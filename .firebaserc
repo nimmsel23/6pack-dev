@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "fitness-aos"
+  },
+  "targets": {
+    "fitness-aos": {
+      "hosting": {
+        "sixpack": ["vos-6pack"]
+      }
+    }
+  }
+}
