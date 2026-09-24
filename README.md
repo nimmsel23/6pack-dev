@@ -45,3 +45,5 @@ angemeldet sein. Das Ziel ist `https://vos-6pack.web.app`.
 Sprachausgabe und Tonsignale benötigen Browser-Unterstützung. Audio wird nach
 dem ersten Start-Tap aktiviert; bei gesperrtem Bildschirm hängt die Wiedergabe
 vom Browser und Betriebssystem ab.
+
+Video-Anleitung: [Video-URLs einrichten](docs/VIDEO_URLS.md).
