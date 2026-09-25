@@ -5,8 +5,11 @@
   "targets": {
     "fitness-aos": {
       "hosting": {
-        "sixpack": ["vos-6pack"]
+        "sixpack": [
+          "vos-6pack"
+        ]
       }
     }
-  }
+  },
+  "etags": {}
 }
