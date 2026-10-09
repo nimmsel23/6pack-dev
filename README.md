@@ -11,6 +11,15 @@ npm run dev
 npm run build
 ```
 
+**Eat** öffnet Fuel direkt im selben Tab: auf Firebase-Hosts (`*.web.app`,
+`*.firebaseapp.com`) unter `https://fuel-vos.web.app/`, im lokalen Betrieb
+unter dem aktuellen Hostnamen auf Port `7000` (z. B. `http://127.0.0.1:7000/`).
+
+**Favorites** speichert ganze Tages- und Shuffle-Workouts über den Stern in
+der jeweiligen Workout-Ansicht. Übungen, Reihenfolge, Zeiten und Pausen bleiben
+im Browser gespeichert und lassen sich dort wieder starten oder entfernen.
+Das Wiederholen eines Favoriten verändert den Fortschritt im Tagesprogramm nicht.
+
 `catalog/6pack/` und `catalog/calisthenics/` sind die Datenquelle dieser App.
 `npm run build:data` erzeugt `sixpackData.generated.js` daraus. Die Datei wird
 nicht committed. `video_url` im Übungs-YAML versorgt den Runner mit einem
