@@ -8,6 +8,10 @@
   Action `.github/workflows/deploy.yml`, vom User so gewünscht). Deshalb vor
   jedem Push `npm run build` laufen lassen — ein roter Build blockiert den
   Deploy. Nach dem Push den Action-Lauf prüfen.
+  **Stand:** Workflow liegt noch unter `ci/deploy.yml` — Cloud-Sessions dürfen
+  nichts unter `.github/workflows/` pushen (fehlender `workflow`-Scope). Der
+  User muss ihn einmal lokal nach `.github/workflows/deploy.yml` verschieben
+  und pushen; bis dahin deployt ein Push noch nichts.
 - Lokaler `.githooks/pre-push` = nur Build-Check (aktiv nach
   `git config core.hooksPath .githooks`), kein Deploy.
 
