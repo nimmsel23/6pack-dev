@@ -116,24 +116,64 @@ function generateDayWorkout(day) {
   return { day, rest: false, items };
 }
 
+// Lokales Kalenderdatum als YYYY-MM-DD (String-Vergleich = Datumsvergleich).
+function localDate(date = new Date()) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function addDays(isoDate, days) {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  return localDate(new Date(y, m - 1, d + days));
+}
+
+const EMPTY_PROGRAM = { currentDay: 1, completedDays: [], completedOn: {}, lastCompletedOn: null, restDate: null, workouts: {} };
+
 function loadProgram() {
-  if (typeof window === 'undefined') return { currentDay: 1, completedDays: [], workouts: {} };
+  if (typeof window === 'undefined') return EMPTY_PROGRAM;
   try {
     const raw = window.localStorage.getItem(SIXPACK_PROGRAM_KEY);
-    if (!raw) return { currentDay: 1, completedDays: [], workouts: {} };
+    if (!raw) return EMPTY_PROGRAM;
     const parsed = JSON.parse(raw);
-    return {
+    return syncProgramToDate({
       currentDay: parsed.currentDay || 1,
       completedDays: Array.isArray(parsed.completedDays) ? parsed.completedDays : [],
+      completedOn: parsed.completedOn || {},
+      lastCompletedOn: parsed.lastCompletedOn || null,
+      restDate: parsed.restDate || null,
       workouts: parsed.workouts || {},
-    };
+    });
   } catch {
-    return { currentDay: 1, completedDays: [], workouts: {} };
+    return EMPTY_PROGRAM;
   }
 }
 
+// Ein Programm-Tag = ein Kalendertag. Ruhetage (Tag 3/7 jeder Woche) belegen
+// den Kalendertag nach dem letzten Workout und gelten am Folgetag automatisch
+// als erledigt — sonst bliebe das Programm auf dem Ruhetag stehen.
+function syncProgramToDate(program, today = localDate()) {
+  let p = program;
+  while (isRestDay(p.currentDay)) {
+    const restDate = p.restDate || (p.lastCompletedOn ? addDays(p.lastCompletedOn, 1) : today);
+    if (restDate >= today) return p.restDate === restDate ? p : { ...p, restDate };
+    p = {
+      ...p,
+      completedDays: p.completedDays.includes(p.currentDay) ? p.completedDays : [...p.completedDays, p.currentDay],
+      completedOn: { ...p.completedOn, [p.currentDay]: restDate },
+      currentDay: p.currentDay + 1,
+      lastCompletedOn: restDate,
+      restDate: null,
+    };
+  }
+  return p;
+}
+
 function HomeScreen({ program, onOpenToday, onNav }) {
-  const todayDone = program.completedDays.includes(program.currentDay);
+  const today = localDate();
+  // Heute schon trainiert → für den Rest des Tages Rest anzeigen.
+  const trainedToday = program.lastCompletedOn === today;
+  const restDayToday = !trainedToday && isRestDay(program.currentDay);
+  const lastDone = program.currentDay - 1;
   const menuButtons = [
     { id: 'eat', label: 'Eat', Icon: UtensilsCrossed },
     { id: 'track', label: 'Track', Icon: ListChecks },
@@ -148,7 +188,9 @@ function HomeScreen({ program, onOpenToday, onNav }) {
       <div className="px-5 py-4 flex items-center justify-between" style={{ background: '#111' }}>
         <div className="text-xs font-black tracking-[0.3em]" style={{ color: '#e2001a' }}>6PP</div>
         <div className="text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
-          Woche {weekOf(program.currentDay)} · Tag {dayInWeek(program.currentDay)}
+          {trainedToday
+            ? `Woche ${weekOf(lastDone)} · Tag ${dayInWeek(lastDone)} ✓`
+            : `Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`}
         </div>
       </div>
 
@@ -161,8 +203,15 @@ function HomeScreen({ program, onOpenToday, onNav }) {
           <Dumbbell size={40} color="#333" />
         </div>
         <div className="px-4 py-2.5 text-center text-sm font-black uppercase tracking-[0.12em]" style={{ background: '#e2001a', color: '#fff' }}>
-          {todayDone ? `Tag ${program.currentDay} erledigt ✓` : "Today's Workout"}
+          {trainedToday ? 'Rest' : restDayToday ? 'Rest Day' : "Today's Workout"}
         </div>
+        {(trainedToday || restDayToday) && (
+          <div className="px-4 py-2 text-center text-[11px] font-bold" style={{ background: '#111', color: 'var(--dim)' }}>
+            {trainedToday
+              ? `Tag ${dayInWeek(lastDone)} erledigt ✓ · Morgen: ${isRestDay(program.currentDay) ? 'Rest Day' : `Tag ${dayInWeek(program.currentDay)}`}`
+              : `Erholung · Morgen: Tag ${dayInWeek(program.currentDay + 1)}`}
+          </div>
+        )}
       </button>
 
       <div className="grid grid-cols-3 gap-px mt-px" style={{ background: 'var(--line)' }}>
@@ -964,6 +1013,18 @@ function RunnerScreen({ workout, onFinish, onBack }) {
 
 export default function SixPackPromiseCard({ onSubNav, coachingNotes = [] }) {
   const [program, setProgram] = useState(() => loadProgram());
+
+  // App bleibt auf dem iPhone oft über Nacht offen → beim Zurückkehren und
+  // jede Minute auf den neuen Kalendertag nachziehen (Ruhetag abschließen).
+  useEffect(() => {
+    const sync = () => setProgram(p => syncProgramToDate(p));
+    document.addEventListener('visibilitychange', sync);
+    const interval = window.setInterval(sync, 60_000);
+    return () => {
+      document.removeEventListener('visibilitychange', sync);
+      window.clearInterval(interval);
+    };
+  }, []);
   const [screen, setScreen] = useState('home');
   const [viewDay, setViewDay] = useState(null);
   const [adhocWorkout, setAdhocWorkout] = useState(null);
@@ -1024,11 +1085,18 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [] }) {
 
   function finishWorkout() {
     if (adhocWorkout) return;
-    setProgram(p => ({
-      ...p,
-      completedDays: p.completedDays.includes(viewDay) ? p.completedDays : [...p.completedDays, viewDay],
-      currentDay: viewDay === p.currentDay ? p.currentDay + 1 : p.currentDay,
-    }));
+    const today = localDate();
+    setProgram(p => {
+      const advances = viewDay === p.currentDay;
+      return syncProgramToDate({
+        ...p,
+        completedDays: p.completedDays.includes(viewDay) ? p.completedDays : [...p.completedDays, viewDay],
+        completedOn: { ...p.completedOn, [viewDay]: today },
+        currentDay: advances ? p.currentDay + 1 : p.currentDay,
+        lastCompletedOn: advances ? today : p.lastCompletedOn,
+        restDate: null,
+      }, today);
+    });
   }
 
   const activeWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
