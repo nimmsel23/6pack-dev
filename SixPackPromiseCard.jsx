@@ -706,6 +706,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const announcedStep = useRef(null);
   const lastCountdownBeep = useRef(null);
   const audioContext = useRef(null);
+  const speechUnlocked = useRef(false);
   const [videoUrls, setVideoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
 
@@ -839,6 +840,14 @@ function RunnerScreen({ workout, onFinish, onBack }) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (AudioContextClass && !audioContext.current) audioContext.current = new AudioContextClass();
       audioContext.current?.resume();
+      // iOS Safari gibt Sprachausgabe erst frei, wenn speak() direkt im Tap
+      // aufgerufen wurde — die eigentlichen Ansagen laufen aber im useEffect.
+      if ('speechSynthesis' in window && !speechUnlocked.current) {
+        const unlock = new SpeechSynthesisUtterance(' ');
+        unlock.volume = 0;
+        window.speechSynthesis.speak(unlock);
+        speechUnlocked.current = true;
+      }
     } else {
       window.speechSynthesis?.cancel();
     }
