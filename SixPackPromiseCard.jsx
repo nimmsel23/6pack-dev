@@ -621,7 +621,7 @@ function TrackScreen({ program, onBack, onOpenDay }) {
 }
 
 function DayScreen({ day, workout, onBack, onStart }) {
-  const totalSeconds = workout.items.reduce((sum, item) => sum + item.seconds, 0);
+  const totalSeconds = workoutTotalSeconds(workout.items);
 
   return (
     <div>
@@ -666,10 +666,23 @@ function DayScreen({ day, workout, onBack, onStart }) {
   );
 }
 
+// Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
+// Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
+const TRANSITION_SECONDS = 5;
+
+function needsTransition(items, index) {
+  return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
+}
+
+function workoutTotalSeconds(items) {
+  return items.reduce((sum, item, i) => sum + item.seconds + (needsTransition(items, i) ? TRANSITION_SECONDS : 0), 0);
+}
+
 function createRunnerState(workout) {
   return {
     itemIndex: 0,
     remaining: workout.items[0]?.seconds || 0,
+    transition: false,
     running: false,
     done: workout.items.length === 0,
   };
@@ -679,15 +692,18 @@ function advanceRunnerState(state, workout) {
   if (!state.running || state.done) return state;
   const remaining = state.remaining - 1;
   if (remaining > 0) return { ...state, remaining };
+  if (!state.transition && needsTransition(workout.items, state.itemIndex)) {
+    return { ...state, transition: true, remaining: TRANSITION_SECONDS };
+  }
   const nextIndex = state.itemIndex + 1;
-  if (nextIndex >= workout.items.length) return { ...state, remaining: 0, running: false, done: true };
-  return { ...state, itemIndex: nextIndex, remaining: workout.items[nextIndex].seconds };
+  if (nextIndex >= workout.items.length) return { ...state, remaining: 0, transition: false, running: false, done: true };
+  return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
 function RunnerScreen({ workout, onFinish, onBack }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const completionReported = useRef(false);
-  const announcedIndex = useRef(-1);
+  const announcedStep = useRef(null);
   const lastCountdownBeep = useRef(null);
   const audioContext = useRef(null);
   const [videoUrls, setVideoUrls] = useState(loadVideoUrls);
@@ -716,23 +732,34 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   }
 
   useEffect(() => {
-    if (!state.running || state.done || announcedIndex.current === state.itemIndex) return;
-    announcedIndex.current = state.itemIndex;
+    const step = `${state.itemIndex}:${state.transition}`;
+    if (!state.running || state.done || announcedStep.current === step) return;
+    const previousStep = announcedStep.current;
+    announcedStep.current = step;
     lastCountdownBeep.current = null;
     setVideoError(false);
+    if (state.transition) {
+      // Nächste Übung schon im Übergang ansagen, damit man sich in Position bringen kann.
+      const nextItem = workout.items[state.itemIndex + 1];
+      beep(660);
+      if (nextItem) announce(nextItem);
+      return;
+    }
     const item = workout.items[state.itemIndex];
     if (!item) return;
     beep(item.type === 'rest' ? 660 : 990);
-    announce(item);
-  }, [state.itemIndex, state.running, state.done, workout]);
+    // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Beep.
+    if (previousStep !== `${state.itemIndex - 1}:true`) announce(item);
+  }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
   useEffect(() => {
     const item = workout.items[state.itemIndex];
-    if (!state.running || item?.type !== 'rest' || state.remaining > 3 || state.remaining < 1) return;
+    const isPause = state.transition || item?.type === 'rest';
+    if (!state.running || !isPause || state.remaining > 3 || state.remaining < 1) return;
     if (lastCountdownBeep.current === state.remaining) return;
     lastCountdownBeep.current = state.remaining;
     beep();
-  }, [state.itemIndex, state.remaining, state.running, workout]);
+  }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   useEffect(() => () => {
     window.speechSynthesis?.cancel();
@@ -792,6 +819,32 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   }
 
   const isRest = current.type === 'rest';
+
+  if (state.transition) {
+    return (
+      <div className="p-6">
+        <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6">
+          <ChevronLeft size={18} /> Abbrechen
+        </button>
+        <div className="text-center">
+          <div className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: '#e2001a' }}>Wechsel</div>
+          <div className="text-sm font-bold mt-2" style={{ color: 'var(--dim)' }}>Als Nächstes</div>
+          <div className="text-2xl font-black text-fit-ink mt-1">{next?.name}</div>
+          <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
+        </div>
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={toggleRunning}
+            className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
+            style={{ background: '#e2001a', color: '#fff' }}
+          >
+            {state.running ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
+            {state.running ? 'Pause' : 'Start'}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
