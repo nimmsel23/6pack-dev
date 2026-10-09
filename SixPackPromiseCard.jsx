@@ -709,46 +709,66 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const [videoUrls, setVideoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
 
-  function beep(frequency = 880) {
+  function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
     const context = audioContext.current;
     if (!context || context.state !== 'running') return;
     const oscillator = context.createOscillator();
     const gain = context.createGain();
+    const start = context.currentTime + delay;
     oscillator.frequency.value = frequency;
     oscillator.type = 'sine';
-    gain.gain.setValueAtTime(0.12, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.18);
+    gain.gain.setValueAtTime(0.12, start);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
     oscillator.connect(gain).connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.18);
+    oscillator.start(start);
+    oscillator.stop(start + duration);
   }
 
-  function announce(item) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(item.type === 'rest' ? 'Pause' : item.name);
-    utterance.lang = item.type === 'rest' ? 'de-DE' : 'en-US';
+  // Start einer Übung/Pause: hoher, kurzer "Piep". Ende: tiefer, langer "Tüt".
+  const startBeep = (delay = 0) => beep(990, { delay });
+  const endBeep = () => beep(440, { duration: 0.45 });
+
+  function speak(text, lang) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
     window.speechSynthesis.speak(utterance);
   }
 
+  // Name + Dauer, z.B. "Crunches" … "30 Sekunden" bzw. "Pause, 45 Sekunden".
+  function announce(item) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    if (item.type === 'rest') {
+      speak(`Pause, ${item.seconds} Sekunden`, 'de-DE');
+    } else {
+      speak(item.name, 'en-US');
+      speak(`${item.seconds} Sekunden`, 'de-DE');
+    }
+  }
+
   useEffect(() => {
-    const step = `${state.itemIndex}:${state.transition}`;
-    if (!state.running || state.done || announcedStep.current === step) return;
+    if (!state.running && !state.done) return;
+    const step = state.done ? 'done' : `${state.itemIndex}:${state.transition}`;
+    if (announcedStep.current === step) return;
     const previousStep = announcedStep.current;
     announcedStep.current = step;
     lastCountdownBeep.current = null;
     setVideoError(false);
+    // Eine Übung/Pause ist gerade zu Ende gegangen (nicht der 5s-Wechsel).
+    const itemEnded = previousStep !== null && !previousStep.endsWith(':true');
+    if (itemEnded) endBeep();
+    if (state.done) return;
     if (state.transition) {
       // Nächste Übung schon im Übergang ansagen, damit man sich in Position bringen kann.
       const nextItem = workout.items[state.itemIndex + 1];
-      beep(660);
       if (nextItem) announce(nextItem);
       return;
     }
     const item = workout.items[state.itemIndex];
     if (!item) return;
-    beep(item.type === 'rest' ? 660 : 990);
-    // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Beep.
+    // Start-Piep nach dem End-Tüt versetzt, damit sich die Töne nicht überlagern.
+    startBeep(itemEnded ? 0.55 : 0);
+    // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Piep.
     if (previousStep !== `${state.itemIndex - 1}:true`) announce(item);
   }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
