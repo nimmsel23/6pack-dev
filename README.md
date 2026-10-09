@@ -35,6 +35,15 @@ gebaut werden. Der Publish-Befehl committed und deployt nichts.
 `.firebaserc` bindet das Hosting-Ziel `sixpack` im Projekt `fitness-aos` an die
 Site `vos-6pack`. `firebase.json` veröffentlicht ausschließlich `dist`.
 
+**Automatisch:** Jeder Push auf `dev` deployt per GitHub Action
+(`.github/workflows/deploy.yml`) live. Benötigtes Repo-Secret:
+`FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS` (Service-Account-JSON mit Rolle
+„Firebase Hosting Admin“), optional `TELEGRAM_TO`/`TELEGRAM_TOKEN`.
+Lokal prüft `.githooks/pre-push` vor dem Push den Build
+(einmalig: `git config core.hooksPath .githooks`).
+
+**Manuell:**
+
 ```sh
 npm run deploy
 ```

@@ -3,8 +3,13 @@
 ## Arbeitsregeln (vom User festgelegt)
 
 - **Alles immer committen und pushen** (Branch `dev`), ohne nachzufragen —
-  jede abgeschlossene Änderung sofort. Ein Push nach `dev` deployt nichts;
-  Deploy (`npm run deploy`) weiterhin nur nach expliziter Bestätigung.
+  jede abgeschlossene Änderung sofort.
+- **Push auf `dev` = Live-Deploy** nach https://vos-6pack.web.app (GitHub
+  Action `.github/workflows/deploy.yml`, vom User so gewünscht). Deshalb vor
+  jedem Push `npm run build` laufen lassen — ein roter Build blockiert den
+  Deploy. Nach dem Push den Action-Lauf prüfen.
+- Lokaler `.githooks/pre-push` = nur Build-Check (aktiv nach
+  `git config core.hooksPath .githooks`), kein Deploy.
 
 ## Runner (`SixPackPromiseCard.jsx` → `RunnerScreen`) — Anforderungen aus Gym-Tests
 
