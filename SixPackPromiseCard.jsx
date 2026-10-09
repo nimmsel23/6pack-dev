@@ -786,6 +786,31 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     audioContext.current?.close();
   }, []);
 
+  // Bildschirm während des Workouts anlassen (Screen Wake Lock API). Der Lock
+  // fällt bei App-/Tab-Wechsel automatisch weg → bei Rückkehr neu anfordern.
+  useEffect(() => {
+    if (state.done || !('wakeLock' in navigator)) return undefined;
+    let lock = null;
+    let cancelled = false;
+    async function acquire() {
+      if (document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+      try {
+        const acquired = await navigator.wakeLock.request('screen');
+        if (cancelled) acquired.release();
+        else lock = acquired;
+      } catch {
+        // z.B. Energiesparmodus — dann geht der Screen eben nach System-Timeout aus.
+      }
+    }
+    acquire();
+    document.addEventListener('visibilitychange', acquire);
+    return () => {
+      cancelled = true;
+      document.removeEventListener('visibilitychange', acquire);
+      lock?.release();
+    };
+  }, [state.done, state.running]);
+
   useEffect(() => {
     if (!state.running || state.done) return undefined;
     const interval = window.setInterval(() => setState(s => advanceRunnerState(s, workout)), 1000);
@@ -808,6 +833,9 @@ function RunnerScreen({ workout, onFinish, onBack }) {
 
   function toggleRunning() {
     if (!state.running) {
+      // iOS Safari: Töne/Ansagen mit laufender Musik (Spotify etc.) mischen,
+      // statt sie zu stoppen. Ohne das übernimmt Web Audio die Audio-Session.
+      if (navigator.audioSession) navigator.audioSession.type = 'ambient';
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (AudioContextClass && !audioContext.current) audioContext.current = new AudioContextClass();
       audioContext.current?.resume();
