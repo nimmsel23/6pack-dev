@@ -1,0 +1,66 @@
+# Live-Deploy: jeder Push auf dev → https://vos-6pack.web.app
+# (Hosting-Ziel "sixpack" im Projekt fitness-aos, siehe .firebaserc).
+#
+# Läuft in GitHub statt lokal, damit auch Pushes aus Cloud-Sessions ohne
+# Firebase-CLI deployen. Der lokale .githooks/pre-push prüft nur den Build.
+#
+# Benötigte Repo-Secrets:
+#   FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS (oder FIREBASE_SERVICE_ACCOUNT)
+#   TELEGRAM_TO + TELEGRAM_TOKEN (optional, für die Benachrichtigung)
+
+name: Deploy (vos-6pack)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.githooks/**'
+
+concurrency:
+  group: deploy-vos-6pack
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (inkl. build:data aus catalog/)
+        run: npm run build
+
+      - name: Deploy Live
+        id: firebase_deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS || secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: fitness-aos
+          target: sixpack
+          channelId: live
+
+      - name: Telegram-Benachrichtigung
+        if: success() && env.TELEGRAM_TO != ''
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🚀 6Pack ist LIVE deployed!
+
+            🔗 https://vos-6pack.web.app
+
+            Commit: ${{ github.event.head_commit.message }}
