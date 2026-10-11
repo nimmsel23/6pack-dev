@@ -1,0 +1,29 @@
+#!/bin/bash
+# pre-push: Build-Check vor jedem Push auf dev. Der eigentliche Deploy nach
+# vos-6pack.web.app läuft danach in GitHub Actions (.github/workflows/deploy.yml)
+# — ein kaputter Build soll gar nicht erst gepusht werden, sonst schlägt der
+# Live-Deploy fehl. Aktivieren (einmalig pro Clone):
+#   git config core.hooksPath .githooks
+# Überspringen im Notfall: git push --no-verify
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+pushes_dev=false
+while read -r local_ref _ _ _; do
+  [ "$local_ref" = "refs/heads/dev" ] && pushes_dev=true
+done
+$pushes_dev || exit 0
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "⚠️  pre-push: uncommittete Änderungen — Build prüft den Arbeitsstand, nicht nur den Push." >&2
+fi
+
+[ -d node_modules ] || npm ci --silent || exit 1
+
+echo "🔨 pre-push: npm run build …" >&2
+if ! npm run build --silent >/dev/null 2>/tmp/6pack-prepush-build.log; then
+  cat /tmp/6pack-prepush-build.log >&2
+  echo "❌ pre-push: Build fehlgeschlagen — Push abgebrochen (Deploy würde scheitern)." >&2
+  exit 1
+fi
+echo "✅ pre-push: Build ok — GitHub Actions deployt nach https://vos-6pack.web.app" >&2
