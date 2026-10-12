@@ -797,19 +797,53 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const startBeep = (delay = 0) => beep(990, { delay });
   const endBeep = () => beep(440, { duration: 0.45 });
 
-  function speak(text, lang) {
+  // Beste verfügbare Stimme je Sprache: Online-/Premium-Stimmen (Google
+  // "Natural", Apple "Enhanced"/"Premium") klingen deutlich weniger blechern
+  // als der mechanische Offline-Default. `getVoices()` liefert auf manchen
+  // Plattformen erst nach dem `voiceschanged`-Event etwas — Cache einmalig
+  // befüllen, nicht pro Ansage neu auflösen.
+  const voicesCache = useRef(null);
+  function bestVoice(lang) {
+    if (!('speechSynthesis' in window)) return null;
+    if (!voicesCache.current) voicesCache.current = window.speechSynthesis.getVoices();
+    const voices = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+    if (voices.length === 0) return null;
+    const premium = voices.find(v => /natural|enhanced|premium/i.test(v.name));
+    if (premium) return premium;
+    const google = voices.find(v => /google/i.test(v.name));
+    if (google) return google;
+    return voices[0];
+  }
+
+  function speak(text, lang, { pitch = 1, rate = 1 } = {}) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    utterance.pitch = pitch;
+    utterance.rate = rate;
+    const voice = bestVoice(lang);
+    if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
   }
 
+  // Zwei direkt aufeinanderfolgende Items mit gleichem Namen = dieselbe
+  // Übung für die zweite Seite (z.B. "Side Plank Lifts" zweimal in Folge).
+  function isSideSwitch(index) {
+    const item = workout.items[index];
+    const previous = workout.items[index - 1];
+    return item?.type === 'exercise' && previous?.type === 'exercise' && previous.name === item.name;
+  }
+
   // Name + Dauer, z.B. "Crunches" … "30 Sekunden" bzw. "Pause, 45 Sekunden".
-  function announce(item) {
+  // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") zusätzlich
+  // explizit "Seitenwechsel" ansagen, sonst wirkt die Wiederholung wie ein
+  // Fehler in der Ansage statt wie der geplante zweite Durchgang.
+  function announce(item, index) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
       speak(`Pause, ${item.seconds} Sekunden`, 'de-DE');
     } else {
+      if (index != null && isSideSwitch(index)) speak('Seitenwechsel', 'de-DE');
       speak(item.name, 'en-US');
       speak(`${item.seconds} Sekunden`, 'de-DE');
     }
@@ -829,8 +863,9 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     if (state.done) return;
     if (state.transition) {
       // Nächste Übung schon im Übergang ansagen, damit man sich in Position bringen kann.
-      const nextItem = workout.items[state.itemIndex + 1];
-      if (nextItem) announce(nextItem);
+      const nextIndex = state.itemIndex + 1;
+      const nextItem = workout.items[nextIndex];
+      if (nextItem) announce(nextItem, nextIndex);
       return;
     }
     const item = workout.items[state.itemIndex];
@@ -838,8 +873,24 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     // Start-Piep nach dem End-Tüt versetzt, damit sich die Töne nicht überlagern.
     startBeep(itemEnded ? 0.55 : 0);
     // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Piep.
-    if (previousStep !== `${state.itemIndex - 1}:true`) announce(item);
+    if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, workout]);
+
+  // "Noch 10 Sekunden" während einer laufenden Übung (nicht Rest/Wechsel) —
+  // Zeit genug, den letzten Rep anzusetzen statt vom Pieps-Ende überrascht zu werden.
+  const announcedTenSecondsStep = useRef(null);
+  useEffect(() => {
+    const item = workout.items[state.itemIndex];
+    const step = `${state.itemIndex}:${state.transition}`;
+    if (!state.running || state.transition || item?.type !== 'exercise') return;
+    if (state.remaining !== 10) {
+      if (state.remaining > 10) announcedTenSecondsStep.current = null;
+      return;
+    }
+    if (announcedTenSecondsStep.current === step) return;
+    announcedTenSecondsStep.current = step;
+    speak('Noch 10 Sekunden', 'de-DE');
+  }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   useEffect(() => {
     const item = workout.items[state.itemIndex];
