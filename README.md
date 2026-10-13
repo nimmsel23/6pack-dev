@@ -86,7 +86,7 @@ angeben. Vite leitet `/sixpack*` an Node (`FITNESS_NODE_PORT`, Standard 9100)
 weiter. Firebase allein hat diesen lokalen Endpunkt nicht; ohne explizit
 konfigurierten erreichbaren Server bleiben neue Fotos in der Offline-Queue.
 
-`routes/sixpack-photos.mjs` speichert neue Fotos unter
+`server/routes/sixpack-photos.mjs` im Fitness-Repository speichert neue Fotos unter
 `~/.aos/fitness/users/<uid>/sixpack-photos/`, außerhalb der Build-Assets.
 `FITNESS_SIXPACK_PHOTOS_DIR` überschreibt den übergeordneten Nutzerordner.
 Die Routen gehören zum lokalen, vertrauenswürdigen Server: Die UID dient zur
@@ -107,7 +107,7 @@ Sie sind in der neuen Galerie nicht eingebunden; eine Migration braucht eine
 explizite Nutzerzuordnung. Google-Drive-Sync bleibt ein separater TODO-Punkt.
 
 API-Regressionstest (isolierte temporäre Dateien):
-`node scripts/test-sixpack-photos.mjs`.
+`node scripts/test-sixpack-photos.mjs` im Fitness-Repository.
 
 
 `SixPackPromiseCard.jsx` ist der stabile Barrel-Einstieg: Default-Export aus
