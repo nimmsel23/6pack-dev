@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.3.0",
   "scripts": {
-    "predev": "npm run build:data",
+    "predev": "pnpm run build:data",
     "dev": "vite",
-    "prebuild": "npm run build:data",
+    "prebuild": "pnpm run build:data",
     "build": "vite build",
     "preview": "vite preview",
     "build:data": "node build-data.mjs",
-    "deploy": "npm run build && firebase deploy --only hosting:sixpack",
+    "deploy": "pnpm run build && firebase deploy --only hosting:sixpack",
     "publish:fitness": "node publish-fitness.mjs"
   },
   "dependencies": {
