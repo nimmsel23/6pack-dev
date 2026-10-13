@@ -6,7 +6,7 @@ import './styles.css';
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <main className="max-w-xl mx-auto py-4">
-      <SixPackPromiseCard />
+      <SixPackPromiseCard uid="local" />
     </main>
   </React.StrictMode>
 );
