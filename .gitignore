@@ -2,3 +2,4 @@ node_modules/
 dist/
 sixpackData.generated.js
 .DS_Store
+.claude/hooks/*.log
