@@ -17,7 +17,39 @@ function savePendingQueue(uid, queue) {
   window.localStorage.setItem(`${SIXPACK_PENDING_KEY}:${uid}`, JSON.stringify(queue));
 }
 
-/** Konvertiert eine DataURL in ein File-Objekt für FormData */
+// Backend (fitness/api/routers/sixpack_photos.py) erwartet den Content-Type passend
+// zur Dateiendung — nicht file.type verwenden (iOS/HEIC liefert teils leer/anders).
+const IMAGE_TYPES = {
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp',
+  heic: 'image/heic', heif: 'image/heif',
+};
+const contentTypeFor = (name) => IMAGE_TYPES[String(name).split('.').pop().toLowerCase()] || null;
+
+class AuthError extends Error {}
+
+/** Foto mit Authorization laden (<img src> kann keine Header senden) → Blob-URL. */
+function AuthImage({ route, getHeaders, alt }) {
+  const [src, setSrc] = useState(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let stale = false;
+    let objectUrl = null;
+    (async () => {
+      try {
+        const res = await fetch(photoUrl(route), { headers: await getHeaders(), signal: AbortSignal.timeout(15000) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        objectUrl = URL.createObjectURL(await res.blob());
+        if (stale) URL.revokeObjectURL(objectUrl); else setSrc(objectUrl);
+      } catch { if (!stale) setFailed(true); }
+    })();
+    return () => { stale = true; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [route]);
+  if (failed) return <div className="w-full h-full flex items-center justify-center text-[10px]" style={{ color: 'var(--dim)' }}>nicht ladbar</div>;
+  if (!src) return <div className="w-full h-full" />;
+  return <img src={src} alt={alt} className="w-full h-full object-cover" />;
+}
+
+/** Konvertiert eine DataURL in ein File-Objekt (Offline-Queue → Upload) */
 function dataUrlToFile(dataUrl, filename) {
   const [header, data] = dataUrl.split(',');
   const mime = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
@@ -27,7 +59,12 @@ function dataUrlToFile(dataUrl, filename) {
   return new File([arr], filename, { type: mime });
 }
 
-export default function SelfiesScreen({ onBack, uid }) {
+/**
+ * Auth: mit getIdToken (Firebase-Build) → Authorization: Bearer <ID-Token>; ohne Token
+ * (Local-Modus, Standalone) → x-fitness-uid — das akzeptiert das Backend nur lokal mit
+ * FITNESS_SIXPACK_DEV_UID_AUTH=1 und nie hinter einem Proxy/Funnel.
+ */
+export default function SelfiesScreen({ onBack, uid, getIdToken }) {
   const [serverPhotos, setServerPhotos] = useState([]);
   const [pending, setPending] = useState(() => loadPendingQueue(uid));
   const [serverOk, setServerOk] = useState(null); // null = unbekannt, true/false
@@ -38,33 +75,49 @@ export default function SelfiesScreen({ onBack, uid }) {
   const busy = useRef(false);
   const hasUid = typeof uid === 'string' && /^[\w-]{1,128}$/.test(uid);
 
-  /** Holt die Foto-Liste vom lokalen Server */
+  /** Auth-Header pro Request frisch holen (ID-Token läuft nach ~1h ab, SDK erneuert es). */
+  async function authHeaders() {
+    const token = getIdToken ? await getIdToken().catch(() => null) : null;
+    return token ? { Authorization: `Bearer ${token}` } : { 'x-fitness-uid': uid };
+  }
+
+  /** Holt die Foto-Liste vom Server (uid kommt serverseitig aus dem Token bzw. Dev-Header). */
   async function fetchServerPhotos() {
     try {
-      const res = await fetch(photoUrl(`sixpack/photos?uid=${encodeURIComponent(uid)}`), {
-        signal: AbortSignal.timeout(3000),
+      const res = await fetch(photoUrl('sixpack/photos'), {
+        headers: await authHeaders(),
+        signal: AbortSignal.timeout(5000),
       });
+      if (res.status === 401 || res.status === 403) throw new AuthError(`HTTP ${res.status}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      if (!data.ok || !Array.isArray(data.photos) || typeof data.uid !== 'string') throw new Error('Invalid photo response');
       setServerOk(true);
-      if (!data.ok || !Array.isArray(data.photos)) throw new Error('Invalid photo response');
-      setServerPhotos(data.photos);
+      setStatusMsg(msg => (msg.startsWith('Anmeldung') ? '' : msg));
+      setServerPhotos(data.photos.map(p => ({
+        ...p,
+        route: `sixpack-photos/${encodeURIComponent(data.uid)}/${encodeURIComponent(p.filename)}`,
+      })));
       return true;
-    } catch {
+    } catch (err) {
       setServerOk(false);
+      if (err instanceof AuthError) setStatusMsg('Anmeldung erforderlich bzw. abgelaufen – Fotos bleiben lokal vorgemerkt.');
       return false;
     }
   }
 
+  /** Raw-Binary-Upload (kein Multipart): Metadaten als Query, Content-Type nach Endung. */
   async function upload(file, id, date) {
-    const fd = new FormData();
-    fd.append('photo', file);
-    fd.append('id', id);
-    fd.append('date', date);
-    const res = await fetch(photoUrl('sixpack/photos'), {
-      method: 'POST', headers: { 'x-fitness-uid': uid }, body: fd,
-      signal: AbortSignal.timeout(10000),
+    const type = contentTypeFor(file.name);
+    if (!type) throw new Error('Unsupported image type');
+    const query = new URLSearchParams({ filename: file.name, id, date });
+    const res = await fetch(photoUrl(`sixpack/photos?${query}`), {
+      method: 'POST',
+      headers: { ...(await authHeaders()), 'Content-Type': type },
+      body: file,
+      signal: AbortSignal.timeout(30000),
     });
+    if (res.status === 401 || res.status === 403) throw new AuthError(`HTTP ${res.status}`);
     if (!res.ok || !(await res.json()).ok) throw new Error('Upload failed');
   }
 
@@ -215,11 +268,19 @@ export default function SelfiesScreen({ onBack, uid }) {
               className="aspect-square relative"
               style={{ background: '#000' }}
             >
-              <img
-                src={photo.source === 'server' ? photoUrl(photo.url) : photo.dataUrl}
-                alt={new Date(photo.date).toLocaleDateString('de-AT')}
-                className="w-full h-full object-cover"
-              />
+              {photo.source === 'server' ? (
+                <AuthImage
+                  route={photo.route}
+                  getHeaders={authHeaders}
+                  alt={new Date(photo.date).toLocaleDateString('de-AT')}
+                />
+              ) : (
+                <img
+                  src={photo.dataUrl}
+                  alt={new Date(photo.date).toLocaleDateString('de-AT')}
+                  className="w-full h-full object-cover"
+                />
+              )}
               {/* Pending-Indikator */}
               {photo.source === 'pending' && (
                 <div

@@ -1016,7 +1016,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   );
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, getIdToken }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1161,7 +1161,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }
           />
         )}
         {screen === 'favorites' && <FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} />}
-        {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
+        {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} getIdToken={getIdToken} />}
         {screen === 'shuffle' && <ShuffleScreen onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} />}
         {screen === 'day' && activeWorkout && (
           activeWorkout.rest ? (
