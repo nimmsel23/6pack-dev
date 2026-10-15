@@ -14,6 +14,7 @@
     "publish:fitness": "node publish-fitness.mjs"
   },
   "dependencies": {
+    "firebase": "11.10.0",
     "js-yaml": "4.1.1",
     "lucide-react": "0.453.0",
     "react": "18.3.1",
