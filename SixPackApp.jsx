@@ -706,6 +706,7 @@ function advanceRunnerState(state, workout) {
 function RunnerScreen({ workout, onFinish, onBack }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const completionReported = useRef(false);
+  const startedAtRef = useRef(Date.now());
   const announcedStep = useRef(null);
   const lastCountdownBeep = useRef(null);
   const audioContext = useRef(null);
@@ -875,7 +876,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   useEffect(() => {
     if (state.done && !completionReported.current) {
       completionReported.current = true;
-      onFinish();
+      onFinish({ startedAt: startedAtRef.current });
     }
   }, [state.done, onFinish]);
 
@@ -1016,7 +1017,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   );
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1110,7 +1111,22 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }
     setScreen('runner');
   }
 
-  function finishWorkout() {
+  function finishWorkout({ startedAt } = {}) {
+    const doneWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
+    if (doneWorkout && onWorkoutComplete) {
+      const byName = new Map();
+      (doneWorkout.items || []).filter(i => i.type === 'exercise').forEach(i => {
+        byName.set(i.name, [...(byName.get(i.name) || []), { seconds: i.seconds }]);
+      });
+      onWorkoutComplete({
+        block: '6Pack',
+        source: 'sixpack',
+        startedAt: startedAt || Date.now(),
+        endedAt: Date.now(),
+        notes: adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`,
+        exercises: [...byName].map(([name, sets]) => ({ name, sets })),
+      });
+    }
     if (adhocWorkout) return;
     const today = localDate();
     setProgram(p => {
