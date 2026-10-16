@@ -45,6 +45,7 @@ export function buildWorkoutDoc({
   source, app = source, userId = null,
   modality = 'strength', block, program = null,
   exercises = [], startedAt, endedAt, effort = null, notes = '',
+  activity = null, // optionale Activity im Fitness-Format, z. B. { type: 'hiit', muscleTarget: 'core', duration: 5 }
   runId = newRunId(),
 }) {
   const start = new Date(startedAt || Date.now());
@@ -67,6 +68,7 @@ export function buildWorkoutDoc({
       sessionMode: modality === 'cardio' ? 'cardio' : 'strength',
       block,
       ...(program ? { program } : {}),
+      ...(activity ? { activity } : {}),
       exercises: exercises.map((ex) => ({
         id: `${source}-${slug(ex.name)}`,
         name: ex.name,

@@ -670,6 +670,25 @@ function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite
   );
 }
 
+// Musik anderer Apps (Spotify etc.) darf NIE pausieren — weder beim Öffnen der App noch beim
+// Start einer Übung. iOS: Kategorie "ambient" mischt mit laufender Musik; sie muss gesetzt sein,
+// BEVOR irgendein Audio (AudioContext, Sprachausgabe) startet. Darum schon beim Laden des Moduls,
+// vor jedem Audio-Start und nach jeder Rückkehr in die App (iOS setzt sie dabei gern zurück).
+function keepMusicPlaying() {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.audioSession) navigator.audioSession.type = 'ambient';
+  } catch {
+    // ältere Browser ohne Audio Session API: nichts zu tun
+  }
+}
+keepMusicPlaying();
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') keepMusicPlaying();
+  });
+  window.addEventListener('pageshow', keepMusicPlaying);
+}
+
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
@@ -713,6 +732,11 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const lastCountdownBeep = useRef(null);
   const audioContext = useRef(null);
   const speechUnlocked = useRef(false);
+  // Start-Intro: Willkommen + erste Übung + "begin in 3, 2, 1" + langer Ton, danach läuft die Zeit.
+  const [intro, setIntro] = useState(false);
+  const introTimers = useRef([]);
+  const introDone = useRef(false);
+  const introToken = useRef(0); // macht abgebrochene Intros wirkungslos (speechSynthesis.cancel() feuert onend/onerror)
   const [videoUrls, setVideoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
 
@@ -753,11 +777,15 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     return voices[0];
   }
 
-  function speak(text, lang, { pitch = 1, rate = 1 } = {}) {
+  function speak(text, lang, { pitch = 1, rate = 1, onend } = {}) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.pitch = pitch;
     utterance.rate = rate;
+    if (onend) {
+      utterance.onend = onend;
+      utterance.onerror = onend;
+    }
     const voice = bestVoice(lang);
     if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
@@ -788,6 +816,70 @@ function RunnerScreen({ workout, onFinish, onBack }) {
       speak(item.name, 'en-US');
       speak(secondsText(item.seconds), 'en-US');
     }
+  }
+
+  // Seite bei einseitigen Übungen (dieselbe Übung zweimal direkt hintereinander): erste Hälfte = linke Seite.
+  function firstSideLabel(index) {
+    const item = workout.items[index];
+    const following = workout.items[index + 1];
+    return item?.type === 'exercise' && following?.type === 'exercise' && following.name === item.name ? 'left side' : '';
+  }
+
+  function clearIntroTimers() {
+    introTimers.current.forEach(window.clearTimeout);
+    introTimers.current = [];
+  }
+
+  function cancelIntro() {
+    introToken.current += 1;
+    clearIntroTimers();
+    window.speechSynthesis?.cancel();
+    introDone.current = false; // beim nächsten Start wieder von vorn
+    setIntro(false);
+  }
+
+  // "Welcome … <Übung>[, left side], begin in 3, 2, 1" + langer Ton ("tüüt"), dann startet die Zeit.
+  function startIntro() {
+    introDone.current = true;
+    const token = (introToken.current += 1);
+    const alive = () => token === introToken.current;
+    setIntro(true);
+    const first = workout.items[0];
+    const label = first?.type === 'exercise' ? first.name : 'Rest';
+    const side = firstSideLabel(0);
+    const later = (fn, ms) => introTimers.current.push(window.setTimeout(fn, ms));
+
+    const go = () => {
+      if (!alive()) return;
+      // Intro hat die erste Übung bereits angesagt → der normale Start-Effekt soll sie nicht doppelt ansagen.
+      announcedStep.current = '0:false';
+      lastCountdownBeep.current = null;
+      beep(990, { duration: 0.6 });
+      setIntro(false);
+      setState(s => ({ ...s, running: true }));
+    };
+    const countdown = () => {
+      if (!alive()) return;
+      if ('speechSynthesis' in window) speak('3', 'en-US'); else beep(660);
+      later(() => ('speechSynthesis' in window ? speak('2', 'en-US') : beep(660)), 1000);
+      later(() => ('speechSynthesis' in window ? speak('1', 'en-US') : beep(660)), 2000);
+      later(go, 3000);
+    };
+
+    if (!('speechSynthesis' in window)) {
+      countdown();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    speak("Welcome to 6Pack. Let's go.", 'en-US');
+    let continued = false;
+    const proceed = () => {
+      if (continued || !alive()) return;
+      continued = true;
+      countdown();
+    };
+    speak(`${label}${side ? `, ${side}` : ''}. Begin in`, 'en-US', { onend: proceed });
+    later(proceed, 12000); // Sicherung, falls onend nie feuert (manche iOS-Versionen)
   }
 
   useEffect(() => {
@@ -843,6 +935,8 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   useEffect(() => () => {
+    introToken.current += 1;
+    introTimers.current.forEach(window.clearTimeout);
     window.speechSynthesis?.cancel();
     audioContext.current?.close();
   }, []);
@@ -893,10 +987,15 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const videoUrl = playableVideoUrl(selectedVideoUrl);
 
   function toggleRunning() {
+    if (intro) {
+      // Tippen während des Intros = abbrechen (wie Pause)
+      cancelIntro();
+      return;
+    }
     if (!state.running) {
       // iOS Safari: Töne/Ansagen mit laufender Musik (Spotify etc.) mischen,
       // statt sie zu stoppen. Ohne das übernimmt Web Audio die Audio-Session.
-      if (navigator.audioSession) navigator.audioSession.type = 'ambient';
+      keepMusicPlaying();
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (AudioContextClass && !audioContext.current) audioContext.current = new AudioContextClass();
       audioContext.current?.resume();
@@ -910,6 +1009,11 @@ function RunnerScreen({ workout, onFinish, onBack }) {
       }
     } else {
       window.speechSynthesis?.cancel();
+    }
+    // Erster Start des Workouts: erst das Intro (Willkommen, erste Übung, 3-2-1), dann läuft die Zeit.
+    if (!state.running && !introDone.current && state.itemIndex === 0 && !state.transition) {
+      startIntro();
+      return;
     }
     setState(s => ({ ...s, running: !s.running }));
   }
@@ -955,8 +1059,8 @@ function RunnerScreen({ workout, onFinish, onBack }) {
             className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
             style={{ background: '#e2001a', color: '#fff' }}
           >
-            {state.running ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
-            {state.running ? 'Pause' : 'Start'}
+            {state.running || intro ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
+            {state.running || intro ? 'Pause' : 'Start'}
           </button>
         </div>
       </div>
@@ -1014,13 +1118,27 @@ function RunnerScreen({ workout, onFinish, onBack }) {
           className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
           style={{ background: '#e2001a', color: '#fff' }}
         >
-          {state.running ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
-          {state.running ? 'Pause' : 'Start'}
+          {state.running || intro ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
+          {state.running || intro ? 'Pause' : 'Start'}
         </button>
       </div>
     </div>
   );
 }
+
+// Activity Finisher: nach JEDEM abgeschlossenen 6Pack-Workout wird automatisch ein Core-HIIT-Finisher
+// (5 Minuten) mitgeloggt — im Fitness-Activity-Format (type 'hiit', Muskelziel core), damit er in
+// Coverage/Superkompensation wie ein manuell erfasstes HIIT zählt. Dauer hier anpassen.
+const FINISHER_MINUTES = 5;
+const CORE_HIIT_FINISHER = {
+  type: 'hiit',
+  muscleTarget: 'core',
+  muscles: ['core'],
+  primaryMuscles: [],
+  duration: FINISHER_MINUTES,
+  label: 'Activity Finisher · Core HIIT',
+  finisher: true,
+};
 
 export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete }) {
   const [program, setProgram] = useState(() => loadProgram());
@@ -1131,7 +1249,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         runId,
         startedAt: startedAt || Date.now(),
         endedAt: Date.now(),
-        notes: adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`,
+        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Finisher Core HIIT ${FINISHER_MINUTES} min`,
+        activity: { ...CORE_HIIT_FINISHER },
         exercises: [...byName].map(([name, sets]) => ({ name, sets })),
       });
     }

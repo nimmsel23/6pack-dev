@@ -24,3 +24,12 @@
 - Screen darf während des Workouts nicht ausgehen (Screen Wake Lock).
 - Musik anderer Apps darf nicht unterbrochen werden (iOS:
   `navigator.audioSession.type = 'ambient'`; Videos immer `muted`).
+
+## Start-Intro, Musik, Finisher (User-Vorgaben 2026-10-16)
+
+- **Start-Intro:** Beim ersten Start eines Workouts: "Welcome to 6Pack. Let's go." → "<Übung>[, left side]. Begin in" → "3, 2, 1" → langer Ton → dann läuft die Zeit.
+  "left side" nur bei einseitigen Übungen (dieselbe Übung zweimal direkt hintereinander; die zweite Hälfte sagt weiter "Switch sides"). Tippen während des Intros bricht ab.
+- **Musik darf nie pausieren** — weder beim Öffnen der App noch beim Übungsstart: `keepMusicPlaying()` setzt `navigator.audioSession.type = 'ambient'` schon beim Laden des Moduls, vor jedem Audio-Start und nach jeder Rückkehr in die App (iOS). Videos immer `muted`. Nichts Audio-Relevantes vor dem ersten Tap erzeugen.
+- **Activity Finisher:** Nach jedem abgeschlossenen Workout wird automatisch `Core HIIT` (5 min, `FINISHER_MINUTES` in `SixPackApp.jsx`) als `activity` im Session-Dokument mitgeloggt (Fitness-Activity-Format `type: 'hiit'`, `muscleTarget: 'core'`); `workoutDoc.js::buildWorkoutDoc` nimmt dafür ein optionales `activity`.
+- Offen: 30-s-Warnton (nie gebaut).
+
