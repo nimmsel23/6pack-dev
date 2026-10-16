@@ -19,7 +19,7 @@
 
 - 5s-Wechsel zwischen direkt aufeinanderfolgenden Übungen (`TRANSITION_SECONDS`).
 - Start jeder Übung/Pause: hoher kurzer Piep, Ende: tiefer langer Tüt.
-- Ansage mit Dauer ("Crunches" … "30 Sekunden", "Pause, 45 Sekunden"); der
+- Alle Sprachansagen **komplett Englisch** (en-US, User-Vorgabe 2026-10-16): Ansage mit Dauer ("Crunches" … "30 seconds", "Rest, 45 seconds"), "Switch sides" beim Seitenwechsel, "10 seconds left" 10 s vor Ende einer Übung; der
   5s-Wechsel selbst wird nicht angesagt.
 - Screen darf während des Workouts nicht ausgehen (Screen Wake Lock).
 - Musik anderer Apps darf nicht unterbrochen werden (iOS:

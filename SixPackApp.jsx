@@ -771,19 +771,22 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     return item?.type === 'exercise' && previous?.type === 'exercise' && previous.name === item.name;
   }
 
-  // Name + Dauer, z.B. "Crunches" … "30 Sekunden" bzw. "Pause, 45 Sekunden".
+  // Alle Sprachansagen sind komplett Englisch (en-US).
+  const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
+
+  // Name + Dauer, z.B. "Crunches" … "30 seconds" bzw. "Rest, 45 seconds".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") zusätzlich
-  // explizit "Seitenwechsel" ansagen, sonst wirkt die Wiederholung wie ein
+  // explizit "Switch sides" ansagen, sonst wirkt die Wiederholung wie ein
   // Fehler in der Ansage statt wie der geplante zweite Durchgang.
   function announce(item, index) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
-      speak(`Pause, ${item.seconds} Sekunden`, 'de-DE');
+      speak(`Rest, ${secondsText(item.seconds)}`, 'en-US');
     } else {
-      if (index != null && isSideSwitch(index)) speak('Seitenwechsel', 'de-DE');
+      if (index != null && isSideSwitch(index)) speak('Switch sides', 'en-US');
       speak(item.name, 'en-US');
-      speak(`${item.seconds} Sekunden`, 'de-DE');
+      speak(secondsText(item.seconds), 'en-US');
     }
   }
 
@@ -814,7 +817,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
-  // "Noch 10 Sekunden" während einer laufenden Übung (nicht Rest/Wechsel) —
+  // "10 seconds left" während einer laufenden Übung (nicht Rest/Wechsel) —
   // Zeit genug, den letzten Rep anzusetzen statt vom Pieps-Ende überrascht zu werden.
   const announcedTenSecondsStep = useRef(null);
   useEffect(() => {
@@ -827,7 +830,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     }
     if (announcedTenSecondsStep.current === step) return;
     announcedTenSecondsStep.current = step;
-    speak('Noch 10 Sekunden', 'de-DE');
+    speak('10 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   useEffect(() => {
