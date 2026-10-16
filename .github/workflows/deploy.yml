@@ -44,7 +44,7 @@ jobs:
       - name: Install
         run: pnpm install --ignore-scripts   # kein Lockfile im Repo (pnpm-Workspace in vitalos/fitness-dev)
 
-      - name: Build (inkl. build:data aus catalog/, Stempel: Splash + Service Worker)
+      - name: "Build (inkl. build:data aus catalog/; Stempel = Splash + Service Worker)"
         run: pnpm run build
 
       - name: Hinweis - Secret fehlt
