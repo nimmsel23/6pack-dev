@@ -1,3 +1,9 @@
+# 6pack live: Runner-Update ausgeliefert (2026-10-16)
+
+- `vos-release 6pack` (675def9) hat NICHTS deployt: der Pre-Push-Hook löste nur bei `src/`, `public/` usw. aus, 6pack hat den Code im Repo-Root. Manuell deployt (`pnpm run deploy` in `~/vitalos/6pack-app`), Live-Bundle geprüft: enthält Intro, 30s/10s-Cues, Core-HIIT-Finisher, `ambient`.
+- Hook-Trigger erweitert (`32ddd53`, geht mit dem nächsten Release in `vitalos` ein): Root-`*.jsx/*.js/*.mjs/*.css`, `catalog/`, `mini-app.json`, `scripts/mini-app-shell/`.
+- Beim Release-Lauf bricht `vos-release` nach dem Push noch an fremden Änderungen im Meta-Repo ab — jetzt nur noch Warnung.
+
 # Runner: Start-Intro, Musik-Sicherung, Auto-Finisher (2026-10-16)
 
 - Start-Intro (Welcome + erste Übung [+ left side] + "begin in 3, 2, 1" + langer Ton) vor dem ersten Zeitlauf; abbrechbar, abgebrochene Intros bleiben wirkungslos (Token).
