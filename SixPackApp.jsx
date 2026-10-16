@@ -909,6 +909,23 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
+  // Warnton + "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
+  // 30 s dauern (bei genau 30 s wäre es der Start) und nicht in Rest/Wechsel.
+  const announcedThirtySecondsStep = useRef(null);
+  useEffect(() => {
+    const item = workout.items[state.itemIndex];
+    const step = `${state.itemIndex}:${state.transition}`;
+    if (!state.running || state.transition || item?.type !== 'exercise' || item.seconds <= 30) return;
+    if (state.remaining !== 30) {
+      if (state.remaining > 30) announcedThirtySecondsStep.current = null;
+      return;
+    }
+    if (announcedThirtySecondsStep.current === step) return;
+    announcedThirtySecondsStep.current = step;
+    beep(660, { duration: 0.3 });
+    speak('30 seconds left', 'en-US');
+  }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
+
   // "10 seconds left" während einer laufenden Übung (nicht Rest/Wechsel) —
   // Zeit genug, den letzten Rep anzusetzen statt vom Pieps-Ende überrascht zu werden.
   const announcedTenSecondsStep = useRef(null);
