@@ -1,3 +1,9 @@
+# ~/6pack-dev aufgeräumt: wieder auf dev (2026-10-16)
+
+- Die WIP von `agent/photo-auth` (private Fotos mit Firebase-Auth: `PrivatePhoto`, `SelfiesGallery`, `photoAuth`/`photoClient`, umgebauter Selfies-Screen) ist als Commit `926e8a1` gesichert; `dev` wurde in den Branch gemergt (`f27e538`; `main.jsx` → dev-Stand mit Sync-Root, `.gitignore` beide Zeilen). Build auf dem Merge grün.
+- `agent/photo-auth` ist **nicht** nach `dev` gemergt (unfertig; Push auf `dev` = Live-Deploy). `~/6pack-dev` steht wieder auf `dev`.
+- Offen für `vos-release 6pack`: Preflight meldet Konflikt in `package.json` (dev = npm + Stamp-Build, `vitalos` = `packageManager: pnpm@11.3.0`, `pnpm run`). Entscheidung nötig, welcher Paketmanager gilt.
+
 # 6Pack: Splash, sw.js und SW-Register aus @vos/mini-app-shell (2026-10-16)
 
 - Splash, Service Worker und SW-Register kommen aus `@vos/mini-app-shell` (SSOT `~/vitalos/packages/mini-app-shell`, hier vendored unter `scripts/mini-app-shell/` — nicht editieren; Aktualisieren/Drift: `node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell [--check]`; Konfig `mini-app.json`).
