@@ -1,0 +1,14 @@
+{
+  "apps": {
+    "6pack": {
+      "name": "6Pack",
+      "short": "6Pack",
+      "description": "6-Pack-Programm mit Workout-Runner",
+      "accent": "#e5192b",
+      "register": true,
+      "sw": {
+        "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"]
+      }
+    }
+  }
+}

@@ -1,3 +1,9 @@
+# 6Pack: Splash, sw.js und SW-Register aus @vos/mini-app-shell (2026-10-16)
+
+- Splash, Service Worker und SW-Register kommen aus `@vos/mini-app-shell` (SSOT `~/vitalos/packages/mini-app-shell`, hier vendored unter `scripts/mini-app-shell/` — nicht editieren; Aktualisieren/Drift: `node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell [--check]`; Konfig `mini-app.json`).
+- `npm run build` = `vite build` + `stamp dist --app 6pack`; `index.html` ohne Inline-Splash/-Register, alter `public/sw.js` → `docs/archive/sw.static-v1.js`.
+- Aktivierung räumt nur Caches mit Präfix `vos-6pack-`. Commits `34a2c8c`, `7049696` auf `dev`. Nicht gepusht — Push auf `dev` = Live-Deploy.
+
 # 2026-10-13 — Selfies: lokale Synchronisierung und Fotoauswahl
 
 - Barrel-Einstieg und getrenntes Selfies-Modul auf den aktuellen 6Pack-Stand

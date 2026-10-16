@@ -3,3 +3,6 @@ dist/
 sixpackData.generated.js
 .DS_Store
 .claude/hooks/*.log
+
+# Firebase-CLI-Cache (entsteht bei firebase deploy)
+.firebase/

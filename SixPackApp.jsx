@@ -2,6 +2,7 @@ import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb } from 'lucide-react';
+import { newRunId } from './workoutDoc.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
 
 const SIXPACK_PROGRAM_KEY = 'fitness-sixpack-program-v1';
@@ -706,6 +707,8 @@ function advanceRunnerState(state, workout) {
 function RunnerScreen({ workout, onFinish, onBack }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const completionReported = useRef(false);
+  const startedAtRef = useRef(Date.now());
+  const runIdRef = useRef(newRunId());
   const announcedStep = useRef(null);
   const lastCountdownBeep = useRef(null);
   const audioContext = useRef(null);
@@ -875,7 +878,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   useEffect(() => {
     if (state.done && !completionReported.current) {
       completionReported.current = true;
-      onFinish();
+      onFinish({ startedAt: startedAtRef.current, runId: runIdRef.current });
     }
   }, [state.done, onFinish]);
 
@@ -1016,7 +1019,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   );
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1110,7 +1113,25 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid }
     setScreen('runner');
   }
 
-  function finishWorkout() {
+  function finishWorkout({ startedAt, runId } = {}) {
+    const doneWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
+    if (doneWorkout && onWorkoutComplete) {
+      const byName = new Map();
+      (doneWorkout.items || []).filter(i => i.type === 'exercise').forEach(i => {
+        byName.set(i.name, [...(byName.get(i.name) || []), { seconds: i.seconds }]);
+      });
+      onWorkoutComplete({
+        block: '6Pack',
+        source: 'sixpack',
+        modality: 'core',
+        program: adhocWorkout ? { id: 'sixpack', adhoc: true } : { id: 'sixpack', day: viewDay },
+        runId,
+        startedAt: startedAt || Date.now(),
+        endedAt: Date.now(),
+        notes: adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`,
+        exercises: [...byName].map(([name, sets]) => ({ name, sets })),
+      });
+    }
     if (adhocWorkout) return;
     const today = localDate();
     setProgram(p => {

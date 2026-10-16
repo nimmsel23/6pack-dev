@@ -1,6 +1,9 @@
 # Live-Deploy: jeder Push auf dev → https://vos-6pack.web.app
 # (Hosting-Ziel "sixpack" im Projekt fitness-aos, siehe .firebaserc).
 #
+# (Liegt seit 2026-10-15 unter .github/workflows/, vorher inaktiv in ci/.)
+# Ohne Secret wird nur gebaut, der Deploy übersprungen.
+#
 # Läuft in GitHub statt lokal, damit auch Pushes aus Cloud-Sessions ohne
 # Firebase-CLI deployen. Der lokale .githooks/pre-push prüft nur den Build.
 #
@@ -28,21 +31,26 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
+      FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS || secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install
-        run: npm ci
+        run: npm install --no-audit --no-fund --ignore-scripts   # kein Lockfile im Repo (pnpm-Workspace in fitness-dev)
 
       - name: Build (inkl. build:data aus catalog/)
         run: npm run build
 
+      - name: Hinweis - Secret fehlt
+        if: env.FIREBASE_SA == ''
+        run: echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS fehlt - Deploy übersprungen."
+
       - name: Deploy Live
+        if: env.FIREBASE_SA != ''
         id: firebase_deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -53,7 +61,7 @@ jobs:
           channelId: live
 
       - name: Telegram-Benachrichtigung
-        if: success() && env.TELEGRAM_TO != ''
+        if: success() && env.FIREBASE_SA != '' && env.TELEGRAM_TO != ''
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
