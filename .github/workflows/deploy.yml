@@ -35,15 +35,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4   # Version aus package.json "packageManager"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install
-        run: npm install --no-audit --no-fund --ignore-scripts   # kein Lockfile im Repo (pnpm-Workspace in fitness-dev)
+        run: pnpm install --ignore-scripts   # kein Lockfile im Repo (pnpm-Workspace in vitalos/fitness-dev)
 
-      - name: Build (inkl. build:data aus catalog/)
-        run: npm run build
+      - name: Build (inkl. build:data aus catalog/, Stempel: Splash + Service Worker)
+        run: pnpm run build
 
       - name: Hinweis - Secret fehlt
         if: env.FIREBASE_SA == ''
