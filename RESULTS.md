@@ -1,3 +1,10 @@
+# Geräte-Abnahme: Selfie-Sync funktioniert (2026-10-17)
+
+- Nutzer hat ein Bild am Handy in 6Pack hochgeladen und die erfolgreiche Anzeige am Laptop mit demselben Konto bestätigt. Der echte angemeldete Zwei-Geräte-Ablauf ist damit bestätigt, zusätzlich zu den automatisierten Client-/Emulator-Tests.
+- Veröffentlicht: 6pack 21c804d; VitalOS-Shell-Fix 42e1168 übernimmt den bestehenden Login und bindet die Galerie an user.uid. Production-CI für Shell und Standalone erfolgreich (39028533456 / 39028533446); tatsächliche Bundles geprüft.
+- Verbindlicher Speicherpfad: `sixpackSelfies/{uid}/photos/{photoId}`, Eigentümer-Zugriff, kein impliziter Coach-Zugriff. Frühere Log-Einträge zum users-Pfad/Coach-Zugriff beschreiben den verworfenen Zwischenstand.
+- Nutzer-Abnahme belegt Upload/Anzeige Handy → Laptop. Offline-Wiederanlauf, alte Server-Fotos und HEIC/Kamera-Varianten sind damit nicht zusätzlich auf realen Geräten geprüft. Persönliche Bilddateien oder Tokens wurden nicht ausgelesen.
+
 # Repo-Anleitung und Veröffentlichung (2026-10-17)
 
 - AGENTS.md erklärt Root-Dateien, direkte Fitness-Integration, den vereinigten Foto-Sync, Auth-/Queue-/Import-Grenzen, Tests und Release-Wege. CLAUDE.md verweist darauf; veraltete Aussagen über dev als Live-Deploy korrigiert.

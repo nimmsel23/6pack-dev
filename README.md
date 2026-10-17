@@ -106,6 +106,20 @@ Beim Öffnen, bei erneuter Verbindung, beim Zurückkehren zur App und manuell wi
 synchronisiert. Bei vollem oder beschädigtem Browserspeicher wird kein Erfolg
 behauptet; Original behalten. Nicht zugeordnete v1-Daten bleiben unangetastet.
 
+### Im Alltag
+
+1. In VitalOS oder 6Pack mit demselben Firebase-Konto anmelden.
+2. In 6Pack → Selfies ein Foto aufnehmen oder Dateien auswählen.
+3. „In der Cloud gespeichert“ bedeutet bestätigten Upload. Vorgemerkte Fotos
+   brauchen noch Synchronisierung; bei Fehlern das Original behalten.
+4. Am anderen Gerät Selfies öffnen und bei Bedarf „Jetzt synchronisieren“ drücken.
+   Der Laptop muss keinen eigenen Foto-Server betreiben.
+
+**Geräte-Abnahme 2026-10-17:** Der Nutzer hat ein Foto am Handy hochgeladen und
+den erfolgreichen Abruf am Laptop bestätigt. Dieser Upload-/Lese-Ablauf ist
+praktisch geprüft. Offline-Wiederanlauf, Altbestand-Import und HEIC/Kamera-Varianten
+bleiben separate Gerätetests; die Abnahme behauptet dafür keinen zusätzlichen Test.
+
 ### Vorhandene Laptop-Fotos übernehmen
 
 „Vorhandene Server-Fotos übernehmen“ importiert den angemeldeten eigenen
