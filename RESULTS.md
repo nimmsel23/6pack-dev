@@ -1,3 +1,10 @@
+# Selfies: Firebase Cloud-Sync (2026-10-17)
+
+- Lokale Foto-API im Client durch Firestore REST mit Firebase-ID-Token ersetzt; keine Laptop-Abhängigkeit. Gemeinsamer Pfad `users/{uid}/sixpackPhotos/{id}` für Standalone und Fitness. Bestehende Regeln erlauben Eigentümer und Coach.
+- Google-Login direkt im Selfies-Screen auch für lokale Fitness-Builds. Gemeinsame Firebase-Konfiguration; bestehende Host-Instanz wird wiederverwendet. Fremde ausgewählte UID wird abgewiesen, Konto-Wechsel remountet die Galerie und ihre Queue.
+- JPEG maximal 1600 px / 700000 Data-URL-Zeichen; Originale bleiben erhalten. UID-Queue, bestätigte Uploads, deterministische IDs, paginierte Galerie. Keine automatische Übertragung alter Laptop-Dateien oder unzugeordneter v1-Queues.
+- Geprüft: Standalone Vite-Build und isolierte REST-Client-Regression (Auth/UID-Isolation, Payload-Grenzen, Wiederholung, Pagination, 403, Decode-Fehler). Angemeldeter echter Geräte-Sync ist noch nicht geprüft. Kein Push/Deploy.
+
 # 6pack live: Runner-Update ausgeliefert (2026-10-16)
 
 - `vos-release 6pack` (675def9) hat NICHTS deployt: der Pre-Push-Hook löste nur bei `src/`, `public/` usw. aus, 6pack hat den Code im Repo-Root. Manuell deployt (`pnpm run deploy` in `~/vitalos/6pack-app`), Live-Bundle geprüft: enthält Intro, 30s/10s-Cues, Core-HIIT-Finisher, `ambient`.

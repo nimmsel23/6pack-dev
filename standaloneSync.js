@@ -12,14 +12,7 @@ import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signO
 import { buildWorkoutDoc } from './workoutDoc.js';
 
 // Gleiches Firebase-Projekt wie die Fitness-App (fitness-aos). Web-Config ist öffentlich.
-const config = {
-  apiKey: 'AIzaSyD1hvp2UYrvizLOzoSqOX-bwRWcCpJVAlg',
-  authDomain: 'fitness-aos.firebaseapp.com',
-  projectId: 'fitness-aos',
-  storageBucket: 'fitness-aos.firebasestorage.app',
-  messagingSenderId: '842575255284',
-  appId: '1:842575255284:web:65c4831683a893c110f0a1',
-};
+import { config } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
 

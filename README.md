@@ -78,41 +78,30 @@ vom Browser und Betriebssystem ab.
 Video-Anleitung: [Video-URLs einrichten](docs/VIDEO_URLS.md).
 
 
-## Fortschrittsfotos (lokaler Server)
+## Fortschrittsfotos (Firebase Cloud-Sync)
 
-`Session` übergibt die UID des aktiven DB-Adapters. Upload, Liste und Bilder
-nutzen relative URLs am App-Server; `VITE_API_BASE` kann einen anderen Server
-angeben. Vite leitet `/sixpack*` an Node (`FITNESS_NODE_PORT`, Standard 9100)
-weiter. Firebase allein hat diesen lokalen Endpunkt nicht; ohne explizit
-konfigurierten erreichbaren Server bleiben neue Fotos in der Offline-Queue.
+Selfies werden mit Firebase-ID-Token direkt in Firestore unter
+`users/{uid}/sixpackPhotos/{photoId}` gespeichert. Standalone und Fitness verwenden
+dasselbe Projekt `fitness-aos` und denselben Login. Auch im lokalen Fitness-Build
+kann man sich direkt im Selfies-Screen mit Google anmelden. Kein Laptop-Server,
+Tailscale oder Storage-Bucket erforderlich. Die bestehenden Regeln in
+`~/vitalos/firestore.rules` erlauben dem Eigentümer und Coach Zugriff; andere
+Nutzer und anonyme Requests haben keinen Zugriff.
 
-`server/routes/sixpack-photos.mjs` im Fitness-Repository speichert neue Fotos unter
-`~/.aos/fitness/users/<uid>/sixpack-photos/`, außerhalb der Build-Assets.
-`FITNESS_SIXPACK_PHOTOS_DIR` überschreibt den übergeordneten Nutzerordner.
-Die Routen gehören zum lokalen, vertrauenswürdigen Server: Die UID dient zur
-Zuordnung, nicht als Authentifizierung für einen öffentlichen Foto-Dienst.
+Fotos werden für den Sync zu JPEG verkleinert (längste Kante maximal 1600 px,
+Data-URL maximal 700000 Zeichen). Originale bleiben auf dem Gerät. HEIC/HEIF
+funktioniert nur, wenn der Browser es decodieren kann; andernfalls erscheint eine
+Fehlermeldung. Mehrfachauswahl ist möglich. Die Galerie lädt beim Öffnen und bei
+erneuter Verbindung; der Sync-Button lädt ebenfalls neu.
 
-Fehlgeschlagene Uploads landen unter
-`fitness-sixpack-selfies-pending-v2:<uid>` im Browser. Synchronisierung erfolgt
-beim Öffnen, beim Online-Ereignis oder per „Jetzt synchronisieren“.
-Dateiformat und Aufnahmedatum bleiben erhalten; eine stabile Upload-ID verhindert
-Duplikate bei Wiederholungen. JPG/PNG/WebP/HEIC/HEIF bis 20 MB sind erlaubt;
-HEIC-Anzeige hängt vom Browser ab. Bei vollem oder gesperrtem Browserspeicher
-erscheint eine Fehlermeldung statt einer falschen Speicherbestätigung.
+Fehlgeschlagene Uploads bleiben pro Nutzer unter
+`fitness-sixpack-selfies-pending-v2:<uid>` im Browser. Beim Öffnen, Online-Ereignis
+oder manueller Synchronisierung werden sie erneut gesendet; dieselbe Foto-ID
+verhindert Duplikate. Erst die Serverbestätigung entfernt einen Queue-Eintrag.
+Bestehende zugeordnete Browser-Queues werden mit demselben Login übernommen.
+Nicht zugeordnete v1-Queues und lokale Server-Fotos werden weder gelöscht noch
+automatisch einem Konto zugeordnet. Bereits auf dem Laptop gespeicherte Originale
+können über „Fotos auswählen“ hochgeladen werden.
 
-Alte unzugeordnete Browser-Einträge (`fitness-sixpack-selfies-v1`,
-`fitness-sixpack-selfies-pending-v1`) und Dateien unter `public/sixpack-photos/`
-werden nicht automatisch verschoben, gelöscht oder einem Nutzer zugeordnet.
-Sie sind in der neuen Galerie nicht eingebunden; eine Migration braucht eine
-explizite Nutzerzuordnung. Google-Drive-Sync bleibt ein separater TODO-Punkt.
-
-API-Regressionstest (isolierte temporäre Dateien):
-`node scripts/test-sixpack-photos.mjs` im Fitness-Repository.
-
-
-`SixPackPromiseCard.jsx` ist der stabile Barrel-Einstieg: Default-Export aus
-`SixPackApp.jsx`, benannter Export `SelfiesScreen`. Die Foto-Oberfläche liegt in
-`SelfiesScreen.jsx`, der geteilte Zurück-Header in `BackHeader.jsx`.
-Foto-Requests benötigen eine explizite UID (kein Server-Owner-Fallback).
-Ohne angemeldete UID bleibt die Foto-Oberfläche gesperrt; der lokale DB-Adapter
-liefert ausdrücklich `local`. „Fotos auswählen“ öffnet Galerie/Dateien ohne Kamera-Zwang und erlaubt Mehrfachauswahl. Beide Eingaben nutzen denselben UID-gebundenen Upload-/Offline-Ablauf; jede Datei erhält eine eigene Statusmeldung.
+Prüfung: `node scripts/test-selfie-cloud.mjs` und `npm run build`.
+Firebase REST-Auth: https://firebase.google.com/docs/firestore/use-rest-api

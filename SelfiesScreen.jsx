@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { getApps, getApp, initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { config } from './firebaseConfig.js';
 import BackHeader from './BackHeader.jsx';
+import { listSelfies, prepareSelfie, uploadSelfie } from './selfieCloud.js';
 
 // Fotos werden direkt hochgeladen; nur fehlgeschlagene Uploads landen in der
 // nutzergebundenen Browser-Queue. Alte, unzugeordnete Queues bleiben unberührt.
 const SIXPACK_PENDING_KEY = 'fitness-sixpack-selfies-pending-v2';
-const LOCAL_SERVER = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
-const photoUrl = (route) => `${LOCAL_SERVER ? `${LOCAL_SERVER}/` : ''}${route.replace(/^\//, '')}`;
-
 function loadPendingQueue(uid) {
   try {
     const queue = JSON.parse(window.localStorage.getItem(`${SIXPACK_PENDING_KEY}:${uid}`) || '[]');
@@ -17,17 +18,26 @@ function savePendingQueue(uid, queue) {
   window.localStorage.setItem(`${SIXPACK_PENDING_KEY}:${uid}`, JSON.stringify(queue));
 }
 
-/** Konvertiert eine DataURL in ein File-Objekt für FormData */
-function dataUrlToFile(dataUrl, filename) {
-  const [header, data] = dataUrl.split(',');
-  const mime = header.match(/:(.*?);/)?.[1] || 'image/jpeg';
-  const bytes = atob(data);
-  const arr = new Uint8Array(bytes.length);
-  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-  return new File([arr], filename, { type: mime });
+export default function SelfiesScreen({ onBack, uid }) {
+  const [auth] = useState(() => getAuth(getApps().length ? getApp() : initializeApp(config)));
+  const [user, setUser] = useState(auth.currentUser);
+  const [error, setError] = useState('');
+  useEffect(() => onAuthStateChanged(auth, setUser), [auth]);
+  if (!user) return (
+    <div>
+      <BackHeader label="Selfies" onBack={onBack} />
+      <p className="p-4">Melde dich mit demselben Konto wie auf deinem anderen Gerät an.</p>
+      <button className="p-4 underline" onClick={() => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => setError(e.message))}>Mit Google anmelden</button>
+      {error && <p role="alert" className="p-4">{error}</p>}
+    </div>
+  );
+  if (uid && uid !== 'local' && uid !== user.uid) return (
+    <div><BackHeader label="Selfies" onBack={onBack} /><p className="p-4">Selfies sind nur für das eigene angemeldete Konto verfügbar.</p></div>
+  );
+  return <SelfieGallery key={user.uid} uid={user.uid} onBack={onBack} />;
 }
 
-export default function SelfiesScreen({ onBack, uid }) {
+function SelfieGallery({ onBack, uid }) {
   const [serverPhotos, setServerPhotos] = useState([]);
   const [pending, setPending] = useState(() => loadPendingQueue(uid));
   const [serverOk, setServerOk] = useState(null); // null = unbekannt, true/false
@@ -36,36 +46,19 @@ export default function SelfiesScreen({ onBack, uid }) {
   const [selectionResults, setSelectionResults] = useState([]);
 
   const busy = useRef(false);
-  const hasUid = typeof uid === 'string' && /^[\w-]{1,128}$/.test(uid);
+  const hasUid = uid !== 'local' && typeof uid === 'string' && /^[\w-]{1,128}$/.test(uid);
 
-  /** Holt die Foto-Liste vom lokalen Server */
+  /** Loads the signed-in user’s cloud gallery. */
   async function fetchServerPhotos() {
     try {
-      const res = await fetch(photoUrl(`sixpack/photos?uid=${encodeURIComponent(uid)}`), {
-        signal: AbortSignal.timeout(3000),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const photos = await listSelfies(uid);
       setServerOk(true);
-      if (!data.ok || !Array.isArray(data.photos)) throw new Error('Invalid photo response');
-      setServerPhotos(data.photos);
+      setServerPhotos(photos);
       return true;
     } catch {
       setServerOk(false);
       return false;
     }
-  }
-
-  async function upload(file, id, date) {
-    const fd = new FormData();
-    fd.append('photo', file);
-    fd.append('id', id);
-    fd.append('date', date);
-    const res = await fetch(photoUrl('sixpack/photos'), {
-      method: 'POST', headers: { 'x-fitness-uid': uid }, body: fd,
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok || !(await res.json()).ok) throw new Error('Upload failed');
   }
 
   async function uploadPending() {
@@ -74,7 +67,9 @@ export default function SelfiesScreen({ onBack, uid }) {
     setUploading(true);
     try {
       for (const item of loadPendingQueue(uid)) {
-        await upload(dataUrlToFile(item.dataUrl, item.name), item.id, item.date);
+        const dataUrl = item.dataUrl.startsWith('data:image/jpeg;base64,') && item.dataUrl.length <= 700000
+          ? item.dataUrl : await prepareSelfie(await (await fetch(item.dataUrl)).blob());
+        await uploadSelfie(uid, item.id, item.date, dataUrl);
         // Read fresh storage so photos queued elsewhere are retained.
         const remaining = loadPendingQueue(uid).filter(p => p.id !== item.id);
         savePendingQueue(uid, remaining);
@@ -120,24 +115,20 @@ export default function SelfiesScreen({ onBack, uid }) {
         } else {
           const item = { id: crypto.randomUUID(), date: new Date().toISOString(), name: file.name };
           try {
-            await upload(file, item.id, item.date);
+            item.dataUrl = await prepareSelfie(file);
+            await uploadSelfie(uid, item.id, item.date, item.dataUrl);
             saved++;
             message = 'Gespeichert';
           } catch {
             setServerOk(false);
             try {
-              item.dataUrl = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-              });
+              if (!item.dataUrl) throw new Error('Bildformat nicht lesbar.');
               const queue = [...loadPendingQueue(uid), item];
               savePendingQueue(uid, queue);
               setPending(queue);
               message = 'Offline gespeichert – Synchronisierung ausstehend';
             } catch {
-              message = 'Nicht gespeichert: Browserspeicher voll oder nicht verfügbar. Bitte Original behalten.';
+              message = 'Nicht gespeichert: Bild nicht lesbar oder Browserspeicher voll. Bitte Original behalten.';
             }
           }
         }
@@ -156,7 +147,7 @@ export default function SelfiesScreen({ onBack, uid }) {
   // Alle sichtbaren Fotos: Server-Fotos zuerst, dann ausstehende LocalStorage-Fotos
   const allPhotos = [
     ...serverPhotos.map(p => ({ ...p, source: 'server' })),
-    ...pending.map(p => ({ date: p.date, dataUrl: p.dataUrl, source: 'pending' })),
+    ...pending.filter(p => !serverPhotos.some(s => s.id === p.id)).map(p => ({ date: p.date, dataUrl: p.dataUrl, source: 'pending' })),
   ];
 
   return (
@@ -192,8 +183,8 @@ export default function SelfiesScreen({ onBack, uid }) {
           style={{ color: serverOk ? '#4ade80' : '#facc15', background: '#0e0e0e' }}
         >
           {statusMsg || (serverOk
-            ? `🟢 Server online — ${serverPhotos.length} Foto${serverPhotos.length !== 1 ? 's' : ''} gespeichert`
-            : `🟡 Server offline — ${pending.length} Foto${pending.length !== 1 ? 's' : ''} ausstehend`
+            ? `🟢 Cloud verbunden — ${serverPhotos.length} Foto${serverPhotos.length !== 1 ? 's' : ''} gespeichert`
+            : `🟡 Cloud nicht erreichbar — ${pending.length} Foto${pending.length !== 1 ? 's' : ''} ausstehend`
           )}
         </div>
       )}
@@ -216,7 +207,7 @@ export default function SelfiesScreen({ onBack, uid }) {
               style={{ background: '#000' }}
             >
               <img
-                src={photo.source === 'server' ? photoUrl(photo.url) : photo.dataUrl}
+                src={photo.source === 'server' ? photo.url : photo.dataUrl}
                 alt={new Date(photo.date).toLocaleDateString('de-AT')}
                 className="w-full h-full object-cover"
               />
