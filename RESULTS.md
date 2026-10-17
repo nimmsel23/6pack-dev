@@ -1,3 +1,8 @@
+# Repo-Anleitung und Veröffentlichung (2026-10-17)
+
+- AGENTS.md erklärt Root-Dateien, direkte Fitness-Integration, den vereinigten Foto-Sync, Auth-/Queue-/Import-Grenzen, Tests und Release-Wege. CLAUDE.md verweist darauf; veraltete Aussagen über dev als Live-Deploy korrigiert.
+- Code dev/fitness gepusht. Foto-Regeln/Index per VitalOS-CI erfolgreich veröffentlicht (Run 39026791319); 6Pack-Preview erfolgreich (Run 39026861873), ausgeliefertes Bundle per HTTP geprüft. Fitness-Merge f6fdb70 auf dev gepusht; Staging :8100 aktiv, private API ohne Token HTTP 401.
+
 # Photo-Sync-Arbeitsstände zusammengeführt (2026-10-17)
 
 - `agent/photo-auth` tatsächlich gemergt: dessen photoAuth (Google/E-Mail), SelfiesGallery, PrivatePhoto und tokengeprüfter photoClient werden weiterverwendet. Finale Speicherung über den Cloud-Client statt separater konkurrierender Login-/Galerie-Implementierung.

@@ -1,19 +1,14 @@
 # CLAUDE.md — 6pack-dev
 
-## Arbeitsregeln (vom User festgelegt)
+## Arbeitsregeln
 
-- **Alles immer committen und pushen** (Branch `dev`), ohne nachzufragen —
-  jede abgeschlossene Änderung sofort.
-- **Push auf `dev` = Live-Deploy** nach https://vos-6pack.web.app (GitHub
-  Action `.github/workflows/deploy.yml`, vom User so gewünscht). Deshalb vor
-  jedem Push `npm run build` laufen lassen — ein roter Build blockiert den
-  Deploy. Nach dem Push den Action-Lauf prüfen.
-  **Stand:** Workflow liegt noch unter `ci/deploy.yml` — Cloud-Sessions dürfen
-  nichts unter `.github/workflows/` pushen (fehlender `workflow`-Scope). Der
-  User muss ihn einmal lokal nach `.github/workflows/deploy.yml` verschieben
-  und pushen; bis dahin deployt ein Push noch nichts.
-- Lokaler `.githooks/pre-push` = nur Build-Check (aktiv nach
-  `git config core.hooksPath .githooks`), kein Deploy.
+Die gemeinsame Arbeitsanleitung für alle Agents steht in **AGENTS.md**:
+Dateizuständigkeiten, Foto-Sync, Branches, Tests und Integration in Fitness.
+
+Die alte Beschreibung „dev-Push = Live-Deploy“ ist überholt: der aktive
+`.github/workflows/deploy.yml` veröffentlicht einen 24h-Preview-Channel.
+Production läuft über den freigegebenen `vitalos`-Release-Checkout. Vor einem
+Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 
 ## Runner (`SixPackPromiseCard.jsx` → `RunnerScreen`) — Anforderungen aus Gym-Tests
 
