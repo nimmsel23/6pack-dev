@@ -189,9 +189,9 @@ function SelfieGallery({ onBack, uid }) {
         </div>
       )}
 
-      {pending.length > 0 && (
+      {(
         <button className="w-full py-2 text-sm" onClick={() => { setStatusMsg(''); uploadPending(); }} disabled={uploading}>
-          Jetzt synchronisieren ({pending.length})
+          Jetzt synchronisieren{pending.length > 0 ? ` (${pending.length})` : ''}
         </button>
       )}
 
