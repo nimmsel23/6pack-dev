@@ -12,3 +12,5 @@
 - [x] 2026-10-17: Übungen vor Workout-Start öffnen: Muskelgrafik, Anleitung, Video und Rückkehr zur Liste.
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
+
+- [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.
