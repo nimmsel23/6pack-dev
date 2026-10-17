@@ -10,6 +10,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { loadMuscles, exerciseContent } from './catalogContent.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = __dirname;
@@ -55,6 +56,7 @@ function isProgramFile(filename) {
 }
 
 function buildExercises() {
+  const muscles = loadMuscles(join(REPO_ROOT, 'catalog/muscles'));
   const files = readdirSync(SIXPACK_DIR).filter((f) => f.endsWith('.yml') && !isProgramFile(f));
   const exercises = {};
   const coaching = {};
@@ -66,6 +68,7 @@ function buildExercises() {
     exercises[ex.id] = {
       id: ex.id,
       name: ex.name,
+      ...exerciseContent(ex, muscles),
       category,
       focusLabel: CATEGORY_LABELS[category] || 'Core',
       ...(ex.video_url ? { videoUrl: ex.video_url } : {}),

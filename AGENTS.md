@@ -25,6 +25,8 @@ Fremde Änderungen und persönliche Daten erhalten.
 | `main.jsx` | Standalone-Einstieg und Login-/Workout-Sync-Anzeige |
 | `SixPackPromiseCard.jsx` | Stabiler Export-Einstieg für Fitness; kein zweiter App-Code |
 | `SixPackApp.jsx` | Screens, Programm, Workout-Runner, Audio und Navigation |
+| `ExerciseDetailScreen.jsx`, `ExerciseMuscles.jsx` | Gemeinsame Übungsdetails vor dem Workout und aus Learn |
+| `exerciseMedia.js`, `catalogContent.mjs` | Gemeinsame Medien-Auflösung und KB-Anreicherung beider Generatoren |
 | `SelfiesScreen.jsx` | Login und Account-Grenze der Foto-Oberfläche |
 | `photoAuth.js` | Bestehenden Firebase-Login nutzen; Google/E-Mail, Logout |
 | `SelfiesGallery.jsx` | Kamera, Mehrfachauswahl, Offline-Queue und expliziter Altbestand-Import |
@@ -76,6 +78,8 @@ Production-Weg ist VitalOS-CI (`deploy-firestore-rules.yml`), kein direkter Agen
 Paketmanager: **pnpm**, Version aus `package.json`.
 
 ```sh
+node build-data.mjs
+node scripts/test-exercise-details.mjs
 node scripts/test-selfie-cloud.mjs
 pnpm run build
 pnpm run vendor:check

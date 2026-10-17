@@ -55,6 +55,9 @@ jobs:
       - name: "Build (inkl. build:data aus catalog/; Stempel = Splash + Service Worker)"
         run: pnpm run build
 
+      - name: Exercise preview regression checks
+        run: node scripts/test-exercise-details.mjs
+
       - name: Hinweis - Secret fehlt
         if: env.FIREBASE_SA == ''
         run: echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS fehlt - Deploy übersprungen."

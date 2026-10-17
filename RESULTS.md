@@ -1,3 +1,11 @@
+## 2026-10-17 — Übungsdetails vor dem Workout
+
+- Tagesliste, Shuffle und gespeicherte Workouts öffnen eine gemeinsame Detailansicht; Learn verwendet dieselbe Ansicht. Start bleibt eine eigene Aktion.
+- Rückkehr erhält die ausgewählte Liste und den Shuffle-Zustand; Tastaturfokus wird wiederhergestellt, Escape führt zurück.
+- Muskelgrafik und deutsche Muskelnamen aus kanonischen KB-Regionen, Ausführung und Fehler aus vorhandenen Coaching-Daten. Gemeinsamer Generator-Helper für Standalone und Fitness.
+- 20/21 öffentliche Demo-Zuordnungen, HTTPS-Dateien und YouTube/Vimeo-Einbettungen; lokale Runner-Vorgaben gelten auch für Details. Any Ball BTB Pass ist offen und wird als fehlend angezeigt. Externe Player-Verfügbarkeit nicht auf allen Geräten geprüft.
+- Geprüft: Standalone-Produktionsbuild, Regressionstest für Navigation/Start/Shuffle/Learn, alle 21 Muskel-/Anleitungsdatensätze, tatsächliches Detail-Rendering und fehlende/defekte Medien. Gerätetest offen. Details: docs/VIDEO_URLS.md.
+
 # Geräte-Abnahme: Selfie-Sync funktioniert (2026-10-17)
 
 - Nutzer hat ein Bild am Handy in 6Pack hochgeladen und die erfolgreiche Anzeige am Laptop mit demselben Konto bestätigt. Der echte angemeldete Zwei-Geräte-Ablauf ist damit bestätigt, zusätzlich zu den automatisierten Client-/Emulator-Tests.
