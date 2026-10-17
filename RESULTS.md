@@ -1,3 +1,10 @@
+# Photo-Sync-Arbeitsstände zusammengeführt (2026-10-17)
+
+- `agent/photo-auth` tatsächlich gemergt: dessen photoAuth (Google/E-Mail), SelfiesGallery, PrivatePhoto und tokengeprüfter photoClient werden weiterverwendet. Finale Speicherung über den Cloud-Client statt separater konkurrierender Login-/Galerie-Implementierung.
+- Privater Firestore-Pfad `sixpackSelfies/{uid}/photos/{id}` mit Eigentümer-Regeln statt Coach-lesbarem users-Pfad. Bilder getrennt von paginierter Metadaten-Liste; 401-Refresh, Account-Guard, bestätigte persistente Queue.
+- Authentifizierter Altbestand-Import über vorhandene Fitness-API: ursprüngliches Datum, deterministische Import-ID, bestätigte Einträge überspringen; Originale bleiben erhalten. Kein hardcodierter Funnel oder stiller Laptop-Fallback.
+- Geprüft: Cloud/Import-Client-Regression, Standalone-Build, echter isolierter Firestore-Emulator mit Upload/List/Download und Verweigerung für fremde Nutzer/Coach/anonyme Requests sowie fehlerhafte/zu große Daten. Geräte-Kamera bleibt ein physischer Gerätetest.
+
 # Selfies: Firebase Cloud-Sync (2026-10-17)
 
 - Lokale Foto-API im Client durch Firestore REST mit Firebase-ID-Token ersetzt; keine Laptop-Abhängigkeit. Gemeinsamer Pfad `users/{uid}/sixpackPhotos/{id}` für Standalone und Fitness. Bestehende Regeln erlauben Eigentümer und Coach.
