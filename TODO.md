@@ -10,6 +10,9 @@
 - [x] 2026-10-17: Reales Handy → Laptop Selfie-Sync vom Nutzer bestätigt; Abnahme und verbleibende Testgrenzen dokumentieren.
 
 - [x] 2026-10-17: Übungen vor Workout-Start öffnen: Muskelgrafik, Anleitung, Video und Rückkehr zur Liste.
+- [x] 2026-10-20: Deutlichen zweistufigen Piep-Tüt-Ton am Ende jeder Runner-Übung ergänzen.
+- [x] 2026-10-20: Englische Abschlussansage nach dem Workout ergänzen.
+- [ ] Wöchentlich: eine weitere Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzen.
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
 

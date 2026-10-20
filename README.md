@@ -54,8 +54,13 @@ Lokal prüft `.githooks/pre-push` vor dem Push den Build
 **Manuell:**
 
 ```sh
-npm run deploy
+npm run build
+npm run firebase
 ```
+
+`npm run firebase` veröffentlicht ausschließlich den vorhandenen `dist/`-Ordner
+und startet keinen Build. Für Production den Release-Workflow aus dem VitalOS-
+Meta-Repo verwenden.
 
 Das Ziel ist `https://vos-6pack.web.app` — eine eigene Hosting-Site, getrennt
 von `fitness-aos.web.app`. Einmalig vor dem ersten Deploy (CLI angemeldet):

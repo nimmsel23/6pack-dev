@@ -74,6 +74,8 @@
 
 # Results
 
+- 2026-10-20: Runner spielt am Ende jeder Übung einen deutlichen zweistufigen Piep-Tüt-Ton; Lautstärke der Web-Audio-Cues angehoben. Kein Geräte-Audio-Test ausgeführt.
+- 2026-10-20: Nach dem Workout-Ende sagt der Runner einmal „Congratulations. You've completed today's workout.“ auf Englisch.
 - 2026-10-09: Eat öffnet Fuel direkt: Firebase-Hosts führen zu `fuel-vos.web.app`, lokale Hosts zu Port `7000`. Die bisherige Eat-Platzhalterseite entfällt.
 - 2026-10-09: Favorites speichert vollständige Tages- und Shuffle-Workouts mit Übungen, Reihenfolge, Zeiten und Pausen. Favoriten können wieder gestartet und entfernt werden; Wiederholungen verändern den Programmfortschritt nicht. Bisherige Übungsfavoriten bleiben unter ihrem alten Speicherschlüssel erhalten.
 

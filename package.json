@@ -11,7 +11,7 @@
     "build": "vite build && node scripts/mini-app-shell/cli.mjs stamp dist --app 6pack",
     "preview": "vite preview",
     "build:data": "node build-data.mjs",
-    "deploy": "pnpm run build && firebase deploy --only hosting:sixpack",
+    "firebase": "firebase deploy --only hosting:sixpack",
     "publish:fitness": "node publish-fitness.mjs",
     "vendor:check": "node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell --check"
   },
