@@ -4,6 +4,7 @@ sixpackData.generated.js
 public/release-info.json
 .DS_Store
 .claude/hooks/*.log
+.claude/hooks/*.bak*
 
 # Firebase-CLI-Cache (entsteht bei firebase deploy)
 .firebase/
