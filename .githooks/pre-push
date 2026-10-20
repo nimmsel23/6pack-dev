@@ -69,7 +69,7 @@ else
   echo "🔍 6pack-app: relevante Änderungen im Push zu vitalos — baue + deploye zu Firebase…"
 fi
 
-pnpm run deploy
+pnpm run firebase
 status=$?
 
 if [ $status -ne 0 ]; then
