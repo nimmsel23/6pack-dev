@@ -15,5 +15,7 @@
 - [ ] Wöchentlich: eine weitere Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzen.
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
+- [x] 2026-10-20: 6Pack-dev-Pilot: In-App-Changelog mit den Commits des Deploy-Pushes.
+- [ ] In-App-Changelog nach erfolgreichem 6Pack-Pilot auf die weiteren Apps ausrollen.
 
 - [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.

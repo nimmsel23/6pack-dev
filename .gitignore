@@ -1,6 +1,7 @@
 node_modules/
 dist/
 sixpackData.generated.js
+public/release-info.json
 .DS_Store
 .claude/hooks/*.log
 
