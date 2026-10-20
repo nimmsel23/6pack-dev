@@ -15,10 +15,24 @@ SKIP='\.(md|bak)$|^dist/'
 TRIGGER='^(src/|public/|catalog/|index.html$|vite.config|package.json$|firebase.json$|mini-app.json$|scripts/mini-app-shell/|[^/]+\.(jsx|js|mjs|css)$)'
 
 should_deploy=false
+should_publish_fitness=false
+fitness_source_sha=""
 
 while read -r local_ref local_sha remote_ref remote_sha; do
   [ -z "$local_ref" ] && continue
   branch="${local_ref#refs/heads/}"
+  if [ "$branch" = "dev" ]; then
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+      changed=$(git diff --name-only "$(git hash-object -t tree /dev/null)" "$local_sha")
+    else
+      changed=$(git diff --name-only "$remote_sha" "$local_sha")
+    fi
+    if echo "$changed" | grep -Eq '^(catalog/exercise-videos\.yml$|[^/]+\.(jsx|js|mjs|css)$)'; then
+      should_publish_fitness=true
+      fitness_source_sha="$local_sha"
+    fi
+    continue
+  fi
   [ "$branch" != "vitalos" ] && continue
 
   if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
@@ -33,6 +47,17 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     should_deploy=true
   fi
 done <<< "$pushed_refs"
+
+if [ "$should_publish_fitness" = true ]; then
+  fitness_repo="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
+  publisher="$fitness_repo/scripts/publish-mini-app-to-fitness.mjs"
+  if [ ! -f "$publisher" ]; then
+    echo "⚠️ Fitness publisher not found at $publisher; 6Pack source sync skipped until fitness-dev is updated." >&2
+  else
+    echo "🔄 6Pack dev → Fitness dev: synchronizing the pushed source commit…"
+    node "$publisher" sixpack "$fitness_source_sha" || exit $?
+  fi
+fi
 
 if [ "$should_deploy" != true ]; then
   exit 0
