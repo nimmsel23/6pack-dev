@@ -7,13 +7,14 @@
 // in einer localStorage-Outbox und werden beim nächsten Login nachgeschickt
 // (deterministische Doc-ID → erneutes Senden ist idempotent).
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
+import { getMessaging, getToken, isSupported as isMessagingSupported } from 'firebase/messaging';
 import { buildWorkoutDoc } from './workoutDoc.js';
 import { serializeProgram } from './programSync.js';
 
 // Gleiches Firebase-Projekt wie die Fitness-App (fitness-aos). Web-Config ist öffentlich.
-import { config } from './firebaseConfig.js';
+import { config, VAPID_KEY } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
 
@@ -104,4 +105,23 @@ export async function loadProgram(uid) {
 }
 export function saveProgram(uid, program) {
   return setDoc(doc(db, 'users', uid, 'meta', 'sixpack'), { ...serializeProgram(program), saved_at: serverTimestamp() });
+}
+
+// 6Pack-eigene Push-Registrierung: Token liegen in users/{uid}/meta/sixpackPush
+// (getrennt vom Fitness-Push-Panel). Die Cloud Function scheduledSixpackReminders liest dort.
+export async function enableSixpackPush(uid) {
+  if (!uid || uid === 'local') throw new Error('Bitte zuerst anmelden.');
+  if (typeof Notification === 'undefined' || !('serviceWorker' in navigator) || !(await isMessagingSupported())) {
+    throw new Error('Push wird auf diesem Gerät/Browser nicht unterstützt.');
+  }
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') throw new Error('Benachrichtigungen sind blockiert.');
+  const registration = await navigator.serviceWorker.register('./sixpack-messaging-sw.js', { scope: './sixpack-push/' });
+  const token = await getToken(getMessaging(app), { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+  if (!token) throw new Error('Kein Push-Token erhalten.');
+  await setDoc(doc(db, 'users', uid, 'meta', 'sixpackPush'), {
+    tokens: arrayUnion(token),
+    updated_at: serverTimestamp(),
+  }, { merge: true });
+  return token;
 }

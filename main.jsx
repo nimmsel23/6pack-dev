@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import SixPackPromiseCard from './SixPackPromiseCard.jsx';
-import { subscribeSync, signInGoogle, signOutUser, submitWorkout, loadProgram, saveProgram } from './standaloneSync.js';
+import { subscribeSync, signInGoogle, signOutUser, submitWorkout, loadProgram, saveProgram, enableSixpackPush } from './standaloneSync.js';
 import './styles.css';
 
 // Login nur für den Workout-Sync: dieselbe Firebase-uid wie in der Fitness-App,
@@ -30,7 +30,7 @@ function Root() {
   return (
     <main className="max-w-xl mx-auto py-4">
       <SyncBar state={state} />
-      <SixPackPromiseCard uid={state.user?.uid || 'local'} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} />
+      <SixPackPromiseCard uid={state.user?.uid || 'local'} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={enableSixpackPush} />
     </main>
   );
 }
