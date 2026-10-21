@@ -7,9 +7,10 @@
 // in einer localStorage-Outbox und werden beim nächsten Login nachgeschickt
 // (deterministische Doc-ID → erneutes Senden ist idempotent).
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
 import { buildWorkoutDoc } from './workoutDoc.js';
+import { serializeProgram } from './programSync.js';
 
 // Gleiches Firebase-Projekt wie die Fitness-App (fitness-aos). Web-Config ist öffentlich.
 import { config } from './firebaseConfig.js';
@@ -94,4 +95,13 @@ export function submitWorkout(workout) {
   writeOutbox([...readOutbox().filter((i) => i.docId !== item.docId), item]);
   emit();
   return flushOutbox();
+}
+
+// Programm-Fortschritt (Track-View) pro User: users/{uid}/meta/sixpack.
+export async function loadProgram(uid) {
+  const snap = await getDoc(doc(db, 'users', uid, 'meta', 'sixpack'));
+  return snap.exists() ? snap.data() : null;
+}
+export function saveProgram(uid, program) {
+  return setDoc(doc(db, 'users', uid, 'meta', 'sixpack'), { ...serializeProgram(program), saved_at: serverTimestamp() });
 }
