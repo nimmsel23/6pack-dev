@@ -17,6 +17,7 @@ export function mergePrograms(local, remote) {
     completedDays: uniqSorted(local.completedDays || [], remote.completedDays || []),
     completedOn: { ...(older.completedOn || {}), ...(newer.completedOn || {}) },
     workouts: { ...(older.workouts || {}), ...(newer.workouts || {}) },
+    settings: { ...(older.settings || {}), ...(newer.settings || {}) },
     updatedAt: Math.max(local.updatedAt || 0, remote.updatedAt || 0),
   };
 }

@@ -20,13 +20,15 @@ const stored = new Map();
 const window = { localStorage: { getItem: key => stored.get(key) || null, setItem: (key, value) => stored.set(key, value) } };
 const Detail = function ExerciseDetailScreen() {};
 const h = (type, props, ...children) => ({ type, props: props || {}, children });
+const reminder = await import('../reminder.js');
+const programSync = await import('../programSync.js');
 async function compile(file, extra = '', requireExtra = {}) {
   const path = new URL(file, import.meta.url);
   const { code } = await transformWithEsbuild((await readFile(path, 'utf8')) + extra, path.pathname, { loader: 'jsx', format: 'cjs', jsxFactory: 'h', jsxFragment: 'Fragment' });
   const module = { exports: {} };
   vm.runInNewContext(code, {
     module, exports: module.exports, h, Fragment: 'fragment', window,
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : { __esModule: true, default: () => null }),
+    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
   });
   return module.exports;
 }

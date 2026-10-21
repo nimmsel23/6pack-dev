@@ -3,8 +3,9 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Flag } from 'lucide-react';
+import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Flag, Settings } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
+import { getReminder, reminderDue, reminderSupported, requestReminderPermission, readLastSent, writeLastSent, showReminder } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
 
@@ -125,7 +126,7 @@ function addDays(isoDate, days) {
   return localDate(new Date(y, m - 1, d + days));
 }
 
-const EMPTY_PROGRAM = { currentDay: 1, completedDays: [], completedOn: {}, lastCompletedOn: null, restDate: null, workouts: {}, updatedAt: 0 };
+const EMPTY_PROGRAM = { currentDay: 1, completedDays: [], completedOn: {}, lastCompletedOn: null, restDate: null, workouts: {}, settings: {}, updatedAt: 0 };
 
 function loadProgram() {
   if (typeof window === 'undefined') return EMPTY_PROGRAM;
@@ -140,6 +141,7 @@ function loadProgram() {
       lastCompletedOn: parsed.lastCompletedOn || null,
       restDate: parsed.restDate || null,
       workouts: parsed.workouts || {},
+      settings: parsed.settings || {},
       updatedAt: parsed.updatedAt || 0,
     });
   } catch {
@@ -186,10 +188,15 @@ function HomeScreen({ program, onOpenToday, onNav }) {
     <div>
       <div className="px-5 py-4 flex items-center justify-between" style={{ background: '#111' }}>
         <div className="text-xs font-black tracking-[0.3em]" style={{ color: '#e2001a' }}>6PP</div>
-        <div className="text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
-          {trainedToday
-            ? `Woche ${weekOf(lastDone)} · Tag ${dayInWeek(lastDone)} ✓`
-            : `Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`}
+        <div className="flex items-center gap-3">
+          <div className="text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
+            {trainedToday
+              ? `Woche ${weekOf(lastDone)} · Tag ${dayInWeek(lastDone)} ✓`
+              : `Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`}
+          </div>
+          <button onClick={() => onNav('settings')} aria-label="Einstellungen" className="p-1">
+            <Settings size={16} color="#e2001a" />
+          </button>
         </div>
       </div>
 
@@ -496,6 +503,53 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
       >
         Start Workout
       </button>
+    </div>
+  );
+}
+
+function SettingsScreen({ reminder, onChange, onBack }) {
+  const [permission, setPermission] = useState(reminderSupported() ? Notification.permission : 'unsupported');
+  const blocked = permission === 'denied' || permission === 'unsupported';
+
+  async function toggle() {
+    if (reminder.enabled) return onChange({ ...reminder, enabled: false });
+    const result = await requestReminderPermission();
+    setPermission(result);
+    if (result === 'granted') onChange({ ...reminder, enabled: true });
+  }
+
+  return (
+    <div>
+      <BackHeader label="Settings" onBack={onBack} />
+      <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Erinnerung</div>
+      <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+        <span className="text-sm font-bold" style={{ color: '#fff' }}>Tägliche Benachrichtigung</span>
+        <button
+          role="switch"
+          aria-checked={reminder.enabled}
+          onClick={toggle}
+          className="relative w-12 h-7 rounded-full transition-colors"
+          style={{ background: reminder.enabled ? '#e2001a' : '#444' }}
+        >
+          <span className="absolute top-0.5 w-6 h-6 rounded-full bg-white transition-all" style={{ left: reminder.enabled ? 22 : 2 }} />
+        </button>
+      </div>
+      <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000', opacity: reminder.enabled ? 1 : 0.45 }}>
+        <span className="text-sm font-bold" style={{ color: '#fff' }}>Uhrzeit</span>
+        <input
+          type="time"
+          value={reminder.time}
+          disabled={!reminder.enabled}
+          onChange={e => e.target.value && onChange({ ...reminder, time: e.target.value })}
+          className="rounded px-2 py-1 text-sm font-bold"
+          style={{ background: '#000', color: '#fff', border: '1px solid #333' }}
+        />
+      </div>
+      <div className="px-4 py-3 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
+        {blocked
+          ? 'Benachrichtigungen sind für diese App blockiert oder nicht verfügbar. Bitte in den Browser-/System-Einstellungen erlauben.'
+          : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Zuverlässig, solange die App geöffnet oder im Hintergrund aktiv ist.'}
+      </div>
     </div>
   );
 }
@@ -1189,6 +1243,32 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setScreen('home');
   }
 
+  const reminder = getReminder(program);
+  function changeReminder(next) {
+    setProgram(p => ({ ...p, settings: { ...p.settings, reminder: next }, updatedAt: Date.now() }));
+  }
+
+  // Erinnerung: Zeit erreicht und heute noch nicht trainiert → einmal pro Tag benachrichtigen.
+  useEffect(() => {
+    if (!reminder.enabled || !reminderSupported() || Notification.permission !== 'granted') return undefined;
+    const check = () => {
+      const today = localDate();
+      const due = reminderDue({
+        reminder, now: new Date(), today,
+        trainedToday: program.lastCompletedOn === today,
+        restToday: isRestDay(program.currentDay),
+        lastSent: readLastSent(),
+      });
+      if (!due) return;
+      writeLastSent(today);
+      showReminder('6Pack', `Zeit fürs Training — Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`);
+    };
+    check();
+    const interval = window.setInterval(check, 30_000);
+    document.addEventListener('visibilitychange', check);
+    return () => { window.clearInterval(interval); document.removeEventListener('visibilitychange', check); };
+  }, [reminder.enabled, reminder.time, program.lastCompletedOn, program.currentDay]);
+
   // Manuelles Setzen des Trackers (Track-View): ab jetzt ist dieser Tag der aktuelle.
   function setCurrentDay(day) {
     setProgram(p => setTrackerDay(p, day, isRestDay(day), localDate()));
@@ -1288,6 +1368,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   return (
     <section className="rounded-[1.5rem] overflow-hidden" style={{ border: '1px solid var(--line)' }}>
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
+        {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openDay} onSetCurrent={setCurrentDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (
