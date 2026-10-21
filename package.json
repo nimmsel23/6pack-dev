@@ -5,9 +5,9 @@
   "type": "module",
   "packageManager": "pnpm@11.3.0",
   "scripts": {
-    "predev": "pnpm run build:data && node scripts/write-release-info.mjs",
+    "predev": "pnpm run build:data",
     "dev": "vite",
-    "prebuild": "pnpm run build:data && node scripts/write-release-info.mjs",
+    "prebuild": "pnpm run build:data",
     "build": "vite build && node scripts/mini-app-shell/cli.mjs stamp dist --app 6pack",
     "preview": "vite preview",
     "build:data": "node build-data.mjs",

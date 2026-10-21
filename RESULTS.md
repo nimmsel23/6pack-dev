@@ -1,3 +1,14 @@
+## 2026-10-21 — Gemeinsamer Changelog statt Pilot-Kopie
+
+UpdateNotes aus main.jsx durch den universellen VitalOS-Vite-Plugin ersetzt.
+Gemeinsame Quelle in VitalOS, bestehende Mini-App-Shell-Kopie aktualisiert;
+sixpack:seen-release bleibt erhalten. Metadaten werden an den Build gebunden;
+der alte Writer delegiert für ältere Aufrufer an die gemeinsame Funktion.
+
+Vite-Build und Vendor-Parität erfolgreich. Gemeinsamer Dialog im isolierten
+Browser bei 320/390px geprüft, einschließlich Escape, Fokus, Bestätigung und
+blockiertem Speicher. Kein Push, Merge, Pointer-Bump oder Deployment.
+
 ## 2026-10-17 — Übungsdetails vor dem Workout
 
 - Tagesliste, Shuffle und gespeicherte Workouts öffnen eine gemeinsame Detailansicht; Learn verwendet dieselbe Ansicht. Start bleibt eine eigene Aktion.
