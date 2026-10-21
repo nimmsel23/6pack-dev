@@ -2,6 +2,11 @@
 
 ## In-App-Update-Changelog
 
+Im VitalOS-Shell-Betrieb erscheinen die 6Pack-Änderungen im gemeinsamen
+VitalOS-Dialog mit einer zentralen Bestätigung. Der eigene Dialog ist für
+den eigenständigen Betrieb bestimmt; im Shell-Dokument und in Frames wird
+er unterdrückt.
+
 Beim ersten Start und nach einer neuen Release-ID erscheint der gemeinsame
 VitalOS-Changelog mit Commit-Texten, GitHub-Links und der gesamten Historie.
 „Weiter“ oder Escape bestätigt die Version in `sixpack:seen-release`; der

@@ -21,3 +21,5 @@
 - [x] Offline-Cache über App-Updates erhalten: gemeinsame SW-Strategie, API-Migration, vollständiges Asset-Precache und sichere Installation.
 
 - [x] 2026-10-21: Pilot durch gemeinsamen VitalOS-Changelog ersetzen; Bestätigungsschlüssel erhalten.
+
+- [x] 2026-10-21: Im Shell-Betrieb einen gemeinsamen VitalOS-Changelog mit App-Änderungen und zentraler Bestätigung nutzen.

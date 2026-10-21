@@ -1,3 +1,11 @@
+## 2026-10-21 — Zentraler Changelog im Shell-Betrieb
+
+Gemeinsame Quelle aktualisiert: Im Shell-Dokument und in Frames zeigt
+6Pack keinen eigenen Dialog. VitalOS sammelt seine Änderungen zentral.
+Standalone-Verhalten und Bestätigungsschlüssel bleiben erhalten. Gemeinsame
+Browserprüfung bei 320/390px, Metadaten-Tests und Vendor-Parität erfolgreich.
+Kein Push/Deployment.
+
 ## 2026-10-21 — Gemeinsamer Changelog statt Pilot-Kopie
 
 UpdateNotes aus main.jsx durch den universellen VitalOS-Vite-Plugin ersetzt.
