@@ -3,7 +3,7 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight } from 'lucide-react';
+import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
 
@@ -628,6 +628,7 @@ function createRunnerState(workout) {
     transition: false,
     running: false,
     done: workout.items.length === 0,
+    repeatCount: 0,
   };
 }
 
@@ -663,6 +664,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
     const context = audioContext.current;
     if (!context || context.state !== 'running') return;
+    keepMusicPlaying();
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     const start = context.currentTime + delay;
@@ -702,6 +704,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   }
 
   function speak(text, lang, { pitch = 1, rate = 1, onend } = {}) {
+    keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.pitch = pitch;
@@ -834,7 +837,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     startBeep(itemEnded ? 0.55 : 0);
     // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Piep.
     if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
-  }, [state.itemIndex, state.transition, state.running, state.done, workout]);
+  }, [state.itemIndex, state.transition, state.running, state.done, state.repeatCount, workout]);
 
   // Warnton + "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
   // 30 s dauern (bei genau 30 s wäre es der Start) und nicht in Rest/Wechsel.
@@ -963,6 +966,24 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     setState(s => ({ ...s, running: !s.running }));
   }
 
+  function repeatCurrent() {
+    const exercise = workout.items[state.itemIndex];
+    if (exercise?.type !== 'exercise') return;
+    if (intro) cancelIntro();
+    window.speechSynthesis?.cancel();
+    announcedStep.current = null;
+    announcedThirtySecondsStep.current = null;
+    announcedTenSecondsStep.current = null;
+    lastCountdownBeep.current = null;
+    setState(s => ({
+      ...s,
+      remaining: exercise.seconds,
+      transition: false,
+      done: false,
+      repeatCount: s.repeatCount + 1,
+    }));
+  }
+
   function updateVideoUrl(value) {
     setVideoError(false);
     setVideoUrls(previous => {
@@ -985,6 +1006,18 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   }
 
   const isRest = current.type === 'rest';
+  const repeatButton = current.type === 'exercise' && (
+    <button
+      type="button"
+      onClick={repeatCurrent}
+      aria-label={`Übung ${current.name} wiederholen`}
+      title="Aktuelle Übung von vorn starten"
+      className="min-h-12 px-3 rounded-2xl flex items-center gap-1.5 text-xs font-black text-fit-ink"
+      style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}
+    >
+      <RotateCcw size={15} strokeWidth={2.5} /> Wiederholen
+    </button>
+  );
 
   if (state.transition) {
     return (
@@ -998,8 +1031,10 @@ function RunnerScreen({ workout, onFinish, onBack }) {
           <div className="text-2xl font-black text-fit-ink mt-1">{next?.name}</div>
           <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
         </div>
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center gap-2 mt-6">
+          {repeatButton}
           <button
+            type="button"
             onClick={toggleRunning}
             className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
             style={{ background: '#e2001a', color: '#fff' }}
@@ -1057,8 +1092,10 @@ function RunnerScreen({ workout, onFinish, onBack }) {
         </div>
       )}
 
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center gap-2 mt-6">
+        {repeatButton}
         <button
+          type="button"
           onClick={toggleRunning}
           className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
           style={{ background: '#e2001a', color: '#fff' }}

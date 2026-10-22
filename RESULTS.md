@@ -1,3 +1,9 @@
+# 2026-10-22 — Runner-Wiederholen und Audio-Mix
+
+- Im Runner setzt „Wiederholen“ den Timer der aktuellen Übung zurück und startet sie erneut; während des 5-Sekunden-Wechsels kann die vorherige Übung zurückgeholt werden.
+- Vor jeder Sprachansage und jedem Signalton wird die Audio-Session erneut auf `ambient` gesetzt, damit Musik anderer Apps weiterlaufen kann.
+- Kein Build- oder Gerätetest ausgeführt.
+
 ## 2026-10-21 — Zentraler Changelog im Shell-Betrieb
 
 Gemeinsame Quelle aktualisiert: Im Shell-Dokument und in Frames zeigt
