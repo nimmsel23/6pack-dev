@@ -108,3 +108,13 @@ blockiertem Speicher. Kein Push, Merge, Pointer-Bump oder Deployment.
 
 ## 2026-10-17 — Offline-Cache bei Updates
 Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öffentlicher API-Cache mit Migration, Asset-Precache standardmäßig aktiv, fehlgeschlagene Installation ersetzt bestehenden Worker nicht. IndexedDB/localStorage bleiben unverändert. Geprüft: 13 Shell-/Update-Tests, Private-Request-Test, Vendor-Parität. Kein Push/Release; kein physischer Geräte-Test.
+
+## 2026-10-21 — Track: Firestore-Fortschritt + manueller Tracker
+- Programm-Fortschritt wird pro User nach `users/{uid}/meta/sixpack` synchronisiert (`programSync.js`, Merge nach `updatedAt`, erledigte Tage vereinigt). Rules: durch `users/{uid}/{document=**}` gedeckt.
+- Standalone verdrahtet (`standaloneSync.js::loadProgram/saveProgram`); Fitness-Host muss `loadRemoteProgram`/`saveRemoteProgram` an `SixPackPromiseCard` übergeben (offen).
+- Track: Flag-Button pro Tag setzt den Tracker manuell; alle 8 Wochen sichtbar; nach Abschluss springt der Tracker auf den Folgetag des erledigten Tags.
+
+## 2026-10-21 — Settings-Zahnrad + Erinnerung
+- Zahnrad im Home-Header (neben dem Tageszähler) öffnet `SettingsScreen`: Switch + Uhrzeit für die tägliche Erinnerung.
+- Einstellung liegt in `program.settings.reminder` und wird mit `users/{uid}/meta/sixpack` synchronisiert (`reminder.js`).
+- Zustellung lokal (App/SW aktiv). Echte Hintergrund-Push bräuchte einen Server-Scheduler auf dieses Feld — offen.
