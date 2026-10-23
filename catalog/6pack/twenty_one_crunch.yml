@@ -1,0 +1,45 @@
+exercise_id: twenty_one_crunch
+description: Curated 6 Pack Promise entry for 21 Crunch.
+exercises:
+- exercise_id: twenty_one_crunch
+  id: twenty_one_crunch
+  name: '"21" Crunch'
+  display_name: '"21" Crunch'
+  german: '"21" Crunch'
+  english: '"21" Crunch'
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Teilen Sie die Bewegung in drei Abschnitte: sieben Wiederholungen unten, sieben oben, sieben über den vollen Bereich.
+  - Halten Sie die Spannung auch in den Übergängen und atmen Sie gleichmäßig.
+  common_errors:
+  - Die Abschnitte verschwimmen und der Zählrhythmus geht verloren.
+  - Der Schwung ersetzt die Muskelspannung.
+  tags:
+  - 6pack_promise
+  - core
+  - supine
+  aliases:
+  - '"21" Crunch'
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

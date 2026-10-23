@@ -30,8 +30,120 @@ verified_days:
     - type: exercise
       exercise_id: standing_ab_twists
       duration_seconds: 30
+  2:
+    total_seconds: 450
+    items:
+    - type: exercise
+      exercise_id: flutter_kicks
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: v_ups
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: cross_knee_planks
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: scissors
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: ninety_ninety_crunch
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: upper_circle_crunches
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: upper_circle_crunches
+      duration_seconds: 60
+  4:
+    total_seconds: 330
+    items:
+    - type: exercise
+      exercise_id: heels_to_the_heavens
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: mountain_climbers
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: drunken_mountain_climbers
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: accordian_crunches
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: accordian_crunches
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: frog_crunches
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: russian_v_tuck_twists
+      duration_seconds: 30
+  5:
+    total_seconds: 360
+    items:
+    - type: exercise
+      exercise_id: hands_back_tucks
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: canoe_crunch
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: legs_straight_windshield_wipers
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: crunch_and_twists
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: prayer_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: any_ball_btb_pass
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: any_ball_btb_pass
+      duration_seconds: 30
+  6:
+    total_seconds: 360
+    items:
+    - type: exercise
+      exercise_id: iso_reverse_crunches
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: twenty_one_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: starfish_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: ninety_ninety_crunch
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: sprinter_tuck_planks
+      duration_seconds: 30
 rest_days:
 - 3
 - 7
 notes:
-- Week 2 Day 1 is verified from a WhatsApp screenshot (2026-10-23); other days follow with more screenshots.
+- Week 2 days 1, 2, 4, 5 and 6 are verified from WhatsApp screenshots (2026-10-23; app day numbers 8, 9, 11, 12, 13).

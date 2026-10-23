@@ -1,0 +1,43 @@
+exercise_id: frog_crunches
+description: Curated 6 Pack Promise entry for Frog Crunches.
+exercises:
+- exercise_id: frog_crunches
+  id: frog_crunches
+  name: Frog Crunches
+  display_name: Frog Crunches
+  german: Frog Crunches
+  english: Frog Crunches
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Beginnen Sie in Rückenlage mit den Fußsohlen zusammen und den Knien nach außen gekippt.
+  - Rollen Sie den Oberkörper zu den Beinen und führen Sie die Hände zwischen die Knie.
+  common_errors:
+  - Der Nacken zieht, statt dass der Bauch arbeitet.
+  - Die Beine werden nur schwungvoll bewegt.
+  tags:
+  - 6pack_promise
+  - core
+  - supine
+  aliases:
+  - Frog Crunches
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

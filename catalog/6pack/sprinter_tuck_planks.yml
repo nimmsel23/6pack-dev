@@ -1,0 +1,45 @@
+exercise_id: sprinter_tuck_planks
+description: Curated 6 Pack Promise entry for Sprinter Tuck Planks.
+exercises:
+- exercise_id: sprinter_tuck_planks
+  id: sprinter_tuck_planks
+  name: Sprinter Tuck Planks
+  display_name: Sprinter Tuck Planks
+  german: Sprinter Tuck Planks
+  english: Sprinter Tuck Planks
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Wechseln Sie in der Plank im Sprinttempo die Knie zur Brust und halten Sie den Rücken lang.
+  - Spannen Sie den Bauch aktiv an und setzen Sie die Füße leise ab.
+  common_errors:
+  - Der Po schiebt sich beim Wechsel nach oben.
+  - Das Tempo steigt auf Kosten der Rumpfspannung.
+  tags:
+  - 6pack_promise
+  - core
+  - plank
+  aliases:
+  - Sprinter Tuck Planks
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

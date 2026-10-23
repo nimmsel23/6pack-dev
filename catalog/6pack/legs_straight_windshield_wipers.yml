@@ -1,0 +1,46 @@
+exercise_id: legs_straight_windshield_wipers
+description: Curated 6 Pack Promise entry for Legs Straight Windshield Wipers.
+exercises:
+- exercise_id: legs_straight_windshield_wipers
+  id: legs_straight_windshield_wipers
+  name: Legs Straight Windshield Wipers
+  display_name: Legs Straight Windshield Wipers
+  german: Legs Straight Windshield Wipers
+  english: Legs Straight Windshield Wipers
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  secondary_muscles:
+  - 501_rectus_abdominis
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Liegen Sie auf dem Rücken, strecken Sie die Beine nach oben und senken Sie sie kontrolliert zu beiden Seiten.
+  - Halten Sie die Schultern am Boden und die Beine so gestreckt wie möglich.
+  common_errors:
+  - Die Schultern heben vom Boden ab.
+  - Die Beine fallen unkontrolliert zur Seite.
+  tags:
+  - 6pack_promise
+  - core
+  - rotation
+  - supine
+  aliases:
+  - Legs Straight Windshield Wipers
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

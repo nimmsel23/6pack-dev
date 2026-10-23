@@ -1,0 +1,46 @@
+exercise_id: cross_knee_planks
+description: Curated 6 Pack Promise entry for Cross Knee Planks.
+exercises:
+- exercise_id: cross_knee_planks
+  id: cross_knee_planks
+  name: Cross Knee Planks
+  display_name: Cross Knee Planks
+  german: Cross Knee Planks
+  english: Cross Knee Planks
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  secondary_muscles:
+  - 501_rectus_abdominis
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Halten Sie die Plank stabil und ziehen Sie ein Knie kontrolliert zum gegenüberliegenden Ellbogen.
+  - Atmen Sie ruhig weiter und halten Sie das Becken ruhig.
+  common_errors:
+  - Das Becken dreht oder sackt beim Knieziehen ab.
+  - Die Schultern wandern nach hinten, statt aktiv zu stützen.
+  tags:
+  - 6pack_promise
+  - core
+  - plank
+  - rotation
+  aliases:
+  - Cross Knee Planks
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

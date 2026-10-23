@@ -1,0 +1,45 @@
+exercise_id: accordian_crunches
+description: Curated 6 Pack Promise entry for Accordian Crunches.
+exercises:
+- exercise_id: accordian_crunches
+  id: accordian_crunches
+  name: Accordian Crunches
+  display_name: Accordian Crunches
+  german: Accordian Crunches
+  english: Accordian Crunches
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  secondary_muscles:
+  - 501_rectus_abdominis
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Liegen Sie seitlich auf einem Unterarm und ziehen Sie Ellbogen und Knie wie ein Akkordeon zusammen.
+  - Strecken Sie Arm und Bein kontrolliert wieder aus und wechseln Sie nach der Hälfte der Zeit die Seite.
+  common_errors:
+  - Die Bewegung kommt aus dem Schwung statt aus den seitlichen Bauchmuskeln.
+  - Die Schulter sackt in den Boden.
+  tags:
+  - 6pack_promise
+  - core
+  - side_lying
+  aliases:
+  - Accordian Crunches
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated
