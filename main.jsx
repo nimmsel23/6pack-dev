@@ -28,7 +28,7 @@ function Root() {
   const [state, setState] = useState({ user: null, pending: 0 });
   useEffect(() => subscribeSync(setState), []);
   return (
-    <main className="max-w-xl mx-auto py-4">
+    <main className="w-full">
       <SyncBar state={state} />
       <SixPackPromiseCard uid={state.user?.uid || 'local'} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={enableSixpackPush} />
     </main>

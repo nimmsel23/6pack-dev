@@ -1398,7 +1398,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, []);
 
   return (
-    <section className="rounded-[1.5rem] overflow-hidden" style={{ border: '1px solid var(--line)' }}>
+    <section className="w-full overflow-hidden">
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
         {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} uid={uid} enablePush={enablePush} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
