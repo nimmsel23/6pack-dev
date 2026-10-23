@@ -1201,20 +1201,18 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   );
 }
 
-// Activity Finisher: nach JEDEM abgeschlossenen 6Pack-Workout wird automatisch ein Core-HIIT-Finisher
-// mitgeloggt — im Fitness-Activity-Format (type 'hiit', Muskelziel core), damit er in
-// Coverage/Superkompensation wie ein manuell erfasstes HIIT zählt. Die Dauer ist die tatsächliche
-// Workout-Länge (inkl. Pausen/Wechsel), mindestens 1 Minute — Workouts sind nicht immer 5 min.
-function coreHiitFinisher(items) {
-  const minutes = Math.max(1, Math.round(workoutTotalSeconds(items) / 60));
+// Das 6Pack-Workout IST das Core HIIT: Die Session wird als HIIT-Activity im Fitness-Activity-Format
+// (type 'hiit', Muskelziel core) geloggt, damit sie in Coverage/Superkompensation zählt. Entscheidend
+// ist die Dauer = tatsächliche Workout-Länge (inkl. Pausen/Wechsel), mindestens 1 Minute.
+// Die Session bleibt eine Kraft-Session (sessionMode 'strength'), aber ohne Reps×Sets/Gewicht.
+function coreHiitActivity(items) {
   return {
     type: 'hiit',
     muscleTarget: 'core',
     muscles: ['core'],
     primaryMuscles: [],
-    duration: minutes,
-    label: 'Activity Finisher · Core HIIT',
-    finisher: true,
+    duration: Math.max(1, Math.round(workoutTotalSeconds(items) / 60)),
+    label: '6Pack · Core HIIT',
   };
 }
 
@@ -1387,9 +1385,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     if (doneWorkout && onWorkoutComplete) {
       const byName = new Map();
       (doneWorkout.items || []).filter(i => i.type === 'exercise').forEach(i => {
-        byName.set(i.name, [...(byName.get(i.name) || []), { seconds: i.seconds }]);
+        byName.set(i.name, (byName.get(i.name) || 0) + (Number(i.seconds) || 0));
       });
-      const finisher = coreHiitFinisher(doneWorkout.items || []);
+      const activity = coreHiitActivity(doneWorkout.items || []);
       onWorkoutComplete({
         block: '6Pack',
         source: 'sixpack',
@@ -1398,9 +1396,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         runId,
         startedAt: startedAt || Date.now(),
         endedAt: Date.now(),
-        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Finisher Core HIIT ${finisher.duration} min`,
-        activity: finisher,
-        exercises: [...byName].map(([name, sets]) => ({ name, sets })),
+        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Core HIIT ${activity.duration} min`,
+        activity,
+        exercises: [...byName].map(([name, seconds]) => ({ name, seconds })),
       });
     }
     if (adhocWorkout) return;

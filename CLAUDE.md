@@ -25,7 +25,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Start-Intro:** Beim ersten Start eines Workouts: "Welcome to 6Pack. Let's go." → "<Übung>[, left side]. Begin in" → "3, 2, 1" → langer Ton → dann läuft die Zeit.
   "left side" nur bei einseitigen Übungen (dieselbe Übung zweimal direkt hintereinander; die zweite Hälfte sagt weiter "Switch sides"). Tippen während des Intros bricht ab.
 - **Musik darf nie pausieren** — weder beim Öffnen der App noch beim Übungsstart: `keepMusicPlaying()` setzt `navigator.audioSession.type = 'ambient'` schon beim Laden des Moduls, vor jedem Audio-Start und nach jeder Rückkehr in die App (iOS). Videos immer `muted`. Nichts Audio-Relevantes vor dem ersten Tap erzeugen.
-- **Activity Finisher:** Nach jedem abgeschlossenen Workout wird automatisch `Core HIIT` (Dauer = tatsächliche Workout-Länge in Minuten, min. 1; `coreHiitFinisher()` in `SixPackApp.jsx`, nicht mehr fix 5 min) als `activity` im Session-Dokument mitgeloggt (Fitness-Activity-Format `type: 'hiit'`, `muscleTarget: 'core'`); `workoutDoc.js::buildWorkoutDoc` nimmt dafür ein optionales `activity`.
+- **6Pack-Session (2026-10-23):** Bleibt eine Kraft-Session (`sessionMode: 'strength'`, wie Calisthenics), aber ohne Sets/Reps/Weight: Übungen stehen schlank als `{ name, duration }` (Sekunden, `setsArray: []`); entscheidend ist die Dauer. Zusätzlich `activity` = Core HIIT (`type: 'hiit'`, `muscleTarget: 'core'`, `duration` = tatsächliche Workout-Länge in Minuten, min. 1; `coreHiitActivity()` in `SixPackApp.jsx`).
 - **30-s-Warnton:** Bei 30 s Restzeit einer Übung (nur wenn sie länger als 30 s dauert): kurzer Ton (660 Hz) + "30 seconds left"; bei 10 s weiter "10 seconds left".
 
 

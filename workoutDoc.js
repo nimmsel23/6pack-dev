@@ -40,12 +40,13 @@ export function monthOf(date) {
 
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-// input.exercises: [{ name, sets: [{ reps?, seconds? }] }]
+// input.exercises: [{ name, seconds }]  (6Pack/Calisthenics: nur Dauer, kein Reps×Sets/Gewicht)
+//               oder [{ name, sets: [{ reps?, seconds? }] }] (Kraft)
 export function buildWorkoutDoc({
   source, app = source, userId = null,
   modality = 'strength', block, program = null,
   exercises = [], startedAt, endedAt, effort = null, notes = '',
-  activity = null, // optionale Activity im Fitness-Format, z. B. { type: 'hiit', muscleTarget: 'core', duration: 5 }
+  activity = null, // Activity im Fitness-Format, z. B. { type: 'hiit', muscleTarget: 'core', duration: 5 } (6Pack: die Session selbst)
   runId = newRunId(),
 }) {
   const start = new Date(startedAt || Date.now());
@@ -73,7 +74,8 @@ export function buildWorkoutDoc({
         id: `${source}-${slug(ex.name)}`,
         name: ex.name,
         source,
-        setsArray: ex.sets.map((s) => ({
+        ...(ex.sets ? {} : { duration: Number(ex.seconds) || 0 }),
+        setsArray: (ex.sets || []).map((s) => ({
           reps: s.reps != null ? String(s.reps) : '',
           weight: '',
           ...(s.seconds != null ? { duration: s.seconds } : {}),
