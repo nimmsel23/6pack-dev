@@ -28,3 +28,9 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Activity Finisher:** Nach jedem abgeschlossenen Workout wird automatisch `Core HIIT` (Dauer = tatsächliche Workout-Länge in Minuten, min. 1; `coreHiitFinisher()` in `SixPackApp.jsx`, nicht mehr fix 5 min) als `activity` im Session-Dokument mitgeloggt (Fitness-Activity-Format `type: 'hiit'`, `muscleTarget: 'core'`); `workoutDoc.js::buildWorkoutDoc` nimmt dafür ein optionales `activity`.
 - **30-s-Warnton:** Bei 30 s Restzeit einer Übung (nur wenn sie länger als 30 s dauert): kurzer Ton (660 Hz) + "30 seconds left"; bei 10 s weiter "10 seconds left".
 
+
+## Runner-Videos (2026-10-23)
+
+- Loops starten automatisch (stumm, Loop): Datei-Videos per `autoPlay`+`play()`, Embeds mit `autoplay=1&loop=1`.
+- Datei-Videos (https, nicht YouTube/Vimeo) werden von `videoCache.js` in Cache Storage `sixpack-videos-v1` geladen und als Blob-URL abgespielt. Cache-Name ohne SW-Präfix, damit der Shell-SW ihn nicht räumt. Embeds sind nicht cachebar.
+- Videos stehen in `catalog/exercise-videos.yml` (ID = Katalog-ID); nur geprüfte, öffentliche Demos eintragen.

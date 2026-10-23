@@ -2,6 +2,7 @@ import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
+import { cacheVideo, cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
@@ -991,7 +992,36 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     ? (videoUrls[current.name] ?? current.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[current.name] ?? '')
     : '';
   const video = videoDescriptor(selectedVideoUrl);
-  const videoUrl = video?.src;
+  const remoteVideoUrl = video?.src;
+  const videoRef = useRef(null);
+  const [cachedVideo, setCachedVideo] = useState({ url: '', blob: '' });
+  // Alle Datei-Loops des Workouts beim Start vorladen, damit sie auch offline laufen.
+  useEffect(() => {
+    const urls = workout.items
+      .filter(i => i.type === 'exercise')
+      .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
+      .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
+      .map(v => v.src);
+    cacheVideos(urls);
+  }, [workout, videoUrls]);
+  // Aktuelles Video bevorzugt aus dem Cache (Blob-URL), sonst direkt von der Quelle.
+  useEffect(() => {
+    if (video?.kind !== 'file' || !isCacheableVideo(remoteVideoUrl)) return undefined;
+    let cancelled = false;
+    let blob = '';
+    cacheVideo(remoteVideoUrl).then(() => getCachedVideoBlobUrl(remoteVideoUrl)).then(next => {
+      if (cancelled || !next) { if (next) URL.revokeObjectURL(next); return; }
+      blob = next;
+      setCachedVideo({ url: remoteVideoUrl, blob: next });
+    });
+    return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
+  }, [remoteVideoUrl, video?.kind]);
+  const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
+  // Loop startet automatisch (stumm); play() nach Quellwechsel, falls autoPlay allein nicht greift.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (el) el.play?.().catch(() => {});
+  }, [videoUrl, state.itemIndex]);
 
   function toggleRunning() {
     if (intro) {
@@ -1124,7 +1154,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
         <div className="mt-6">
           <div className="aspect-video rounded-2xl overflow-hidden flex items-center justify-center text-center" style={{ background: '#111', border: '1px solid var(--line)' }}>
             {videoUrl && !videoError ? (
-              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={videoUrl} src={videoUrl} autoPlay muted loop playsInline controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
+              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={remoteVideoUrl} ref={videoRef} src={videoUrl} autoPlay muted loop playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
             ) : (
               <span className="text-xs px-4" style={{ color: 'var(--dim)' }}>
                 {videoError ? 'Video konnte nicht geladen werden.' : 'Noch kein Video für diese Übung hinterlegt.'}

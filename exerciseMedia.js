@@ -25,10 +25,10 @@ export function videoDescriptor(value) {
       id = parsed.pathname.slice(1);
       if (!/^[\w-]{11}$/.test(id)) return null;
     }
-    if (id && /^[\w-]{11}$/.test(id)) return { kind: 'embed', src: `https://www.youtube-nocookie.com/embed/${id}?rel=0&playsinline=1&mute=1` };
+    if (id && /^[\w-]{11}$/.test(id)) return { kind: 'embed', src: `https://www.youtube-nocookie.com/embed/${id}?rel=0&playsinline=1&mute=1&autoplay=1&loop=1&playlist=${id}` };
     if (['vimeo.com', 'www.vimeo.com', 'player.vimeo.com'].includes(parsed.hostname)) {
       const match = parsed.pathname.match(/^\/(?:video\/)?(\d+)$/);
-      return match ? { kind: 'embed', src: `https://player.vimeo.com/video/${match[1]}?dnt=1&muted=1` } : null;
+      return match ? { kind: 'embed', src: `https://player.vimeo.com/video/${match[1]}?dnt=1&muted=1&autoplay=1&loop=1` } : null;
     }
   }
   return { kind: 'file', src: url };
