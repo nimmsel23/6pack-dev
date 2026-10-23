@@ -69,7 +69,7 @@ verified_days:
     - type: exercise
       exercise_id: tuck_planks
       duration_seconds: 30
-      notes: opposite side
+      notes: opposite sides
     - type: rest
       duration_seconds: 45
     - type: exercise

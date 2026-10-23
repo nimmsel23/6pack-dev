@@ -424,7 +424,7 @@ function WorkoutExerciseRow({ item, onOpen }) {
   const content = <>
     <div>
       {item.category && <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#e2001a' }}>{item.category}</div>}
-      <div className="text-sm font-bold" style={{ color: '#fff' }}>{item.name}</div>
+      <div className="text-sm font-bold" style={{ color: '#fff' }}>{item.name}{item.notes ? ` (${item.notes})` : ''}</div>
       <div className="text-xs font-bold" style={{ color: '#e2001a' }}>{item.seconds} Seconds</div>
     </div>
     {item.type === 'exercise' && <ChevronRight size={20} aria-hidden="true" style={{ color: '#e2001a' }} />}
@@ -1168,18 +1168,21 @@ function RunnerScreen({ workout, onFinish, onBack }) {
 }
 
 // Activity Finisher: nach JEDEM abgeschlossenen 6Pack-Workout wird automatisch ein Core-HIIT-Finisher
-// (5 Minuten) mitgeloggt — im Fitness-Activity-Format (type 'hiit', Muskelziel core), damit er in
-// Coverage/Superkompensation wie ein manuell erfasstes HIIT zählt. Dauer hier anpassen.
-const FINISHER_MINUTES = 5;
-const CORE_HIIT_FINISHER = {
-  type: 'hiit',
-  muscleTarget: 'core',
-  muscles: ['core'],
-  primaryMuscles: [],
-  duration: FINISHER_MINUTES,
-  label: 'Activity Finisher · Core HIIT',
-  finisher: true,
-};
+// mitgeloggt — im Fitness-Activity-Format (type 'hiit', Muskelziel core), damit er in
+// Coverage/Superkompensation wie ein manuell erfasstes HIIT zählt. Die Dauer ist die tatsächliche
+// Workout-Länge (inkl. Pausen/Wechsel), mindestens 1 Minute — Workouts sind nicht immer 5 min.
+function coreHiitFinisher(items) {
+  const minutes = Math.max(1, Math.round(workoutTotalSeconds(items) / 60));
+  return {
+    type: 'hiit',
+    muscleTarget: 'core',
+    muscles: ['core'],
+    primaryMuscles: [],
+    duration: minutes,
+    label: 'Activity Finisher · Core HIIT',
+    finisher: true,
+  };
+}
 
 export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush }) {
   const [program, setProgram] = useState(() => loadProgram());
@@ -1352,6 +1355,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
       (doneWorkout.items || []).filter(i => i.type === 'exercise').forEach(i => {
         byName.set(i.name, [...(byName.get(i.name) || []), { seconds: i.seconds }]);
       });
+      const finisher = coreHiitFinisher(doneWorkout.items || []);
       onWorkoutComplete({
         block: '6Pack',
         source: 'sixpack',
@@ -1360,8 +1364,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         runId,
         startedAt: startedAt || Date.now(),
         endedAt: Date.now(),
-        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Finisher Core HIIT ${FINISHER_MINUTES} min`,
-        activity: { ...CORE_HIIT_FINISHER },
+        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Finisher Core HIIT ${finisher.duration} min`,
+        activity: finisher,
         exercises: [...byName].map(([name, sets]) => ({ name, sets })),
       });
     }
