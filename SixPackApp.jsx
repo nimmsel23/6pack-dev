@@ -25,6 +25,8 @@ const EXERCISE_POOL = SIXPACK_EXERCISE_POOL;
 const EXERCISE_VIDEOS_BY_NAME = Object.fromEntries(
   Object.values(SIXPACK_EXERCISE_DETAILS).map(exercise => [exercise.name, exercise.videoUrl || ''])
 );
+// Einmal sortiert statt bei jedem Tastendruck in LearnScreen neu zu sortieren.
+const CORE_EXERCISES_SORTED = Object.values(SIXPACK_EXERCISE_DETAILS).sort((a, b) => a.name.localeCompare(b.name));
 
 // Track-Screenshot des Nutzers: Tag 3 und Tag 7 jeder Woche sind REST-Tage.
 const REST_DAYS_IN_WEEK = [3, 7];
@@ -241,10 +243,9 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
   const [query, setQuery] = useState('');
 
   const visibleCore = useMemo(() => {
-    const list = Object.values(SIXPACK_EXERCISE_DETAILS).sort((a, b) => a.name.localeCompare(b.name));
     const q = query.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((ex) => [ex.id, ex.name, ex.category, ex.focusLabel].join(' ').toLowerCase().includes(q));
+    if (!q) return CORE_EXERCISES_SORTED;
+    return CORE_EXERCISES_SORTED.filter((ex) => [ex.id, ex.name, ex.category, ex.focusLabel].join(' ').toLowerCase().includes(q));
   }, [query]);
 
   const visibleSkills = useMemo(() => {
@@ -753,7 +754,10 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const voicesCache = useRef(null);
   function bestVoice(lang) {
     if (!('speechSynthesis' in window)) return null;
-    if (!voicesCache.current) voicesCache.current = window.speechSynthesis.getVoices();
+    // getVoices() liefert vor dem `voiceschanged`-Event oft [] — dann nicht
+    // dauerhaft leer cachen, sonst bleibt die App für die ganze Session auf
+    // der blechernen Default-Stimme stehen.
+    if (!voicesCache.current || voicesCache.current.length === 0) voicesCache.current = window.speechSynthesis.getVoices();
     const voices = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
     if (voices.length === 0) return null;
     const premium = voices.find(v => /natural|enhanced|premium/i.test(v.name));
