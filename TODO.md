@@ -13,7 +13,10 @@
 - [x] 2026-10-20: Deutlichen zweistufigen Piep-Tüt-Ton am Ende jeder Runner-Übung ergänzen.
 - [x] 2026-10-20: Englische Abschlussansage nach dem Workout ergänzen.
 - [x] 2026-10-22: Aktuelle Runner-Übung wiederholen können und Audio-Mix vor jeder Ansage/jedem Piep erneut setzen.
-- [ ] Wöchentlich: eine weitere Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzen.
+- [ ] Wöchentlich: eine weitere Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzen. (Woche 2 Tag 1/2/4/5/6 erledigt 2026-10-23; Woche 3 offen.)
+- [ ] Videos für Rolling Jackknifes und Accordian Crunches (Woche 2) fehlen; Sprinter Tuck Planks / Canoe Crunch haben nur Näherungs-Videos.
+- [ ] Video-Loops von YouTube/Vimeo sind nicht offline cachebar — bei Bedarf als eigene MP4-Dateien hosten.
+- [ ] Autoplay/Video-Cache im Runner am Handy abnehmen (kein Geräte-Test bisher).
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
 - [x] 2026-10-20: 6Pack-dev-Pilot: In-App-Changelog mit den Commits des Deploy-Pushes.

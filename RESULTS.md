@@ -118,3 +118,10 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Zahnrad im Home-Header (neben dem Tageszähler) öffnet `SettingsScreen`: Switch + Uhrzeit für die tägliche Erinnerung.
 - Einstellung liegt in `program.settings.reminder` und wird mit `users/{uid}/meta/sixpack` synchronisiert (`reminder.js`).
 - Zustellung lokal (App/SW aktiv). Echte Hintergrund-Push bräuchte einen Server-Scheduler auf dieses Feld — offen.
+
+## 2026-10-23 — Woche 2, Finisher-Dauer, Runner-Videos
+- Woche 2 aus WhatsApp-Screenshots (App-Tage 8, 9, 11, 12, 13 = Woche 2 Tag 1, 2, 4, 5, 6) in `catalog/6pack/week2_workouts.yml`; 11 neue Übungs-YAMLs (Texte/Muskeln selbst geschrieben, nicht verifiziert).
+- Activity Finisher: Dauer = tatsächliche Workout-Länge (`coreHiitFinisher()`), nicht mehr fix 5 min.
+- Workout-Liste zeigt Übungsnotizen (z. B. „Tuck Planks (opposite sides)“).
+- Videos: 9 neue YouTube-Demos in `catalog/exercise-videos.yml` (nur Titel/Kanal per oEmbed geprüft, Inhalt nicht). Ohne Video: Rolling Jackknifes, Accordian Crunches.
+- Runner: Autoplay/Loop für Datei-Videos und YouTube/Vimeo-Embeds; Datei-Videos werden in Cache Storage (`sixpack-videos-v1`, `videoCache.js`) vorgeladen und offline abgespielt. Embeds nicht cachebar. Kein physischer Geräte-Test.
