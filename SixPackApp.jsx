@@ -3,7 +3,7 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Flag, Settings, RotateCcw } from 'lucide-react';
+import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
 import { getReminder, reminderDue, reminderSupported, requestReminderPermission, readLastSent, writeLastSent, showReminder } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
@@ -565,7 +565,7 @@ function SettingsScreen({ reminder, onChange, onBack, uid, enablePush }) {
   );
 }
 
-function TrackScreen({ program, onBack, onOpenDay, onSetCurrent }) {
+function TrackScreen({ program, onBack, onOpenDay }) {
   const [week, setWeek] = useState(weekOf(program.currentDay));
   const days = Array.from({ length: DAYS_PER_WEEK }, (_, i) => (week - 1) * DAYS_PER_WEEK + i + 1);
 
@@ -595,7 +595,6 @@ function TrackScreen({ program, onBack, onOpenDay, onSetCurrent }) {
       <div>
         {days.map(day => {
           const rest = isRestDay(day);
-          const done = program.completedDays.includes(day);
           const current = day === program.currentDay;
           return (
             <div key={day} className="flex items-stretch" style={{ background: current ? '#e2001a' : '#1a1a1a', borderBottom: '1px solid #000' }}>
@@ -607,23 +606,7 @@ function TrackScreen({ program, onBack, onOpenDay, onSetCurrent }) {
                 <span className="text-sm font-bold" style={{ color: '#fff' }}>Day {dayInWeek(day)}</span>
                 {rest ? (
                   <span className="text-xs font-black uppercase tracking-[0.1em]" style={{ color: '#fff', opacity: 0.7 }}>Rest</span>
-                ) : (
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{ border: '2px solid #fff', background: done ? '#fff' : 'transparent' }}
-                  >
-                    {done && <Check size={13} color="#e2001a" strokeWidth={4} />}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => !current && onSetCurrent(day)}
-                disabled={current}
-                aria-label={current ? `Day ${dayInWeek(day)} ist der aktuelle Tag` : `Tracker auf Day ${dayInWeek(day)} setzen`}
-                className="px-4 flex items-center disabled:cursor-default"
-                style={{ borderLeft: '1px solid rgba(0,0,0,0.5)', color: '#fff', opacity: current ? 1 : 0.6 }}
-              >
-                <Flag size={16} fill={current ? '#fff' : 'none'} />
+                ) : null}
               </button>
             </div>
           );
@@ -1287,6 +1270,12 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setScreen('day');
   }
 
+  // Track-View: Antippen macht den Tag zum aktuellen und zeigt dessen Übungsliste.
+  function openTrackDay(day) {
+    if (day !== program.currentDay) setProgram(p => setTrackerDay(p, day, isRestDay(day), localDate()));
+    openDay(day);
+  }
+
   function goHome() {
     setScreen('home');
   }
@@ -1316,11 +1305,6 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     document.addEventListener('visibilitychange', check);
     return () => { window.clearInterval(interval); document.removeEventListener('visibilitychange', check); };
   }, [reminder.enabled, reminder.time, program.lastCompletedOn, program.currentDay]);
-
-  // Manuelles Setzen des Trackers (Track-View): ab jetzt ist dieser Tag der aktuelle.
-  function setCurrentDay(day) {
-    setProgram(p => setTrackerDay(p, day, isRestDay(day), localDate()));
-  }
 
   function startWorkout() {
     setScreen('runner');
@@ -1417,7 +1401,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     <section className="rounded-[1.5rem] overflow-hidden" style={{ border: '1px solid var(--line)' }}>
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
         {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} uid={uid} enablePush={enablePush} />}
-        {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openDay} onSetCurrent={setCurrentDay} />}
+        {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (
           <ExerciseDetailScreen
