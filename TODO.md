@@ -19,6 +19,7 @@
 - [ ] Autoplay/Video-Cache im Runner am Handy abnehmen (kein Geräte-Test bisher).
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
+- [x] 2026-10-23: Drehplan für die 9 offenen bzw. unsicheren Woche-2-Videos mit Priorität, Bewegungshinweisen und Dateinamen erstellt (`docs/VIDEO-DREHPLAN-WOCHE-2.md`).
 - [x] 2026-10-20: 6Pack-dev-Pilot: In-App-Changelog mit den Commits des Deploy-Pushes.
 - [ ] In-App-Changelog nach erfolgreichem 6Pack-Pilot auf die weiteren Apps ausrollen.
 

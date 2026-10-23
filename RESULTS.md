@@ -125,3 +125,6 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Workout-Liste zeigt Übungsnotizen (z. B. „Tuck Planks (opposite sides)“).
 - Videos: 9 neue YouTube-Demos in `catalog/exercise-videos.yml`. Starfish Crunch, Cross Knee Plank und Frog Crunch wurden inhaltlich gegen ihre Demos geprüft. Für Rolling Jackknifes und die seitliche Accordian-Variante wurde kein verlässlicher passender Clip bestätigt; Sprinter Tuck Planks und Canoe Crunch bleiben Näherungs-Videos. Für die übrigen Zuordnungen ist die Bewegungsübereinstimmung noch nicht geprüft.
 - Runner: Autoplay/Loop für Datei-Videos und YouTube/Vimeo-Embeds; Datei-Videos werden in Cache Storage (`sixpack-videos-v1`, `videoCache.js`) vorgeladen und offline abgespielt. Embeds nicht cachebar. Kein physischer Geräte-Test.
+
+## 2026-10-23 — Drehplan für Woche-2-Videos
+- Konkrete Aufnahmeliste für neun offene oder unsichere Demos erstellt: drei fehlende passende Clips, zwei Näherungsclips und vier noch ungeprüfte Bewegungszuordnungen. Enthält Workout-Tage, Priorität, Bewegungshinweise, Dateinamen und den Repo-Pfad zur Einbindung: `docs/VIDEO-DREHPLAN-WOCHE-2.md`.
