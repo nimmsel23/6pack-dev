@@ -75,9 +75,11 @@ verified_days:
     - type: exercise
       exercise_id: accordian_crunches
       duration_seconds: 30
+      notes: linke Seite
     - type: exercise
       exercise_id: accordian_crunches
       duration_seconds: 30
+      notes: rechte Seite
     - type: rest
       duration_seconds: 45
     - type: exercise

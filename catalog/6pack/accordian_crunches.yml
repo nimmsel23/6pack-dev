@@ -23,17 +23,19 @@ exercises:
   stabilizers:
   - 607_iliopsoas
   coaching_notes:
-  - Liegen Sie seitlich auf einem Unterarm und ziehen Sie Ellbogen und Knie wie ein Akkordeon zusammen.
-  - Strecken Sie Arm und Bein kontrolliert wieder aus und wechseln Sie nach der Hälfte der Zeit die Seite.
+  - Liegen Sie auf der Seite, stützen Sie sich auf dem unteren Unterarm und halten Sie Schulter, Rippen und Becken stabil übereinander.
+  - Ziehen Sie den oberen Ellbogen und die Knie kontrolliert zusammen und strecken Sie den Rumpf wieder aus; die zweite 30-Sekunden-Runde trainiert die andere Seite.
   common_errors:
-  - Die Bewegung kommt aus dem Schwung statt aus den seitlichen Bauchmuskeln.
-  - Die Schulter sackt in den Boden.
+  - Die Hüfte rollt nach vorn oder hinten, statt stabil gestapelt zu bleiben.
+  - Die Schulter sackt ein oder der Kopf wird mit der Hand nach vorn gezogen.
   tags:
   - 6pack_promise
   - core
+  - obliques
   - side_lying
   aliases:
   - Accordian Crunches
+  - Accordion Crunches
   variations: []
   source: manual
   schema_version: 2026-08-12.exercise-v1

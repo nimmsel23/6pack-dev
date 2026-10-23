@@ -120,8 +120,8 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Zustellung lokal (App/SW aktiv). Echte Hintergrund-Push bräuchte einen Server-Scheduler auf dieses Feld — offen.
 
 ## 2026-10-23 — Woche 2, Finisher-Dauer, Runner-Videos
-- Woche 2 aus WhatsApp-Screenshots (App-Tage 8, 9, 11, 12, 13 = Woche 2 Tag 1, 2, 4, 5, 6) in `catalog/6pack/week2_workouts.yml`; 11 neue Übungs-YAMLs (Texte/Muskeln selbst geschrieben, nicht verifiziert).
+- Woche 2 aus WhatsApp-Screenshots (App-Tage 8, 9, 11, 12, 13 = Woche 2 Tag 1, 2, 4, 5, 6) in `catalog/6pack/week2_workouts.yml`; 11 neue Übungs-YAMLs. Bei der Nachprüfung wurden Starfish Crunch und Rolling Jackknifes sprachlich korrigiert, Accordion-Seitenhinweise ergänzt und fehlende Learn-Kategorien gesetzt. Muskelzuordnungen der übrigen neuen Einträge sind weiterhin nicht einzeln fachlich geprüft.
 - Activity Finisher: Dauer = tatsächliche Workout-Länge (`coreHiitFinisher()`), nicht mehr fix 5 min.
 - Workout-Liste zeigt Übungsnotizen (z. B. „Tuck Planks (opposite sides)“).
-- Videos: 9 neue YouTube-Demos in `catalog/exercise-videos.yml` (nur Titel/Kanal per oEmbed geprüft, Inhalt nicht). Ohne Video: Rolling Jackknifes, Accordian Crunches.
+- Videos: 9 neue YouTube-Demos in `catalog/exercise-videos.yml`. Starfish Crunch, Cross Knee Plank und Frog Crunch wurden inhaltlich gegen ihre Demos geprüft. Für Rolling Jackknifes und die seitliche Accordian-Variante wurde kein verlässlicher passender Clip bestätigt; Sprinter Tuck Planks und Canoe Crunch bleiben Näherungs-Videos. Für die übrigen Zuordnungen ist die Bewegungsübereinstimmung noch nicht geprüft.
 - Runner: Autoplay/Loop für Datei-Videos und YouTube/Vimeo-Embeds; Datei-Videos werden in Cache Storage (`sixpack-videos-v1`, `videoCache.js`) vorgeladen und offline abgespielt. Embeds nicht cachebar. Kein physischer Geräte-Test.
