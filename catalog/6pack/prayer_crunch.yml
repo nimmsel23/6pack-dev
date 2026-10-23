@@ -1,0 +1,43 @@
+exercise_id: prayer_crunch
+description: Curated 6 Pack Promise entry for Prayer Crunch.
+exercises:
+- exercise_id: prayer_crunch
+  id: prayer_crunch
+  name: Prayer Crunch
+  display_name: Prayer Crunch
+  german: Prayer Crunch
+  english: Prayer Crunch
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Halten Sie die Hände wie im Gebet vor der Brust und rollen Sie den Oberkörper kontrolliert zu den Knien.
+  - Atmen Sie am höchsten Punkt aus und spannen Sie den Bauch bewusst an.
+  common_errors:
+  - Die Hände ziehen am Nacken oder schwingen nach vorn.
+  - Der Lendenbereich hebt sich vom Boden ab.
+  tags:
+  - 6pack_promise
+  - core
+  - supine
+  aliases:
+  - Prayer Crunch
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

@@ -1,0 +1,46 @@
+exercise_id: drunken_mountain_climbers
+description: Curated 6 Pack Promise entry for Drunken Mountain Climbers.
+exercises:
+- exercise_id: drunken_mountain_climbers
+  id: drunken_mountain_climbers
+  name: Drunken Mountain Climbers
+  display_name: Drunken Mountain Climbers
+  german: Drunken Mountain Climbers
+  english: Drunken Mountain Climbers
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  secondary_muscles:
+  - 501_rectus_abdominis
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Starten Sie in der hohen Plank und führen Sie die Knie diagonal zur gegenüberliegenden Schulter.
+  - Halten Sie das Becken stabil und die Bauchspannung hoch, auch wenn die Knie unregelmäßig wandern.
+  common_errors:
+  - Das Becken schaukelt oder sackt durch.
+  - Die Knie werden ohne Rumpfspannung nur geschwungen.
+  tags:
+  - 6pack_promise
+  - core
+  - plank
+  - rotation
+  aliases:
+  - Drunken Mountain Climbers
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

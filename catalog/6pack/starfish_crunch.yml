@@ -1,0 +1,45 @@
+exercise_id: starfish_crunch
+description: Curated 6 Pack Promise entry for Starfish Crunch.
+exercises:
+- exercise_id: starfish_crunch
+  id: starfish_crunch
+  name: Starfish Crunch
+  display_name: Starfish Crunch
+  german: Starfish Crunch
+  english: Starfish Crunch
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  - 504_transverse_abdominis
+  stabilizers:
+  - 607_iliopsoas
+  coaching_notes:
+  - Beginnen Sie in Rückenlage mit weit gespreizten Armen und Beinen wie ein Seestern.
+  - Ziehen Sie Ellbogen und Knie über der Körpermitte zusammen und öffnen Sie kontrolliert wieder.
+  common_errors:
+  - Der Nacken zieht statt der Bauchmuskeln.
+  - Die Beine fallen beim Öffnen unkontrolliert zu Boden.
+  tags:
+  - 6pack_promise
+  - core
+  - supine
+  aliases:
+  - Starfish Crunch
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated

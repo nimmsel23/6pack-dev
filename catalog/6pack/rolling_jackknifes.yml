@@ -1,0 +1,45 @@
+exercise_id: rolling_jackknifes
+description: Curated 6 Pack Promise entry for Rolling Jackknifes.
+exercises:
+- exercise_id: rolling_jackknifes
+  id: rolling_jackknifes
+  name: Rolling Jackknifes
+  display_name: Rolling Jackknifes
+  german: Rolling Jackknifes
+  english: Rolling Jackknifes
+  category: core
+  type: compound
+  movements:
+  - trunk_flexion
+  - hip_flexion
+  equipment:
+  - bodyweight
+  primary_muscles:
+  - 501_rectus_abdominis
+  secondary_muscles:
+  - 504_transverse_abdominis
+  - 607_iliopsoas
+  stabilizers:
+  - 502_obliquus_externus
+  - 503_obliquus_internus
+  coaching_notes:
+  - Rollen Sie kontrolliert über den Rücken ab und kommen Sie mit Schwung aus dem Rumpf in die V-Position.
+  - Ziehen Sie Knie und Oberkörper gleichzeitig zusammen und halten Sie die Spannung im Bauch.
+  common_errors:
+  - Der Schwung kommt aus den Armen statt aus dem Rumpf.
+  - Der Rücken wird beim Abrollen schlaff abgelegt.
+  tags:
+  - 6pack_promise
+  - core
+  - rolling
+  aliases:
+  - Rolling Jackknifes
+  variations: []
+  source: manual
+  schema_version: 2026-08-12.exercise-v1
+  origin:
+    type: manual
+    source_refs:
+      app: [6_pack_promise]
+  review_state:
+    status: curated
