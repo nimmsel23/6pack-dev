@@ -7,6 +7,7 @@ import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCac
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
+import { showWorkoutNotification, clearWorkoutNotification, requestWorkoutNotificationPermission } from './workoutNotification.js';
 import { getReminder, reminderSupported, requestReminderPermission } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
@@ -690,6 +691,7 @@ let primedSpeech = false;
 function primeAudio() {
   try {
     keepMusicPlaying();
+    requestWorkoutNotificationPermission();
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (AudioContextClass && !primedAudioContext) primedAudioContext = new AudioContextClass();
     primedAudioContext?.resume();
@@ -832,7 +834,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Alle Sprachansagen sind komplett Englisch (en-US).
   const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
 
-  // Name + Dauer, z.B. "Crunches" … "30 seconds" bzw. "Rest, 45 seconds".
+  // Name + Dauer in einer Utterance, z.B. "Crunches, 30 seconds" bzw. "Rest, 45 seconds".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") zusätzlich
   // explizit "Switch sides" ansagen, sonst wirkt die Wiederholung wie ein
   // Fehler in der Ansage statt wie der geplante zweite Durchgang.
@@ -843,8 +845,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       speak(`Rest, ${secondsText(item.seconds)}`, 'en-US');
     } else {
       if (index != null && isSideSwitch(index)) speak('Switch sides', 'en-US');
-      speak(item.name, 'en-US');
-      speak(secondsText(item.seconds), 'en-US');
+      speak(`${item.name}, ${secondsText(item.seconds)}`, 'en-US');
     }
   }
 
@@ -982,6 +983,26 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     lastCountdownBeep.current = state.remaining;
     shortBeep();
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
+
+  // Dauerhafte Benachrichtigung (Android): aktuelle Übung, Dauer, nächste Übung; "Pausiert" bei Pause.
+  // Aktualisiert bei Übungswechsel und Pause/Start, nicht jede Sekunde (Akku, kein Flackern).
+  useEffect(() => {
+    if (state.done) return;
+    if (!state.running && !intro && state.itemIndex === 0 && !state.transition && !introDone.current) return;
+    const item = workout.items[state.itemIndex];
+    const following = workout.items[state.itemIndex + 1];
+    if (!item) return;
+    const nextName = following ? ` · Danach: ${following.type === 'rest' ? 'Pause' : following.name}` : '';
+    const label = state.transition ? `Wechsel → ${following?.name ?? ''}` : item.type === 'rest' ? `Pause · ${item.seconds} s` : `${item.name} · ${item.seconds} s`;
+    const position = `${workout.items.slice(0, state.itemIndex + 1).filter(i => i.type === 'exercise').length}/${workout.items.filter(i => i.type === 'exercise').length}`;
+    showWorkoutNotification({
+      title: state.running || intro ? `6Pack läuft · Übung ${position}` : `6Pack pausiert · Übung ${position}`,
+      body: `${label}${state.transition ? '' : nextName}`,
+    });
+  }, [state.itemIndex, state.transition, state.running, state.done, intro, workout]);
+
+  useEffect(() => { if (state.done) clearWorkoutNotification(); }, [state.done]);
+  useEffect(() => () => { clearWorkoutNotification(); }, []);
 
   useEffect(() => () => {
     introToken.current += 1;
