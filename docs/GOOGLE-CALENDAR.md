@@ -63,13 +63,25 @@ Variable hinterlegt. Die zusätzliche Redirect-URI wurde vom Nutzer bestätigt.
 Die eigene OAuth-State-Collection hat eine TTL-Policy.
 
 6Pack ist auf `https://vos-6pack.web.app` mit den Kalender-Einstellungen live;
-6Pack- und Fitness-Preview-CI sowie 6Pack-Production-CI sind erfolgreich. Der
-Kalender-Functions-Deploy benötigt noch drei von Firebase angeforderte projektweite
-Service-Agent-Bindings (Pub/Sub Token Creator, Laufzeitkonto Run Invoker und
-Eventarc Event Receiver). Deren automatische Freigabe wurde abgelehnt; die
-separate Nutzerfreigabe ist angefragt. Bis der Functions-Deploy erfolgreich ist,
-ist die Kalender-Automatik noch nicht betriebsbereit. Keine echten Kalendertermine
-wurden durch den Agenten angelegt.
+6Pack- und Fitness-Preview-CI sowie 6Pack-Production-CI sind erfolgreich. Das
+Kalender-Backend ist ebenfalls live: alle vier Functions sind **ACTIVE**, der
+[Deploy-Lauf 40082517530](https://github.com/nimmsel23/6pack-dev/actions/runs/40082517530)
+ist erfolgreich. Die drei erforderlichen projektweiten Service-Agent-Bindings
+wurden nach ausdrücklicher Nutzerfreigabe gesetzt. Ebenso wurden ausschließlich
+die drei neuen Browser-/OAuth-HTTP-Endpunkte nach ausdrücklicher Freigabe aufrufbar
+gemacht; Begin/Disconnect prüfen weiterhin Firebase Auth, Callback den einmaligen
+OAuth-State. Live geprüft: anonyme Begin-/Disconnect-Anfragen ergeben HTTP 401,
+Callback ohne State HTTP 400. Der interne Track-Trigger bleibt geschützt.
+
+**Jetzt in der App:** Einstellungen → Google Kalender verbinden → Google-Freigabe
+abschließen. Anschließend wird genau ein eigener kommender Termin in **Fitness**
+verwaltet. Ein echter Google-Konto-/Handytest muss mit dieser Nutzerfreigabe noch
+erfolgen; der Agent hat keine persönlichen Kalendertermine angelegt.
+
+Für reproduzierbare Functions-Builds enthält das isolierte Functions-Paket eine
+pnpm-Build-Freigabe für `protobufjs` und eine explizite, versionsgenau gepinnte
+Functions-Framework-Abhängigkeit. CI prüft vor dem Deploy auch den tatsächlichen
+Framework-Start und die anonymen Auth-/OAuth-Sperren.
 
 1. Im Google-Cloud-Projekt `fitness-aos` einen OAuth-Webclient verwenden oder
    anlegen. Den bestehenden Google-Login-Webclient kann man wiederverwenden.
