@@ -13,9 +13,19 @@
     "build:data": "node build-data.mjs",
     "firebase": "firebase deploy --only hosting:sixpack",
     "publish:fitness": "node publish-fitness.mjs",
-    "vendor:check": "node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell --check"
+    "vendor:check": "node ~/vitalos/packages/mini-app-shell/cli.mjs vendor scripts/mini-app-shell --check",
+    "build:native": "node build-data.mjs && vite build --mode native",
+    "native:sync": "pnpm run build:native && cap sync",
+    "native:android": "cap open android",
+    "native:ios": "cap open ios",
+    "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/local-notifications": "^8.3.1",
     "firebase": "11.10.0",
     "js-yaml": "4.1.1",
     "lucide-react": "0.453.0",
@@ -23,6 +33,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@vitejs/plugin-react": "4.7.0",
     "autoprefixer": "10.5.0",
     "postcss": "8.5.13",

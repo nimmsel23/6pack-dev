@@ -28,3 +28,7 @@
 - [x] 2026-10-21: Pilot durch gemeinsamen VitalOS-Changelog ersetzen; Bestätigungsschlüssel erhalten.
 
 - [x] 2026-10-21: Im Shell-Betrieb einen gemeinsamen VitalOS-Changelog mit App-Änderungen und zentraler Bestätigung nutzen.
+
+- [x] 2026-10-24: Push-Registrierungsfehler sichtbar machen, bestehende Geräte erneut registrieren und verspäteten App-Start-Timer entfernen.
+- [x] 2026-10-24: Native Android-/iOS-Projekte mit lokal geplanten Workout-Remindern aus dem Track ergänzen.
+- [ ] Native Builds in Android/Xcode bzw. manuellem Native-CI-Workflow ausführen; iPhone signieren und Offline-Reminder auf beiden Geräten abnehmen (siehe docs/NATIVE-REMINDERS.md).

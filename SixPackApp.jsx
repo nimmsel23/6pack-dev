@@ -3,10 +3,10 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
 import { cacheVideo, cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
-import { getReminder, reminderDue, reminderSupported, requestReminderPermission, readLastSent, writeLastSent, showReminder } from './reminder.js';
+import { getReminder, reminderSupported, requestReminderPermission } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
 
@@ -509,25 +509,28 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
   );
 }
 
-function SettingsScreen({ reminder, onChange, onBack, uid, enablePush }) {
-  const [permission, setPermission] = useState(reminderSupported() ? Notification.permission : 'unsupported');
+function SettingsScreen({ reminder, onChange, onBack, enablePush, pushState, localReminders }) {
+  const [permission, setPermission] = useState(localReminders ? 'default' : reminderSupported() ? Notification.permission : 'unsupported');
   const blocked = permission === 'denied' || permission === 'unsupported';
 
   const [notice, setNotice] = useState('');
 
-  async function toggle() {
+  async function activate() {
     setNotice('');
-    if (reminder.enabled) return onChange({ ...reminder, enabled: false });
-    const result = await requestReminderPermission();
-    setPermission(result);
-    if (result !== 'granted') return;
-    // Server-Push (auch bei geschlossener App): Gerät für 6Pack-Push registrieren.
-    // Scheitert das, bleibt die Erinnerung lokal aktiv und der Grund wird angezeigt.
-    if (enablePush) {
-      try { await enablePush(uid); }
-      catch (err) { setNotice(`${err?.message || 'Push-Registrierung fehlgeschlagen.'} Erinnerung läuft nur bei geöffneter App.`); }
+    try {
+      const result = localReminders ? 'granted' : await requestReminderPermission();
+      setPermission(result);
+      if (result !== 'granted') return;
+      await enablePush();
+      onChange({ ...reminder, enabled: true });
+    } catch (err) {
+      setNotice(err?.message || 'Push-Registrierung fehlgeschlagen.');
     }
-    onChange({ ...reminder, enabled: true });
+  }
+
+  function toggle() {
+    if (reminder.enabled) return onChange({ ...reminder, enabled: false });
+    return activate();
   }
 
   return (
@@ -540,6 +543,8 @@ function SettingsScreen({ reminder, onChange, onBack, uid, enablePush }) {
           role="switch"
           aria-checked={reminder.enabled}
           onClick={toggle}
+          aria-label="Tägliche Trainingserinnerung"
+          disabled={pushState.status === 'registering'}
           className="relative w-12 h-7 rounded-full transition-colors"
           style={{ background: reminder.enabled ? '#e2001a' : '#444' }}
         >
@@ -557,11 +562,18 @@ function SettingsScreen({ reminder, onChange, onBack, uid, enablePush }) {
           style={{ background: '#000', color: '#fff', border: '1px solid #333' }}
         />
       </div>
+      <div role="status" className="px-4 pt-3 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
+        {pushState.status === 'registering' ? 'Erinnerung wird eingerichtet …'
+          : reminder.enabled && pushState.status === 'ready' ? localReminders ? 'Offline-Erinnerungen für die nächsten 60 Tage auf diesem Gerät geplant.' : 'Dieses Gerät ist für Hintergrund-Push registriert.'
+          : reminder.enabled ? 'Erinnerung auf diesem Gerät noch nicht bestätigt.' : 'Erinnerung ausgeschaltet.'}
+        {pushState.error && <div>{pushState.error}</div>}
+      </div>
+      {reminder.enabled && pushState.status !== 'ready' && <button onClick={activate} disabled={pushState.status === 'registering'} className="px-4 pt-3 text-sm underline">Erinnerung auf diesem Gerät aktivieren</button>}
       {notice && <div className="px-4 pt-3 text-[11px] font-bold" style={{ color: '#e2001a' }}>{notice}</div>}
       <div className="px-4 py-3 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
-        {blocked
+        {localReminders ? 'Erinnert dich anhand deines Tracks auch ohne Internet und bei geschlossener App. Nach Training, Track- oder Uhrzeitänderung wird der Geräteplan erneuert. Ruhetage bleiben frei.' : blocked
           ? 'Benachrichtigungen sind für diese App blockiert oder nicht verfügbar. Bitte in den Browser-/System-Einstellungen erlauben.'
-          : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Per Push auch bei geschlossener App, sobald dieses Gerät angemeldet und registriert ist.'}
+          : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Push kommt auch bei geschlossener App an. Dieses Gerät muss angemeldet, registriert und mit dem Internet verbunden sein. Auf dem iPhone die App zum Home-Bildschirm hinzufügen und dort öffnen.'}
       </div>
     </div>
   );
@@ -1216,7 +1228,7 @@ function coreHiitActivity(items) {
   };
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1320,26 +1332,71 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setProgram(p => ({ ...p, settings: { ...p.settings, reminder: next }, updatedAt: Date.now() }));
   }
 
-  // Erinnerung: Zeit erreicht und heute noch nicht trainiert → einmal pro Tag benachrichtigen.
+  // Bestehende Einstellungen migrieren und Geräte-Token nach Login/Netzrückkehr
+  // erneuern. Kein Timer-Fallback: ein App-Start ist keine Push-Zustellung.
+  const [pushState, setPushState] = useState({ status: 'idle', error: '' });
+  const pushAttempt = useRef(null);
+  const reminderProgram = useRef(program);
+  reminderProgram.current = program;
+  const registerPush = useCallback(() => {
+    if (localReminders) {
+      setPushState({ status: 'registering', error: '' });
+      const snapshot = reminderProgram.current;
+      return localReminders.sync({ ...snapshot, settings: { ...snapshot.settings, reminder: { ...getReminder(snapshot), enabled: true } } }, true)
+        .then(() => setPushState({ status: 'ready', error: '' }))
+        .catch(err => { setPushState({ status: 'error', error: err.message }); throw err; });
+    }
+    if (!uid || uid === 'local') return Promise.reject(new Error('Bitte zuerst anmelden.'));
+    if (!enablePush) return Promise.reject(new Error('Dieser Host unterstützt noch keine 6Pack-Push-Registrierung.'));
+    if (pushAttempt.current?.uid === uid) return pushAttempt.current.promise;
+    setPushState({ status: 'registering', error: '' });
+    const attempt = { uid };
+    attempt.promise = Promise.resolve().then(() => enablePush(uid)).then(() => {
+      if (pushAttempt.current === attempt) setPushState({ status: 'ready', error: '' });
+    }).catch(err => {
+      if (pushAttempt.current === attempt) setPushState({ status: 'error', error: err?.message || 'Push konnte nicht registriert werden.' });
+      throw err;
+    }).finally(() => {
+      if (pushAttempt.current === attempt) pushAttempt.current = null;
+    });
+    pushAttempt.current = attempt;
+    return attempt.promise;
+  }, [uid, enablePush, localReminders]);
+
   useEffect(() => {
-    if (!reminder.enabled || !reminderSupported() || Notification.permission !== 'granted') return undefined;
-    const check = () => {
-      const today = localDate();
-      const due = reminderDue({
-        reminder, now: new Date(), today,
-        trainedToday: program.lastCompletedOn === today,
-        restToday: isRestDay(program.currentDay),
-        lastSent: readLastSent(),
-      });
-      if (!due) return;
-      writeLastSent(today);
-      showReminder('6Pack', `Zeit fürs Training — Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`);
+    if (localReminders) return undefined;
+    pushAttempt.current = null;
+    setPushState({ status: 'idle', error: '' });
+    const refresh = () => {
+      if (localReminders) return;
+      if (!reminder.enabled || !reminderSupported() || Notification.permission !== 'granted') return;
+      if (document.visibilityState === 'hidden') return;
+      registerPush().catch(() => {}); // Fehler sichtbar in Settings, kein lokaler Ersatz.
     };
-    check();
-    const interval = window.setInterval(check, 30_000);
-    document.addEventListener('visibilitychange', check);
-    return () => { window.clearInterval(interval); document.removeEventListener('visibilitychange', check); };
-  }, [reminder.enabled, reminder.time, program.lastCompletedOn, program.currentDay]);
+    refresh();
+    window.addEventListener('online', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      pushAttempt.current = null;
+      window.removeEventListener('online', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [reminder.enabled, registerPush, localReminders]);
+
+  useEffect(() => {
+    if (!localReminders) return;
+    let cancelled = false;
+    const refresh = () => {
+      localReminders.sync(program).then(() => {
+        if (!cancelled) setPushState({ status: 'ready', error: '' });
+      }).catch(err => {
+        if (!cancelled) setPushState({ status: 'error', error: err.message });
+      });
+    };
+    refresh();
+    document.addEventListener('visibilitychange', refresh);
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', refresh); };
+  }, [localReminders, program]);
 
   function startWorkout() {
     setScreen('runner');
@@ -1436,7 +1493,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   return (
     <section className="w-full overflow-hidden">
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
-        {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} uid={uid} enablePush={enablePush} />}
+        {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (

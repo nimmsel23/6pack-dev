@@ -128,3 +128,11 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 
 ## 2026-10-23 — Drehplan für Woche-2-Videos
 - Konkrete Aufnahmeliste für neun offene oder unsichere Demos erstellt: drei fehlende passende Clips, zwei Näherungsclips und vier noch ungeprüfte Bewegungszuordnungen. Enthält Workout-Tage, Priorität, Bewegungshinweise, Dateinamen und den Repo-Pfad zur Einbindung: `docs/VIDEO-DREHPLAN-WOCHE-2.md`.
+
+## 2026-10-24 — Native Offline-Reminder und Web-Push-Reparatur
+
+- Auf Nutzerwunsch Android und iPhone: Capacitor-Projekte bündeln die bestehende UI; lokale Betriebssystem-Benachrichtigungen folgen dem Track, ohne Login/Internet. 60-Tage-Plan, Ruhetage, Abschluss-Unterdrückung, DST, Neuplanung nach Track-/Uhrzeitänderung und Resume; Android prüft genaue Alarme. Native Anmeldung über vorhandenen Firebase-E-Mail-Login.
+- Web: kein stiller Timer-Fallback mehr; Fehlerstatus/Retry, automatische Geräte-Registrierung nach Login/Netzrückkehr, Aktivierung des Messaging-Workers abwarten, sichtbarer FCM-Vordergrund-Empfang. Notification-Klick öffnet den richtigen App-Pfad.
+- Bestehenden Firebase-Scheduler `scheduledSixpackReminders` live lesend als ACTIVE bestätigt; kein Server-Deploy nötig/veranlasst.
+- Geprüft: `pnpm run build`, `pnpm run build:native`, Capacitor-Sync Android/iOS; Reminder-/native-Bridge-/Worker-/Settings-Tests sowie Exercise-Details, Selfie-Cloud und Program-Sync grün. `vendor:check` meldet vorhandene Drift in vier unveränderten Shell-Dateien.
+- Noch offen: native Android-/Xcode-Builds (hier kein Android-SDK bzw. macOS/Xcode), Apple-Signierung und Offline-Abnahme auf beiden Geräten. Manueller CI-Build-Workflow vorbereitet, noch nicht ausgeführt. Kein Push/Release, keine Store-Veröffentlichung. Anleitung: `docs/NATIVE-REMINDERS.md`.

@@ -9,11 +9,13 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
-import { getMessaging, getToken, isSupported as isMessagingSupported } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported } from 'firebase/messaging';
 import { buildWorkoutDoc } from './workoutDoc.js';
 import { serializeProgram } from './programSync.js';
 
 // Gleiches Firebase-Projekt wie die Fitness-App (fitness-aos). Web-Config ist öffentlich.
+import { waitForActiveWorker } from './reminder.js';
+import { isNativeApp } from './nativeReminders.js';
 import { config, VAPID_KEY } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
@@ -114,14 +116,44 @@ export async function enableSixpackPush(uid) {
   if (typeof Notification === 'undefined' || !('serviceWorker' in navigator) || !(await isMessagingSupported())) {
     throw new Error('Push wird auf diesem Gerät/Browser nicht unterstützt.');
   }
-  const permission = await Notification.requestPermission();
+  const permission = Notification.permission;
   if (permission !== 'granted') throw new Error('Benachrichtigungen sind blockiert.');
   const registration = await navigator.serviceWorker.register('./sixpack-messaging-sw.js', { scope: './sixpack-push/' });
+  await waitForActiveWorker(registration);
   const token = await getToken(getMessaging(app), { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
   if (!token) throw new Error('Kein Push-Token erhalten.');
+  if (auth.currentUser?.uid !== uid) throw new Error('Das angemeldete Konto hat sich geändert. Bitte erneut versuchen.');
   await setDoc(doc(db, 'users', uid, 'meta', 'sixpackPush'), {
     tokens: arrayUnion(token),
     updated_at: serverTimestamp(),
   }, { merge: true });
   return token;
 }
+
+// FCM leitet Nachrichten bei sichtbarer App an die Seite weiter. Der Empfang
+// braucht dann denselben sichtbaren Hinweis wie der Hintergrund-Service-Worker.
+let stopPushMessages = null;
+let pushUserVersion = 0;
+onAuthStateChanged(auth, async (user) => {
+  const version = ++pushUserVersion;
+  stopPushMessages?.();
+  stopPushMessages = null;
+  if (!user || isNativeApp) return;
+  try {
+    if (!(await isMessagingSupported()) || version !== pushUserVersion) return;
+    stopPushMessages = onMessage(getMessaging(app), async (payload) => {
+      if (auth.currentUser?.uid !== user.uid || payload?.data?.app !== 'sixpack') return;
+      if (Notification.permission !== 'granted') return;
+      try {
+        const registration = await navigator.serviceWorker.getRegistration(new URL('./sixpack-push/', window.location.href).href);
+        if (!registration || auth.currentUser?.uid !== user.uid) return;
+        await registration.showNotification(payload.data.title || '6Pack', {
+          body: payload.data.body || 'Zeit fürs Training',
+          icon: new URL('./icon-192.png', window.location.href).href,
+          tag: 'sixpack-reminder',
+          data: { link: new URL('./', window.location.href).href },
+        });
+      } catch (err) { console.warn('[sixpack] Push anzeigen fehlgeschlagen:', err); }
+    });
+  } catch (err) { console.warn('[sixpack] Push-Empfang nicht verfügbar:', err); }
+});

@@ -14,7 +14,7 @@ const React = {
     if (!(index in states)) states[index] = typeof initial === 'function' ? initial() : initial;
     return [states[index], value => { states[index] = typeof value === 'function' ? value(states[index]) : value; }];
   },
-  useEffect() {}, useMemo: callback => callback(), useRef: current => ({ current }),
+  useEffect() {}, useCallback: callback => callback, useMemo: callback => callback(), useRef: current => ({ current }),
 };
 const stored = new Map();
 const window = { localStorage: { getItem: key => stored.get(key) || null, setItem: (key, value) => stored.set(key, value) } };
@@ -27,7 +27,7 @@ async function compile(file, extra = '', requireExtra = {}) {
   const { code } = await transformWithEsbuild((await readFile(path, 'utf8')) + extra, path.pathname, { loader: 'jsx', format: 'cjs', jsxFactory: 'h', jsxFragment: 'Fragment' });
   const module = { exports: {} };
   vm.runInNewContext(code, {
-    module, exports: module.exports, h, Fragment: 'fragment', window,
+    module, exports: module.exports, h, Fragment: 'fragment', window, Notification: { permission: 'granted' },
     require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
   });
   return module.exports;
@@ -36,7 +36,7 @@ function nodes(tree, match) {
   if (!tree || typeof tree !== 'object') return [];
   return [...(match(tree) ? [tree] : []), ...(tree.children || []).flat(Infinity).flatMap(child => nodes(child, match))];
 }
-const app = await compile('../SixPackApp.jsx', '\nexport { DayScreen, ShuffleScreen, FavoritesScreen, WorkoutExerciseRow };');
+const app = await compile('../SixPackApp.jsx', '\nexport { DayScreen, ShuffleScreen, FavoritesScreen, WorkoutExerciseRow, SettingsScreen };');
 const render = () => { cursor = 0; return app.default({ uid: 'test' }); };
 let tree = render();
 const home = nodes(tree, node => node.type?.name === 'HomeScreen')[0];
@@ -124,3 +124,28 @@ assert.equal(nodes(rendered, node => node.type === 'iframe' || node.type === 'vi
 assert.equal(videoDescriptor('https://'), null);
 assert.equal(videoDescriptor('https://youtu.be/invalid'), null);
 console.log('Actual detail rendering: instructions, embedded/file media, failed media and missing catalog data passed.');
+
+// Enabling the switch must not silently fall back to an app-open timer.
+globalThis.Notification = { permission: 'granted' };
+states.length = 0;
+cursor = 0;
+const reminderChanges = [];
+const settingsProps = {
+  reminder: { enabled: false, time: '18:00' },
+  onChange: value => reminderChanges.push(value),
+  enablePush: async () => { throw new Error('Kein Push-Token'); },
+  pushState: { status: 'idle', error: '' },
+};
+let settings = app.SettingsScreen(settingsProps);
+await nodes(settings, node => node.props.role === 'switch')[0].props.onClick();
+assert.equal(reminderChanges.length, 0);
+cursor = 0;
+settings = app.SettingsScreen(settingsProps);
+assert(nodes(settings, node => node.children?.includes('Kein Push-Token')).length);
+cursor = 0;
+settings = app.SettingsScreen({ ...settingsProps, enablePush: async () => {} });
+await nodes(settings, node => node.props.role === 'switch')[0].props.onClick();
+assert.equal(reminderChanges[0].enabled, true);
+console.log('Reminder settings: failed registration stays disabled; confirmed registration enables reminders.');
+
+delete globalThis.Notification;

@@ -1,0 +1,11 @@
+{
+  "appId": "at.vitalos.sixpack",
+  "appName": "6Pack",
+  "webDir": "dist",
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#e2001a",
+      "presentationOptions": ["badge", "sound", "banner", "list"]
+    }
+  }
+}

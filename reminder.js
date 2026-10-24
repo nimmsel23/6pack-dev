@@ -1,7 +1,7 @@
 // Tägliche Trainings-Erinnerung (Settings). Einstellungen liegen im Programm-Dokument
 // (`program.settings.reminder`), werden also mit users/{uid}/meta/sixpack synchronisiert.
-// Auslieferung: lokal, solange App/Service Worker lebt (Zeitpunkt erreicht → Benachrichtigung).
-// Zuverlässige Hintergrund-Zustellung bräuchte einen Server-Scheduler (nicht Teil davon).
+// Auslieferung über scheduledSixpackReminders (Fitness Functions) und FCM.
+// Die UI plant keine Benachrichtigungen mit einem Timer beim App-Start.
 
 export const DEFAULT_REMINDER = { enabled: false, time: '18:00' };
 const LAST_KEY = 'fitness-sixpack-reminder-last-v1';
@@ -42,4 +42,26 @@ export async function showReminder(title, body) {
     if (reg?.showNotification) return reg.showNotification(title, options);
   } catch { /* Fallback unten */ }
   new Notification(title, options);
+}
+
+// A newly registered messaging worker is still installing while its Firebase
+// scripts load. PushManager.subscribe requires an active worker in THIS scope.
+export function waitForActiveWorker(registration, timeoutMs = 20000) {
+  if (registration.active) return Promise.resolve(registration);
+  const worker = registration.installing || registration.waiting;
+  if (!worker) return Promise.reject(new Error('Push-Service-Worker ist nicht verfügbar. Bitte erneut versuchen.'));
+  return new Promise((resolve, reject) => {
+    const finish = error => {
+      clearTimeout(timer);
+      worker.removeEventListener('statechange', check);
+      if (error) reject(error); else resolve(registration);
+    };
+    const check = () => {
+      if (worker.state === 'activated') finish();
+      else if (worker.state === 'redundant') finish(new Error('Push-Service-Worker konnte nicht aktiviert werden.'));
+    };
+    const timer = setTimeout(() => finish(new Error('Push-Aktivierung dauert zu lange. Bitte mit Internet erneut versuchen.')), timeoutMs);
+    worker.addEventListener('statechange', check);
+    check();
+  });
 }

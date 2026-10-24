@@ -9,3 +9,9 @@ public/release-info.json
 
 # Firebase-CLI-Cache (entsteht bei firebase deploy)
 .firebase/
+
+# Native signing material stays local.
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
