@@ -56,9 +56,20 @@ Event-ID verhindern Duplikate durch Wiederholungen oder konkurrierende Trigger.
 
 **Ein reiner Hosting-/Firebase-Web-Release genügt noch nicht.** Die Functions und
 Google-OAuth-Konfiguration müssen vor der ersten Kalenderverbindung eingerichtet
-sein. Am 2026-10-24 wurde Calendar API im Projekt `fitness-aos` als aktiviert
-bestätigt; Secret Manager war noch nicht aktiviert. Es wurden keine echten
-Kalendertermine angelegt und kein Production-Deploy ausgeführt.
+sein. Stand 2026-10-24: Calendar API, Secret Manager sowie Cloud Run/Eventarc/
+Pub/Sub sind aktiviert. Der vorhandene Google-Login-Webclient wird wiederverwendet;
+sein Secret liegt in Secret Manager, die öffentliche Client-ID ist als GitHub-
+Variable hinterlegt. Die zusätzliche Redirect-URI wurde vom Nutzer bestätigt.
+Die eigene OAuth-State-Collection hat eine TTL-Policy.
+
+6Pack ist auf `https://vos-6pack.web.app` mit den Kalender-Einstellungen live;
+6Pack- und Fitness-Preview-CI sowie 6Pack-Production-CI sind erfolgreich. Der
+Kalender-Functions-Deploy benötigt noch drei von Firebase angeforderte projektweite
+Service-Agent-Bindings (Pub/Sub Token Creator, Laufzeitkonto Run Invoker und
+Eventarc Event Receiver). Deren automatische Freigabe wurde abgelehnt; die
+separate Nutzerfreigabe ist angefragt. Bis der Functions-Deploy erfolgreich ist,
+ist die Kalender-Automatik noch nicht betriebsbereit. Keine echten Kalendertermine
+wurden durch den Agenten angelegt.
 
 1. Im Google-Cloud-Projekt `fitness-aos` einen OAuth-Webclient verwenden oder
    anlegen. Den bestehenden Google-Login-Webclient kann man wiederverwenden.
