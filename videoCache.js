@@ -45,6 +45,7 @@ export function cacheVideo(url) {
   return job;
 }
 
-export function cacheVideos(urls) {
-  return Promise.all([...new Set(urls)].map(cacheVideo));
+// Nacheinander statt parallel, damit das Laden den Runner und das laufende Video nicht ausbremst.
+export async function cacheVideos(urls) {
+  for (const url of new Set(urls)) await cacheVideo(url);
 }

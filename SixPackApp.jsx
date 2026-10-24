@@ -3,7 +3,7 @@ import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
-import { cacheVideo, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
+import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
@@ -769,21 +769,21 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const gain = context.createGain();
     const start = context.currentTime + delay;
     oscillator.frequency.value = frequency;
-    oscillator.type = 'sine';
-    gain.gain.setValueAtTime(0.2, start);
-    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+    oscillator.type = 'square';
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(0.18, start + 0.01);
+    gain.gain.setValueAtTime(0.18, start + Math.max(0.01, duration - 0.03));
+    gain.gain.linearRampToValueAtTime(0.0001, start + duration);
     oscillator.connect(gain).connect(context.destination);
     oscillator.start(start);
     oscillator.stop(start + duration);
   }
 
-  // Start einer Übung/Pause: hoher, kurzer "Piep". Übungsende: klarer
-  // zweistufiger "Piep-Tüt"-Ton, damit der Abschluss auch neben Sprache hörbar bleibt.
-  const startBeep = (delay = 0) => beep(990, { delay });
-  const endBeep = () => {
-    beep(660, { duration: 0.16 });
-    beep(440, { duration: 0.38, delay: 0.2 });
-  };
+  // Gym-Timer: letzte 3 s jeder Übung/Pause kurze Pieps (shortBeep), an jeder Grenze ein langer,
+  // schriller Ton — hoch (startBeep) = es geht los, tiefer (endBeep) = Wechsel/Pause/Ende.
+  const shortBeep = () => beep(1000, { duration: 0.12 });
+  const startBeep = (delay = 0) => beep(1000, { duration: 0.8, delay });
+  const endBeep = () => beep(700, { duration: 0.8 });
 
   // Beste verfügbare Stimme je Sprache: Online-/Premium-Stimmen (Google
   // "Natural", Apple "Enhanced"/"Premium") klingen deutlich weniger blechern
@@ -884,15 +884,15 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       // Intro hat die erste Übung bereits angesagt → der normale Start-Effekt soll sie nicht doppelt ansagen.
       announcedStep.current = '0:false';
       lastCountdownBeep.current = null;
-      beep(990, { duration: 0.6 });
+      startBeep();
       setIntro(false);
       setState(s => ({ ...s, running: true }));
     };
     const countdown = () => {
       if (!alive()) return;
-      if ('speechSynthesis' in window) speak('3', 'en-US'); else beep(660);
-      later(() => ('speechSynthesis' in window ? speak('2', 'en-US') : beep(660)), 1000);
-      later(() => ('speechSynthesis' in window ? speak('1', 'en-US') : beep(660)), 2000);
+      if ('speechSynthesis' in window) speak('3', 'en-US'); else shortBeep();
+      later(() => ('speechSynthesis' in window ? speak('2', 'en-US') : shortBeep()), 1000);
+      later(() => ('speechSynthesis' in window ? speak('1', 'en-US') : shortBeep()), 2000);
       later(go, 3000);
     };
 
@@ -922,7 +922,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     setVideoError(false);
     // Eine Übung/Pause ist gerade zu Ende gegangen (nicht der 5s-Wechsel).
     const itemEnded = previousStep !== null && !previousStep.endsWith(':true');
-    if (itemEnded) endBeep();
+    if (itemEnded && (state.transition || state.done)) endBeep();
     if (state.done) {
       if ('speechSynthesis' in window) speak("Congratulations. You've completed today's workout.", 'en-US');
       return;
@@ -936,8 +936,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }
     const item = workout.items[state.itemIndex];
     if (!item) return;
-    // Start-Piep nach dem End-Tüt versetzt, damit sich die Töne nicht überlagern.
-    startBeep(itemEnded ? 0.55 : 0);
+    startBeep();
     // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Piep.
     if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, state.repeatCount, workout]);
@@ -955,7 +954,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }
     if (announcedThirtySecondsStep.current === step) return;
     announcedThirtySecondsStep.current = step;
-    beep(660, { duration: 0.3 });
+    shortBeep();
+    beep(1000, { duration: 0.12, delay: 0.2 });
     speak('30 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
@@ -977,11 +977,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   useEffect(() => {
     const item = workout.items[state.itemIndex];
-    const isPause = state.transition || item?.type === 'rest';
-    if (!state.running || !isPause || state.remaining > 3 || state.remaining < 1) return;
+    if (!state.running || !item || state.remaining > 3 || state.remaining < 1) return;
     if (lastCountdownBeep.current === state.remaining) return;
     lastCountdownBeep.current = state.remaining;
-    beep();
+    shortBeep();
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   useEffect(() => () => {
@@ -1063,11 +1062,20 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }).catch(() => {});
     return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
   }, [remoteVideoUrl, video?.kind]);
+  const [cacheStarted, setCacheStarted] = useState(false);
   useEffect(() => {
-    if (!state.running || video?.kind !== 'file' || !isCacheableVideo(remoteVideoUrl)) return undefined;
-    const timer = window.setTimeout(() => { cacheVideo(remoteVideoUrl).catch(() => {}); }, 5000);
+    if (!state.running || cacheStarted) return undefined;
+    const timer = window.setTimeout(() => {
+      setCacheStarted(true);
+      const urls = workout.items
+        .filter(i => i.type === 'exercise')
+        .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
+        .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
+        .map(v => v.src);
+      cacheVideos(urls).catch(() => {});
+    }, 5000);
     return () => window.clearTimeout(timer);
-  }, [state.running, remoteVideoUrl, video?.kind]);
+  }, [state.running, cacheStarted, workout, videoUrls]);
   const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
   // Loop startet automatisch (stumm); play() nach Quellwechsel, falls autoPlay allein nicht greift.
   useEffect(() => {
