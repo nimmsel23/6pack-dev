@@ -3,7 +3,7 @@ import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
-import { cacheVideo, cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
+import { cacheVideo, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
@@ -683,6 +683,27 @@ if (typeof document !== 'undefined') {
   window.addEventListener('pageshow', keepMusicPlaying);
 }
 
+// Audio direkt im Tap auf "Start Workout" freischalten (iOS verlangt eine Nutzergeste), damit der
+// Runner danach ohne zweiten Tap loslaufen kann.
+let primedAudioContext = null;
+let primedSpeech = false;
+function primeAudio() {
+  try {
+    keepMusicPlaying();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass && !primedAudioContext) primedAudioContext = new AudioContextClass();
+    primedAudioContext?.resume();
+    if ('speechSynthesis' in window && !primedSpeech) {
+      const unlock = new SpeechSynthesisUtterance(' ');
+      unlock.volume = 0;
+      window.speechSynthesis.speak(unlock);
+      primedSpeech = true;
+    }
+  } catch {
+    // Audio ist optional — der Timer läuft auch ohne.
+  }
+}
+
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
@@ -718,15 +739,15 @@ function advanceRunnerState(state, workout) {
   return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
-function RunnerScreen({ workout, onFinish, onBack }) {
+function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const completionReported = useRef(false);
   const startedAtRef = useRef(Date.now());
   const runIdRef = useRef(newRunId());
   const announcedStep = useRef(null);
   const lastCountdownBeep = useRef(null);
-  const audioContext = useRef(null);
-  const speechUnlocked = useRef(false);
+  const audioContext = useRef(primedAudioContext);
+  const speechUnlocked = useRef(primedSpeech);
   // Start-Intro: Willkommen + erste Übung + "begin in 3, 2, 1" + langer Ton, danach läuft die Zeit.
   const [intro, setIntro] = useState(false);
   const introTimers = useRef([]);
@@ -1024,27 +1045,24 @@ function RunnerScreen({ workout, onFinish, onBack }) {
   const remoteVideoUrl = video?.src;
   const videoRef = useRef(null);
   const [cachedVideo, setCachedVideo] = useState({ url: '', blob: '' });
-  // Alle Datei-Loops des Workouts beim Start vorladen, damit sie auch offline laufen.
-  useEffect(() => {
-    const urls = workout.items
-      .filter(i => i.type === 'exercise')
-      .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
-      .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
-      .map(v => v.src);
-    Promise.resolve(cacheVideos(urls)).catch(() => {}); // Video-Cache darf den Runner nie blockieren
-  }, [workout, videoUrls]);
-  // Aktuelles Video bevorzugt aus dem Cache (Blob-URL), sonst direkt von der Quelle.
+  // Video darf den Runner nie aufhalten: es spielt sofort von der Quelle. Nur wenn die Datei schon
+  // im Cache liegt, wird auf die Blob-URL gewechselt; Laden in den Cache passiert erst im Hintergrund.
   useEffect(() => {
     if (video?.kind !== 'file' || !isCacheableVideo(remoteVideoUrl)) return undefined;
     let cancelled = false;
     let blob = '';
-    cacheVideo(remoteVideoUrl).then(() => getCachedVideoBlobUrl(remoteVideoUrl)).then(next => {
+    getCachedVideoBlobUrl(remoteVideoUrl).then(next => {
       if (cancelled || !next) { if (next) URL.revokeObjectURL(next); return; }
       blob = next;
       setCachedVideo({ url: remoteVideoUrl, blob: next });
     }).catch(() => {});
     return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
   }, [remoteVideoUrl, video?.kind]);
+  useEffect(() => {
+    if (!state.running || video?.kind !== 'file' || !isCacheableVideo(remoteVideoUrl)) return undefined;
+    const timer = window.setTimeout(() => { cacheVideo(remoteVideoUrl).catch(() => {}); }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [state.running, remoteVideoUrl, video?.kind]);
   const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
   // Loop startet automatisch (stumm); play() nach Quellwechsel, falls autoPlay allein nicht greift.
   useEffect(() => {
@@ -1083,6 +1101,14 @@ function RunnerScreen({ workout, onFinish, onBack }) {
     }
     setState(s => ({ ...s, running: !s.running }));
   }
+
+  // Der Tap auf "Start Workout" hat das Workout schon gewollt: Intro + Zeit starten ohne zweiten Tap.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStart || autoStarted.current) return;
+    autoStarted.current = true;
+    toggleRunning();
+  }, []);
 
   function repeatCurrent() {
     const exercise = workout.items[state.itemIndex];
@@ -1419,6 +1445,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, [localReminders, program]);
 
   function startWorkout() {
+    primeAudio();
     setScreen('runner');
   }
 
@@ -1454,6 +1481,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setAdhocReturnScreen(returnScreen);
     setAdhocWorkout(workout);
     setViewDay(null);
+    primeAudio();
     setScreen('runner');
   }
 
@@ -1548,7 +1576,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} />
+          <RunnerScreen autoStart workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} />
         )}
     </section>
   );
