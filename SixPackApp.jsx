@@ -2,7 +2,7 @@ import CalendarReminderSettings from './CalendarReminderSettings.jsx';
 import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
-import { loadVideoUrls, videoDescriptor, SIXPACK_VIDEO_URLS_KEY } from './exerciseMedia.js';
+import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
@@ -27,6 +27,12 @@ const EXERCISE_POOL = SIXPACK_EXERCISE_POOL;
 const EXERCISE_VIDEOS_BY_NAME = Object.fromEntries(
   Object.values(SIXPACK_EXERCISE_DETAILS).map(exercise => [exercise.name, exercise.videoUrl || ''])
 );
+// Sprechbarer Name für Namen, die die Sprachausgabe schlecht liest ("90/90 Crunch" → Alias aus dem Katalog).
+const SPOKEN_NAMES_BY_NAME = Object.fromEntries(
+  Object.values(SIXPACK_EXERCISE_DETAILS).filter(exercise => exercise.spokenName).map(exercise => [exercise.name, exercise.spokenName])
+);
+// "ISO" würde als Wort gelesen → buchstabieren: "I-S-O Reverse Crunches".
+const spokenName = (name) => (SPOKEN_NAMES_BY_NAME[name] ?? name).replace(/\bISO\b/gi, 'I-S-O');
 // Einmal sortiert statt bei jedem Tastendruck in LearnScreen neu zu sortieren.
 const CORE_EXERCISES_SORTED = Object.values(SIXPACK_EXERCISE_DETAILS).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -709,6 +715,9 @@ function primeAudio() {
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
+// Im Wechsel läuft die Ansage "<Übung> for 30 seconds, begin in" und danach "2" (bei Restzeit 2), "1" (bei 1)
+// und "go" + langer Ton beim Start. Die Ansage muss vor dem "2" fertig sein → Zeitfenster abzüglich Puffer.
+const LEAD_IN_SPEECH_SECONDS = TRANSITION_SECONDS - 2.4;
 
 function needsTransition(items, index) {
   return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
@@ -747,15 +756,15 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const startedAtRef = useRef(Date.now());
   const runIdRef = useRef(newRunId());
   const announcedStep = useRef(null);
-  const lastCountdownBeep = useRef(null);
+  const lastCountdownCall = useRef(null);
   const audioContext = useRef(primedAudioContext);
   const speechUnlocked = useRef(primedSpeech);
-  // Start-Intro: Willkommen + erste Übung + "begin in 3, 2, 1" + langer Ton, danach läuft die Zeit.
+  // Start-Intro: Willkommen + "Start today's workout in 5…1" + langer Ton, dann erste Übung + "begin in 2, 1, go" + langer Ton, danach läuft die Zeit.
   const [intro, setIntro] = useState(false);
   const introTimers = useRef([]);
   const introDone = useRef(false);
   const introToken = useRef(0); // macht abgebrochene Intros wirkungslos (speechSynthesis.cancel() feuert onend/onerror)
-  const [videoUrls, setVideoUrls] = useState(loadVideoUrls);
+  const [videoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
 
   function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
@@ -781,8 +790,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     oscillator.stop(start + duration);
   }
 
-  // Gym-Timer: letzte 3 s jeder Übung/Pause kurze Pieps (shortBeep), an jeder Grenze ein langer,
-  // schriller Ton — hoch (startBeep) = es geht los, tiefer (endBeep) = Wechsel/Pause/Ende.
+  // Gym-Timer: keine Pieps vor dem Ende; an jeder Grenze ein langer, schriller Ton —
+  // hoch (startBeep) = es geht los, tiefer (endBeep) = Zeitende/Wechsel/Pause/Ende.
+  // shortBeep nur für die 30-s-Warnung und als Countdown-Ersatz ohne Sprachausgabe.
   const shortBeep = () => beep(1000, { duration: 0.12 });
   const startBeep = (delay = 0) => beep(1000, { duration: 0.8, delay });
   const endBeep = () => beep(700, { duration: 0.8 });
@@ -834,19 +844,39 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Alle Sprachansagen sind komplett Englisch (en-US).
   const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
 
-  // Name + Dauer in einer Utterance, z.B. "Crunches, 30 seconds" bzw. "Rest, 45 seconds".
+  // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") zusätzlich
   // explizit "Switch sides" ansagen, sonst wirkt die Wiederholung wie ein
   // Fehler in der Ansage statt wie der geplante zweite Durchgang.
-  function announce(item, index) {
+  // `countdown`: Ansage vor dem Start ("… , begin in"), mit Sprechtempo so gewählt, dass sie vor dem
+  // gesprochenen "2" fertig ist — der 5s-Wechsel wird dadurch nie überschritten.
+  function announce(item, index, { countdown = false, side = '' } = {}) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
-      speak(`Rest, ${secondsText(item.seconds)}`, 'en-US');
-    } else {
-      if (index != null && isSideSwitch(index)) speak('Switch sides', 'en-US');
-      speak(`${item.name}, ${secondsText(item.seconds)}`, 'en-US');
+      speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US');
+      return;
     }
+    const lead = index != null && isSideSwitch(index) ? 'Switch sides. ' : '';
+    const text = `${lead}${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
+    if (!countdown) {
+      speak(text, 'en-US');
+      return;
+    }
+    const withLeadIn = `${text}, begin in`;
+    const estimatedSeconds = withLeadIn.length / 14; // ca. 14 Zeichen/s bei Tempo 1
+    speak(withLeadIn, 'en-US', { rate: Math.min(1.6, Math.max(1, estimatedSeconds / LEAD_IN_SPEECH_SECONDS)) });
+  }
+
+  // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
+  // abgebrochen, damit der Takt hält. Ohne Sprachausgabe ersetzt ein kurzer Piep die Zahl.
+  function callOut(text) {
+    if (!('speechSynthesis' in window)) {
+      shortBeep();
+      return;
+    }
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
+    speak(text, 'en-US');
   }
 
   // Seite bei einseitigen Übungen (dieselbe Übung zweimal direkt hintereinander): erste Hälfte = linke Seite.
@@ -1162,15 +1192,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }));
   }
 
-  function updateVideoUrl(value) {
-    setVideoError(false);
-    setVideoUrls(previous => {
-      const next = { ...previous, [current.name]: value };
-      window.localStorage.setItem(SIXPACK_VIDEO_URLS_KEY, JSON.stringify(next));
-      return next;
-    });
-  }
-
   if (state.done || !current) {
     return (
       <div className="p-6 text-center">
@@ -1255,17 +1276,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
               Video lässt sich nicht abspielen? In neuem Tab öffnen
             </a>
           )}
-          <label className="block text-xs font-bold mt-3" style={{ color: 'var(--dim)' }}>
-            Video-URL für {current.name}
-            <input
-              type="url"
-              value={selectedVideoUrl}
-              onChange={event => updateVideoUrl(event.target.value)}
-              placeholder="https://…/uebung.mp4"
-              className="block w-full min-h-12 px-3 mt-2 rounded-xl text-sm text-fit-ink"
-              style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}
-            />
-          </label>
         </div>
       )}
 
