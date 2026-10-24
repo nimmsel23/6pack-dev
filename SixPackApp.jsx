@@ -758,7 +758,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
     const context = audioContext.current;
-    if (!context || context.state !== 'running') return;
+    if (!context) return;
+    if (context.state !== 'running') {
+      // iOS unterbricht den AudioContext z.B. durch Embeds/Anrufe — wieder aufwecken statt still zu bleiben.
+      context.resume?.().then(() => { if (context.state === 'running') beep(frequency, { duration, delay }); }).catch(() => {});
+      return;
+    }
     keepMusicPlaying();
     const oscillator = context.createOscillator();
     const gain = context.createGain();
@@ -1209,7 +1214,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         <div className="mt-6">
           <div className="aspect-video rounded-2xl overflow-hidden flex items-center justify-center text-center" style={{ background: '#111', border: '1px solid var(--line)' }}>
             {videoUrl && !videoError ? (
-              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={remoteVideoUrl} ref={videoRef} src={videoUrl} autoPlay muted loop playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
+              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={remoteVideoUrl} ref={videoRef} src={videoUrl} autoPlay muted loop playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
             ) : (
               <span className="text-xs px-4" style={{ color: 'var(--dim)' }}>
                 {videoError ? 'Video konnte nicht geladen werden.' : 'Noch kein Video für diese Übung hinterlegt.'}

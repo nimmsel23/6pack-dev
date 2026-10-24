@@ -34,3 +34,6 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - Loops starten automatisch (stumm, Loop): Datei-Videos per `autoPlay`+`play()`, Embeds mit `autoplay=1&loop=1`.
 - Datei-Videos (https, nicht YouTube/Vimeo) werden von `videoCache.js` in Cache Storage `sixpack-videos-v1` geladen und als Blob-URL abgespielt. Cache-Name ohne SW-Präfix, damit der Shell-SW ihn nicht räumt. Embeds sind nicht cachebar.
 - Videos stehen in `catalog/exercise-videos.yml` (ID = Katalog-ID); nur geprüfte, öffentliche Demos eintragen.
+
+- **Update 2026-10-24:** Embeds (YouTube/Vimeo) starten NICHT mehr automatisch (kein `autoplay`/`loop`, kein `allow="autoplay"`): Verdacht, dass autoplay-Iframes auf iOS die Audio-Session an sich ziehen und damit Sprachansagen/Töne des Runners verstummen (seit `12c5e53`, 2026-10-23). Nicht auf Gerät verifiziert. Datei-Videos bleiben Autoplay-Loops. `beep()` weckt einen unterbrochenen AudioContext per `resume()` auf. Videos dürfen den Runner nie blockieren: kein Bulk-Vorladen, Cache nur für das aktuelle Video 5 s nach Laufbeginn.
+- **Autostart (2026-10-24):** "Start Workout" startet Intro + Timer direkt (`autoStart`, Audio wird im Tap per `primeAudio()` freigeschaltet). Vimeo-Link von `bent_knee_windshield_wipers` deaktiviert (Einbettung gesperrt).
