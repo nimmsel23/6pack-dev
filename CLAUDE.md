@@ -47,3 +47,4 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
   - 5s-Wechsel: dieselbe Abfolge für die nächste Übung; Ansage per Sprechtempo (`LEAD_IN_SPEECH_SECONDS`) vor dem "2" fertig, "2"/"1" bei Restzeit 2/1, "go" beim Start. Der Wechsel wird nie verlängert.
   - Keine Pieps in den letzten 3 s mehr; nur der lange Ton bei Zeitende (`endBeep`) und beim Start (`startBeep`). 30-s-Warnung bleibt.
   - Sprechname: Namen mit Ziffer/`/`/`"` nehmen den ersten sprechbaren Katalog-Alias (`spokenName` aus `build-data.mjs`, z. B. "90/90 Crunch" → "Ninety Ninety Crunch"); "ISO" wird als "I-S-O" buchstabiert. Nicht auf Gerät gehört.
+  - Seitenwechsel (dieselbe Übung direkt nochmal, User-Vorgabe 2026-10-24): statt Name + Dauer nur "Switch sides, begin in 2, 1, go".

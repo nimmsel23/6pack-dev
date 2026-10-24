@@ -845,9 +845,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
 
   // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
-  // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") zusätzlich
-  // explizit "Switch sides" ansagen, sonst wirkt die Wiederholung wie ein
-  // Fehler in der Ansage statt wie der geplante zweite Durchgang.
+  // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
+  // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
   // `countdown`: Ansage vor dem Start ("… , begin in"), mit Sprechtempo so gewählt, dass sie vor dem
   // gesprochenen "2" fertig ist — der 5s-Wechsel wird dadurch nie überschritten.
   function announce(item, index, { countdown = false, side = '' } = {}) {
@@ -857,8 +856,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US');
       return;
     }
-    const lead = index != null && isSideSwitch(index) ? 'Switch sides. ' : '';
-    const text = `${lead}${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
+    // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
+    const text = index != null && isSideSwitch(index)
+      ? 'Switch sides'
+      : `${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
     if (!countdown) {
       speak(text, 'en-US');
       return;
