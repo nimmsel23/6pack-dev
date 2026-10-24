@@ -1,0 +1,5 @@
+# Cloud Build installs this Functions package independently from the web app.
+packages:
+  - "."
+allowBuilds:
+  protobufjs: true
