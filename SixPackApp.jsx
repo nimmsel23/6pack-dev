@@ -992,7 +992,19 @@ function RunnerScreen({ workout, onFinish, onBack }) {
 
   useEffect(() => {
     if (!state.running || state.done) return undefined;
-    const interval = window.setInterval(() => setState(s => advanceRunnerState(s, workout)), 1000);
+    // Zeit aus der Uhr ableiten: wird der Timer gedrosselt (iOS, Sperrbildschirm, schwere
+    // Iframes), holt der nächste Tick die verpassten Sekunden nach, statt stehen zu bleiben.
+    let lastTick = Date.now();
+    const interval = window.setInterval(() => {
+      const now = Date.now();
+      const steps = Math.max(1, Math.floor((now - lastTick) / 1000));
+      lastTick += steps * 1000;
+      setState(s => {
+        let next = s;
+        for (let i = 0; i < steps; i += 1) next = advanceRunnerState(next, workout);
+        return next;
+      });
+    }, 1000);
     return () => window.clearInterval(interval);
   }, [state.running, state.done, workout]);
 
@@ -1019,7 +1031,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
       .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
       .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
       .map(v => v.src);
-    cacheVideos(urls);
+    Promise.resolve(cacheVideos(urls)).catch(() => {}); // Video-Cache darf den Runner nie blockieren
   }, [workout, videoUrls]);
   // Aktuelles Video bevorzugt aus dem Cache (Blob-URL), sonst direkt von der Quelle.
   useEffect(() => {
@@ -1030,7 +1042,7 @@ function RunnerScreen({ workout, onFinish, onBack }) {
       if (cancelled || !next) { if (next) URL.revokeObjectURL(next); return; }
       blob = next;
       setCachedVideo({ url: remoteVideoUrl, blob: next });
-    });
+    }).catch(() => {});
     return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
   }, [remoteVideoUrl, video?.kind]);
   const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
@@ -1178,6 +1190,11 @@ function RunnerScreen({ workout, onFinish, onBack }) {
               </span>
             )}
           </div>
+          {video?.kind === 'embed' && selectedVideoUrl && (
+            <a href={selectedVideoUrl} target="_blank" rel="noopener noreferrer" className="block text-xs font-bold mt-2 text-center" style={{ color: 'var(--dim)' }}>
+              Video lässt sich nicht abspielen? In neuem Tab öffnen
+            </a>
+          )}
           <label className="block text-xs font-bold mt-3" style={{ color: 'var(--dim)' }}>
             Video-URL für {current.name}
             <input

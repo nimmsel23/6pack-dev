@@ -60,10 +60,9 @@ standing_ab_twists:
   url: https://www.youtube.com/watch?v=A16QxMDfn9M
   source: https://www.youtube.com/watch?v=A16QxMDfn9M
   author: Wellness by Workplace Options
-bent_knee_windshield_wipers:
-  url: https://vimeo.com/267321093
-  source: https://vimeo.com/267321093
-  author: Elite Sports Performance / Prairie Athletic Club
+# bent_knee_windshield_wipers: Vimeo 267321093 deaktiviert (2026-10-24) — Einbettung
+# vom Uploader gesperrt ("Aufgrund seiner Datenschutzeinstellungen ..."), Jakob-Report.
+# Erst wieder eintragen, wenn ein einbettbarer Clip verifiziert ist.
 scissors:
   url: https://www.youtube.com/watch?v=riTPn9M76J8
   source: https://www.youtube.com/watch?v=riTPn9M76J8
