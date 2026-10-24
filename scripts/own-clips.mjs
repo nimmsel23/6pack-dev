@@ -3,10 +3,11 @@
 // Eigene Übungs-Clips: Stand pro Tag prüfen und Handy-Aufnahmen app-tauglich importieren.
 //   node scripts/own-clips.mjs status [--day N]          (Standard: Tag 1)
 //   node scripts/own-clips.mjs import <exercise_id> <datei>
+//   node scripts/own-clips.mjs sync <pfad-zu-fitness-dev>   (Clips in den Fitness-Tab kopieren)
 // Clips liegen als public/videos/<exercise_id>.mp4 (siehe docs/VIDEO_URLS.md, „Eigene Clips“).
-import { existsSync, mkdirSync, readFileSync, renameSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 
@@ -79,11 +80,27 @@ function importClip(id, input) {
   console.log(`✓ ${target} (${mb.toFixed(1)} MB)${mb > MAX_MB ? `  ← über ${MAX_MB} MB, Clip kürzen` : ''}`);
 }
 
+// Fitness hat ein eigenes public/ (eigene Hosting-Origin): dieselben Clips dorthin spiegeln.
+function sync(target) {
+  if (!target) throw new Error('Aufruf: sync <pfad-zu-fitness-dev>');
+  const dest = join(resolve(target), 'public/videos');
+  if (!existsSync(join(resolve(target), 'scripts/build-sixpack-data.mjs'))) throw new Error(`${target} sieht nicht nach fitness-dev aus`);
+  mkdirSync(dest, { recursive: true });
+  const clips = readdirSync(CLIPS).filter(f => /\.(mp4|webm)$/.test(f));
+  for (const f of clips) {
+    const same = existsSync(join(dest, f)) && readFileSync(join(dest, f)).equals(readFileSync(join(CLIPS, f)));
+    if (!same) copyFileSync(join(CLIPS, f), join(dest, f));
+    console.log(`${same ? '=' : '→'} ${f}`);
+  }
+  console.log(`${clips.length} Clip(s) nach ${dest}. Dort: Daten neu bauen (predev/prebuild), committen.`);
+}
+
 const [cmd, ...args] = process.argv.slice(2);
 try {
   if (cmd === 'status') {
     const i = args.indexOf('--day');
     status(i >= 0 ? Number(args[i + 1]) : 1);
   } else if (cmd === 'import') importClip(args[0], args[1]);
-  else { console.error('Aufruf: status [--day N] | import <exercise_id> <datei>'); process.exitCode = 1; }
+  else if (cmd === 'sync') sync(args[0]);
+  else { console.error('Aufruf: status [--day N] | import <exercise_id> <datei> | sync <fitness-dev>'); process.exitCode = 1; }
 } catch (error) { console.error(`Fehler: ${error.message}`); process.exitCode = 1; }

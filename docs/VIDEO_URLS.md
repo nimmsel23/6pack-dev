@@ -87,3 +87,10 @@ würde auf Android/älteren Geräten nicht spielen). Ein vorhandener Clip gleich
 **Fitness-Tab:** `src/views/SixPack/` in fitness-dev hat eine eigene Kopie von `catalogContent.mjs`/
 `videoCache.js`. Eigene Clips dort erst nach Übernahme dieser Änderung (und eigenem `public/videos/`
 samt Hosting-Header) sichtbar. Noch nicht umgesetzt.
+
+**Update (Fitness-Tab übernommen):** `fitness-dev` liest eigene Clips jetzt ebenfalls aus seinem
+`public/videos/` (`scripts/build-sixpack-data.mjs`, Hosting-Header `/videos/**` im Target `client`).
+Clips nach dem Import spiegeln: `node scripts/own-clips.mjs sync ~/fitness-dev`, dort Build und Commit.
+Der Fitness-Runner (`src/views/SixPack/SixPackApp.jsx`) ist ein älterer Stand ohne `videoCache.js`:
+eigene Clips spielen dort als Autoplay-Loop, aber ohne Offline-Cache. Den Runner nachzuziehen
+(Cache, Autostart, Gym-Timer-Töne) ist ein eigener, größerer Schritt und noch nicht gemacht.
