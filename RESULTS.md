@@ -1,3 +1,16 @@
+# 2026-10-24 — Runner-Fixes nach Gym-Test (Jakob), Release
+
+Jakob meldete per WhatsApp Fehler im Runner der 6Pack-App; der User ergänzte eine Mängelliste (Videos blockieren die App, Workout startet nicht automatisch, Töne unpassend, Wiederholen bei Rest fehlt, Pause-Button sinnlos, Sprachansagen weg). Fixes auf `dev` (`fba285f`, `b682690`, `e7e83e8`, `dc52a08`, `7622cf6`), danach veröffentlicht.
+
+- **`SixPackPromiseCard.jsx` (Runner):** Timer holt Drosselung im Hintergrund nach; Video-Fehler blockieren den Runner nicht mehr. „Start Workout“ startet Intro + Timer direkt (`autoStart`, Audio per `primeAudio()` im Tap freigeschaltet), Videos laden nur im Hintergrund. „Wiederholen“ auch bei Rest (startet die Pause von vorn).
+- **Embeds:** YouTube/Vimeo ohne `autoplay`/`loop` (Verdacht: iOS-Audio-Session wird von Autoplay-Iframes gezogen und verstummt die Ansagen); `beep()` weckt einen unterbrochenen AudioContext per `resume()`. Vimeo-Link von `bent_knee_windshield_wipers` deaktiviert (Einbettung gesperrt) — die Übung hat bis zu einem einbettbaren Clip kein Video.
+- **Töne = Gym-Timer:** Rechteckwelle, letzte 3 s kurze Pieps (1000 Hz), langer Ton (0,8 s) an jeder Grenze (hoch 1000 Hz zum Start, tief 700 Hz beim Wechsel/Ende), 30-s-Warnung als Doppel-Piep + Ansage.
+- **`videoCache.js`:** Alle Datei-Videos des Workouts werden 5 s nach Laufbeginn nacheinander im Hintergrund gecacht (`cacheVideos`).
+- **Release:** `dev` gepusht und nach `vitalos` gemergt (`60ae8d7`), „6pack PWA“-Deploy grün, `vos-6pack.web.app` lieferte `60ae8d7`. Gitlink `6pack` in fitness-dev auf `60ae8d7` gezogen; Fitness-Tab (`fitness-aos.web.app`) enthält die Fixes nach manuellem Deploy. Spätere Standalone-Version ist `9ae576c` (inkl. Clips-Arbeit). Jakob wurde als „fitness-agent“ informiert.
+- **Nicht geprüft:** Alles nur per Build/CI und `release-info.json`; auf dem Handy nichts gehört oder getestet (Sprachansagen, Töne, Autostart, Video-Cache).
+
+---
+
 # 2026-10-24 — Eigene Übungs-Clips (Vorbereitung Tag 1)
 
 Eigene Aufnahmen sollen die fremden Katalog-Demos pro Übung ersetzen, ohne Code- oder Katalogänderung. Vorbereitet für Tag 1 (6 Clips, noch keine geliefert). Commits `5f021e9` und `d858d6f` auf `dev`, nicht gepusht, nichts deployt.
