@@ -50,3 +50,40 @@ Regressionstests prüfen Listen-Navigation, Rückkehr, unveränderten Shuffle,
 expliziten Workout-Start, KB-Muskelregionen, Anleitungen, Medienarten und
 fehlende/fehlerhafte Medien. Ein Build beweist keine Wiedergabe auf dem Handy;
 ein realer Gerätecheck der neuen Detailansicht steht noch aus.
+
+## Eigene Clips (ab 2026-10-24, Start mit Tag 1)
+
+Eigene Aufnahmen ersetzen die fremde Demo pro Übung, ohne Katalog- oder Code-Änderung:
+Datei als `public/videos/<exercise_id>.mp4` (alternativ `.webm`) ablegen, `node build-data.mjs`
+bzw. ein normaler Build (`predev`/`prebuild`) erledigt den Rest. Vorrang: explizites `video_url`
+am Übungseintrag > eigener Clip > `catalog/exercise-videos.yml`. Fehlt ein Clip, bleibt die
+bisherige Demo. Die URL bekommt einen Inhalts-Hash (`./videos/<id>.mp4?v=<hash>`): ein
+ersetzter Clip gilt damit als neue Datei und wird nicht aus dem Video-Cache (`sixpack-videos-v1`,
+Schlüssel = URL) oder dem Browser-Cache veraltet abgespielt. Eigene Clips sind same-origin und
+werden vom Runner wie https-Videos offline gecacht (`videoCache.js`). Hosting: `/videos/**` mit
+`Cache-Control: public, max-age=3600` (`firebase.json`).
+
+**Tag 1 braucht 6 Clips** (Übungen, die zweimal vorkommen, brauchen nur einen):
+`hands_back_tucks`, `marching_planks`, `side_plank_lifts`, `seated_ab_circles`,
+`ninety_ninety_crunch`, `russian_v_tuck_twists`. Für andere Tage:
+`node scripts/own-clips.mjs status --day N`.
+
+**Aufnahme-Tipps (für den Runner):** Hochformat, Kamera fix, ganzer Körper im Bild, eine saubere
+Wiederholung als nahtlose Schleife (Anfang = Ende), 5–10 s. Ton ist egal, der Runner spielt stumm.
+
+**Import vom Handy:**
+```
+node scripts/own-clips.mjs import hands_back_tucks ~/Downloads/IMG_1234.MOV
+node scripts/own-clips.mjs status          # Stand Tag 1, mit Warnungen (Codec, Größe, Ton)
+```
+`import` wandelt in H.264/yuv420p, max. 720 px breit, ohne Ton, mit `faststart` um (iPhone-HEVC
+würde auf Android/älteren Geräten nicht spielen). Ein vorhandener Clip gleichen Namens wird nicht
+überschrieben, sondern nach `video-downloads/` (gitignoriert) archiviert. Richtwert: unter 4 MB je Clip.
+
+**Veröffentlichen:** Clips mit committen (`public/videos/*.mp4`), `pnpm run build`, danach der
+übliche Release-Weg. Ein Build beweist keine Wiedergabe auf dem Handy: einmal auf dem Gerät prüfen
+(Loop läuft, Wechsel zur nächsten Übung, Offline-Start nach einem Durchlauf).
+
+**Fitness-Tab:** `src/views/SixPack/` in fitness-dev hat eine eigene Kopie von `catalogContent.mjs`/
+`videoCache.js`. Eigene Clips dort erst nach Übernahme dieser Änderung (und eigenem `public/videos/`
+samt Hosting-Header) sichtbar. Noch nicht umgesetzt.

@@ -149,3 +149,27 @@ assert.equal(reminderChanges[0].enabled, true);
 console.log('Reminder settings: failed registration stays disabled; confirmed registration enables reminders.');
 
 delete globalThis.Notification;
+
+// Eigene Clips: public/videos/<id>.mp4 ersetzt die Katalog-Demo, explizites video_url bleibt vorrangig,
+// der Inhalts-Hash in der URL verhindert veraltete Cache-Treffer, und der Video-Cache nimmt sie an.
+{
+  const { mkdtempSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { exerciseContent, ownClipUrl } = await import('../catalogContent.mjs');
+  const { isCacheableVideo } = await import('../videoCache.js');
+  const dir = mkdtempSync(join(tmpdir(), 'sixpack-clips-'));
+  assert.equal(ownClipUrl('marching_planks', dir), null);
+  assert.equal(exerciseContent({ id: 'marching_planks' }, {}, dir).videoUrl, data.SIXPACK_EXERCISE_DETAILS.marching_planks.videoUrl, 'ohne Clip bleibt die Katalog-Demo');
+  writeFileSync(join(dir, 'marching_planks.mp4'), 'clip-a');
+  const first = exerciseContent({ id: 'marching_planks' }, {}, dir);
+  assert.match(first.videoUrl, /^\.\/videos\/marching_planks\.mp4\?v=[0-9a-f]{8}$/);
+  assert.equal(first.videoSource, undefined, 'eigener Clip hat keine Fremdquelle');
+  writeFileSync(join(dir, 'marching_planks.mp4'), 'clip-b');
+  assert.notEqual(exerciseContent({ id: 'marching_planks' }, {}, dir).videoUrl, first.videoUrl, 'neuer Inhalt = neue URL');
+  assert.equal(exerciseContent({ id: 'marching_planks', video_url: 'https://example.com/x.mp4' }, {}, dir).videoUrl, undefined, 'explizites video_url bleibt vorrangig');
+  assert.equal(videoDescriptor(first.videoUrl).kind, 'file');
+  assert(isCacheableVideo(first.videoUrl) && isCacheableVideo('/videos/x.mp4') && isCacheableVideo('https://a.example/x.mp4'));
+  assert(!isCacheableVideo('//evil.example/x.mp4') && !isCacheableVideo('http://a.example/x.mp4') && !isCacheableVideo('data:video/mp4;base64,AA'));
+  console.log('Own clips: public/videos overrides catalog demo, hash busts cache, video cache accepts same-origin clips.');
+}

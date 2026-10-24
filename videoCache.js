@@ -9,8 +9,16 @@ function supported() {
   return typeof caches !== 'undefined' && typeof fetch === 'function';
 }
 
+// https-Dateien und eigene Clips derselben Origin (./videos/…, /videos/…); nicht protokoll-relativ (//).
 export function isCacheableVideo(url) {
-  return typeof url === 'string' && /^https:\/\//i.test(url);
+  return typeof url === 'string' && (/^https:\/\//i.test(url) || /^(\/(?!\/)|\.\.?\/)/.test(url));
+}
+
+// Cache-Schlüssel: https-URLs unverändert (bestehende Einträge bleiben gültig), relative gegen die
+// aktuelle Seite aufgelöst, damit der Schlüssel nicht vom Routen-Pfad abhängt.
+function cacheKey(url) {
+  if (/^https:\/\//i.test(url)) return url;
+  try { return new URL(url, globalThis.location?.href).href; } catch { return url; }
 }
 
 async function openCache() {
@@ -21,7 +29,7 @@ async function openCache() {
 export async function getCachedVideoBlobUrl(url) {
   try {
     const cache = await openCache();
-    const hit = cache && await cache.match(url);
+    const hit = cache && await cache.match(cacheKey(url));
     return hit ? URL.createObjectURL(await hit.blob()) : null;
   } catch { return null; }
 }
@@ -34,10 +42,11 @@ export function cacheVideo(url) {
   const job = (async () => {
     try {
       const cache = await openCache();
-      if (await cache.match(url)) return true;
-      const res = await fetch(url, { mode: 'cors', credentials: 'omit' });
+      const key = cacheKey(url);
+      if (await cache.match(key)) return true;
+      const res = await fetch(key, { mode: 'cors', credentials: 'omit' });
       if (!res.ok) return false;
-      await cache.put(url, res);
+      await cache.put(key, res);
       return true;
     } catch { return false; } finally { inflight.delete(url); }
   })();
