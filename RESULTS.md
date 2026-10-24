@@ -1,3 +1,28 @@
+# 2026-10-24 — Eigene Übungs-Clips (Vorbereitung Tag 1)
+
+Eigene Aufnahmen sollen die fremden Katalog-Demos pro Übung ersetzen, ohne Code- oder Katalogänderung. Vorbereitet für Tag 1 (6 Clips, noch keine geliefert). Commits `5f021e9` und `d858d6f` auf `dev`, nicht gepusht, nichts deployt.
+
+- **`catalogContent.mjs`:** `public/videos/<exercise_id>.mp4` (alternativ `.webm`) ersetzt beim Build die Katalog-Demo aus `catalog/exercise-videos.yml`; explizites `video_url` behält Vorrang. URL trägt `?v=<Inhalts-Hash>`, damit ersetzte Clips nicht aus dem alten Cache kommen.
+- **`videoCache.js`:** cached same-origin-Clips wie https-Videos (Offline im Runner).
+- **`firebase.json`:** Cache-Header für `/videos/**`; `public/videos/.gitkeep` angelegt.
+- **`scripts/own-clips.mjs` (neu):** `status [--day N]` (Stand Tag 1, warnt bei falschem Codec, Ton, >4 MB), `import <exercise_id> <datei>` (Handyvideo → H.264, 720 px breit, ohne Ton, faststart; vorhandener Clip wird nach `video-downloads/` archiviert), `sync <fitness-dev-pfad>` (spiegelt Clips in den Fitness-Tab, kopiert nur Geändertes, lehnt Ziele ab, die nicht nach fitness-dev aussehen).
+- **`scripts/test-exercise-details.mjs`:** neue Tests für Vorrang, Hash und Cache-Annahme; grün.
+- **`docs/VIDEO_URLS.md` / `CLAUDE.md`:** Abschnitt „Eigene Clips“ mit Aufnahmetipps und Workflow.
+- **Fitness-Tab (fitness-dev, `03134ab`):** Übernahme von `catalogContent.mjs`, `public/videos` im Build-Skript, Header nur im Target `client`.
+- **Geprüft:** Import/Build/Datenmodell mit künstlichem HEVC-Testclip, danach entfernt und `dist/` neu gebaut. Wiedergabe auf dem Handy nicht getestet.
+
+---
+
+# 2026-10-23 — Track-Tab vereinfacht, volle Bildschirmbreite, Release
+
+Der Track-Tab war mit Flag-Button und Done-Haken überladen. Die aktive Position sagt bereits alles (alles vor dem aktiven Tag ist erledigt, alles danach steht aus). Zusätzlich nutzt die App jetzt die volle Bildschirmbreite.
+
+- **`SixPackApp.jsx` (Track-Tab):** Flag-Button pro Tag, `Flag`-Icon, `onSetCurrent`-Prop und `setCurrentDay` entfernt; Done-Kreis/-Haken entfernt. Pro Tag bleibt nur „Day N“ (aktiv rot, Ruhetage „Rest“). Neue Funktion `openTrackDay`: Antippen setzt den Tag per `setTrackerDay` (`programSync.js`) aktiv, sofern er nicht schon aktuell ist, und öffnet via `openDay` die Übungsliste. `completedDays` bleibt intern für Sync/Fortschritt erhalten. Commit `6340633`.
+- **`main.jsx` / `SixPackApp.jsx` (Layout):** Breitenbegrenzung `max-w-xl`, Zentrierung, vertikales Padding und abgerundeter Karten-Rahmen entfernt; Screens laufen bis an den Rand. Commit `3e508b3`. Nur Build geprüft, nicht im Browser.
+- **Release:** `dev` gepusht (`origin/dev`), per Fast-Forward nach `fitness` (`3c78698..3e508b3`), Gitlink in fitness-dev (`1c48b97`). Danach `~/vitalos/bin/fitness-release --yes` (vom User gestartet): `dev` in `vitalos` gemergt (`403e2f1..d8b44af`), Submodul `6pack` auf `5fb8588`, Pointer-Commit `14f56d8` auf `vitalos/master`. „Live Deploy (Fitness vitalos)“ (Run `39941425368`) erfolgreich; HTTP-Routen nicht geprüft.
+
+---
+
 # 2026-10-22 — Runner-Wiederholen und Audio-Mix
 
 - Im Runner setzt „Wiederholen“ den Timer der aktuellen Übung zurück und startet sie erneut; während des 5-Sekunden-Wechsels kann die vorherige Übung zurückgeholt werden.
