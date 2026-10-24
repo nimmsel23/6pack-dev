@@ -32,3 +32,6 @@
 - [x] 2026-10-24: Push-Registrierungsfehler sichtbar machen, bestehende Geräte erneut registrieren und verspäteten App-Start-Timer entfernen.
 - [x] 2026-10-24: Native Android-/iOS-Projekte mit lokal geplanten Workout-Remindern aus dem Track ergänzen.
 - [ ] Native Builds in Android/Xcode bzw. manuellem Native-CI-Workflow ausführen; iPhone signieren und Offline-Reminder auf beiden Geräten abnehmen (siehe docs/NATIVE-REMINDERS.md).
+
+- [x] 2026-10-24: Genau einen kommenden 6Pack-Termin im vorhandenen Google-Kalender „Fitness“ nach Programm-Abschluss serverseitig aktualisieren; keine Terminserie/kein Kalender-Spam.
+- [ ] Kalender-OAuth/Secret und Calendar-Functions in Production einrichten; echten Google-Consent und Handy-Reminder abnehmen (docs/GOOGLE-CALENDAR.md).

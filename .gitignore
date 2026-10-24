@@ -15,3 +15,7 @@ public/release-info.json
 *.keystore
 *.p12
 *.mobileprovision
+
+# Calendar OAuth configuration and local emulator secrets.
+functions/.env*
+functions/.secret*

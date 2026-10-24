@@ -1,3 +1,4 @@
+import CalendarReminderSettings from './CalendarReminderSettings.jsx';
 import BackHeader from './BackHeader.jsx';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
@@ -509,7 +510,7 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
   );
 }
 
-function SettingsScreen({ reminder, onChange, onBack, enablePush, pushState, localReminders }) {
+function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders }) {
   const [permission, setPermission] = useState(localReminders ? 'default' : reminderSupported() ? Notification.permission : 'unsupported');
   const blocked = permission === 'denied' || permission === 'unsupported';
 
@@ -551,12 +552,11 @@ function SettingsScreen({ reminder, onChange, onBack, enablePush, pushState, loc
           <span className="absolute top-0.5 w-6 h-6 rounded-full bg-white transition-all" style={{ left: reminder.enabled ? 22 : 2 }} />
         </button>
       </div>
-      <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000', opacity: reminder.enabled ? 1 : 0.45 }}>
+      <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
         <span className="text-sm font-bold" style={{ color: '#fff' }}>Uhrzeit</span>
         <input
           type="time"
           value={reminder.time}
-          disabled={!reminder.enabled}
           onChange={e => e.target.value && onChange({ ...reminder, time: e.target.value })}
           className="rounded px-2 py-1 text-sm font-bold"
           style={{ background: '#000', color: '#fff', border: '1px solid #333' }}
@@ -575,6 +575,7 @@ function SettingsScreen({ reminder, onChange, onBack, enablePush, pushState, loc
           ? 'Benachrichtigungen sind für diese App blockiert oder nicht verfügbar. Bitte in den Browser-/System-Einstellungen erlauben.'
           : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Push kommt auch bei geschlossener App an. Dieses Gerät muss angemeldet, registriert und mit dem Internet verbunden sein. Auf dem iPhone die App zum Home-Bildschirm hinzufügen und dort öffnen.'}
       </div>
+      <CalendarReminderSettings uid={uid} />
     </div>
   );
 }
@@ -1254,8 +1255,10 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     loadRemoteProgram(uid)
       .then(remote => {
         if (cancelled) return;
-        setProgram(p => syncProgramToDate(mergePrograms(p, remote)));
         remoteReady.current = uid;
+        // Also publish an unchanged local Track when this account has no remote
+        // document yet, so the calendar can plan immediately after connecting.
+        setProgram(p => ({ ...syncProgramToDate(mergePrograms(p, remote)) }));
       })
       .catch(err => console.warn('[sixpack] Programm laden fehlgeschlagen:', err));
     return () => { cancelled = true; };
@@ -1493,7 +1496,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   return (
     <section className="w-full overflow-hidden">
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
-        {screen === 'settings' && <SettingsScreen reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
+        {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (

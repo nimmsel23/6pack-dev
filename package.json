@@ -18,7 +18,8 @@
     "native:sync": "pnpm run build:native && cap sync",
     "native:android": "cap open android",
     "native:ios": "cap open ios",
-    "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs"
+    "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs",
+    "test:calendar": "node scripts/test-calendar-reminders.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",

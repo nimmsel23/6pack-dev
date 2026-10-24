@@ -1,0 +1,44 @@
+name: Deploy 6Pack calendar functions
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SIXPACK_CALENDAR_CLIENT_ID: ${{ vars.SIXPACK_CALENDAR_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare Firebase credentials
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS || secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          assert os.environ['SIXPACK_CALENDAR_CLIENT_ID'], 'SIXPACK_CALENDAR_CLIENT_ID repository variable is missing'
+          (Path('functions') / '.env.fitness-aos').write_text('SIXPACK_CALENDAR_CLIENT_ID=' + os.environ['SIXPACK_CALENDAR_CLIENT_ID'] + '\n')
+          path = Path(os.environ['RUNNER_TEMP']) / 'sixpack-calendar-deploy.json'
+          path.write_text(json.dumps(json.loads(os.environ['FIREBASE_SA'])))
+          path.chmod(0o600)
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write(f'GOOGLE_APPLICATION_CREDENTIALS={path}\n')
+          PY
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm --dir functions install --ignore-workspace --frozen-lockfile --ignore-scripts
+      - run: pnpm run test:calendar
+      - name: Deploy only calendar functions
+        run: >-
+          pnpm --package firebase-tools@15.34.0 dlx firebase deploy
+          --only functions:sixpack-calendar --project fitness-aos --non-interactive
+      - name: Remove deploy credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sixpack-calendar-deploy.json"
