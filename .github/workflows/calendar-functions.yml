@@ -27,7 +27,9 @@ jobs:
           assert os.environ['SIXPACK_CALENDAR_CLIENT_ID'], 'SIXPACK_CALENDAR_CLIENT_ID repository variable is missing'
           (Path('functions') / '.env.fitness-aos').write_text('SIXPACK_CALENDAR_CLIENT_ID=' + os.environ['SIXPACK_CALENDAR_CLIENT_ID'] + '\n')
           path = Path(os.environ['RUNNER_TEMP']) / 'sixpack-calendar-deploy.json'
-          path.write_text(json.dumps(json.loads(os.environ['FIREBASE_SA'])))
+          credentials = json.loads(os.environ['FIREBASE_SA'])
+          print('Calendar deploy service account: ' + credentials['client_email'])
+          path.write_text(json.dumps(credentials))
           path.chmod(0o600)
           with open(os.environ['GITHUB_ENV'], 'a') as env:
               env.write(f'GOOGLE_APPLICATION_CREDENTIALS={path}\n')
