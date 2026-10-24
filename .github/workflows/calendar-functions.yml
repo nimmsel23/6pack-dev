@@ -40,7 +40,7 @@ jobs:
       - name: Deploy only calendar functions
         run: >-
           pnpm --package firebase-tools@15.34.0 dlx firebase deploy
-          --only functions:sixpack-calendar --project fitness-aos --non-interactive
+          --only functions:sixpack-calendar --project fitness-aos --non-interactive --force
       - name: Remove deploy credentials
         if: always()
         run: rm -f "$RUNNER_TEMP/sixpack-calendar-deploy.json"
