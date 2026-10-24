@@ -1,5 +1,6 @@
 node_modules/
 dist/
+video-downloads/
 sixpackData.generated.js
 public/release-info.json
 .DS_Store
@@ -19,3 +20,4 @@ public/release-info.json
 # Calendar OAuth configuration and local emulator secrets.
 functions/.env*
 functions/.secret*
+.claude/hooks/.fill-docs.lock
