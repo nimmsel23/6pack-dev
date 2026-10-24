@@ -1112,7 +1112,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   function repeatCurrent() {
     const exercise = workout.items[state.itemIndex];
-    if (exercise?.type !== 'exercise') return;
+    if (!exercise) return;
     if (intro) cancelIntro();
     window.speechSynthesis?.cancel();
     announcedStep.current = null;
@@ -1150,12 +1150,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   }
 
   const isRest = current.type === 'rest';
-  const repeatButton = current.type === 'exercise' && (
+  const repeatButton = (
     <button
       type="button"
       onClick={repeatCurrent}
-      aria-label={`Übung ${current.name} wiederholen`}
-      title="Aktuelle Übung von vorn starten"
+      aria-label={isRest ? 'Pause von vorn starten' : `Übung ${current.name} wiederholen`}
+      title={isRest ? 'Pause von vorn starten' : 'Aktuelle Übung von vorn starten'}
       className="min-h-12 px-3 rounded-2xl flex items-center gap-1.5 text-xs font-black text-fit-ink"
       style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}
     >
