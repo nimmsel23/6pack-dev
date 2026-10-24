@@ -899,14 +899,15 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     setIntro(false);
   }
 
-  // "Welcome … <Übung>[, left side], begin in 3, 2, 1" + langer Ton ("tüüt"), dann startet die Zeit.
+  // "Welcome to Six Pack Promise. Start today's workout in 5, 4, 3, 2, 1" + langer Ton, dann
+  // "<Übung>[, left side] for 30 seconds, begin in 2, 1, go" + langer Ton, dann startet die Zeit.
+  // Der zweite Teil dauert wie ein 5s-Wechsel (TRANSITION_SECONDS).
   function startIntro() {
     introDone.current = true;
     const token = (introToken.current += 1);
     const alive = () => token === introToken.current;
     setIntro(true);
     const first = workout.items[0];
-    const label = first?.type === 'exercise' ? first.name : 'Rest';
     const side = firstSideLabel(0);
     const later = (fn, ms) => introTimers.current.push(window.setTimeout(fn, ms));
 
@@ -914,17 +915,26 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       if (!alive()) return;
       // Intro hat die erste Übung bereits angesagt → der normale Start-Effekt soll sie nicht doppelt ansagen.
       announcedStep.current = '0:false';
-      lastCountdownBeep.current = null;
+      lastCountdownCall.current = null;
       startBeep();
+      callOut('go');
       setIntro(false);
       setState(s => ({ ...s, running: true }));
     };
+    const exerciseLeadIn = () => {
+      if (!alive()) return;
+      if (first) announce(first, 0, { countdown: true, side });
+      later(() => callOut('2'), (TRANSITION_SECONDS - 2) * 1000);
+      later(() => callOut('1'), (TRANSITION_SECONDS - 1) * 1000);
+      later(go, TRANSITION_SECONDS * 1000);
+    };
     const countdown = () => {
       if (!alive()) return;
-      if ('speechSynthesis' in window) speak('3', 'en-US'); else shortBeep();
-      later(() => ('speechSynthesis' in window ? speak('2', 'en-US') : shortBeep()), 1000);
-      later(() => ('speechSynthesis' in window ? speak('1', 'en-US') : shortBeep()), 2000);
-      later(go, 3000);
+      [5, 4, 3, 2, 1].forEach((n, i) => later(() => callOut(String(n)), i * 1000));
+      later(() => {
+        startBeep();
+        exerciseLeadIn();
+      }, 5000);
     };
 
     if (!('speechSynthesis' in window)) {
@@ -932,14 +942,13 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       return;
     }
     window.speechSynthesis.cancel();
-    speak("Welcome to 6Pack. Let's go.", 'en-US');
     let continued = false;
     const proceed = () => {
       if (continued || !alive()) return;
       continued = true;
       countdown();
     };
-    speak(`${label}${side ? `, ${side}` : ''}. Begin in`, 'en-US', { onend: proceed });
+    speak("Welcome to Six Pack Promise. Start today's workout in", 'en-US', { onend: proceed });
     later(proceed, 12000); // Sicherung, falls onend nie feuert (manche iOS-Versionen)
   }
 
@@ -949,7 +958,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (announcedStep.current === step) return;
     const previousStep = announcedStep.current;
     announcedStep.current = step;
-    lastCountdownBeep.current = null;
+    lastCountdownCall.current = null;
     setVideoError(false);
     // Eine Übung/Pause ist gerade zu Ende gegangen (nicht der 5s-Wechsel).
     const itemEnded = previousStep !== null && !previousStep.endsWith(':true');
@@ -959,17 +968,19 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       return;
     }
     if (state.transition) {
-      // Nächste Übung schon im Übergang ansagen, damit man sich in Position bringen kann.
+      // Nächste Übung schon im Übergang ansagen ("… begin in"), damit man sich in Position bringen kann.
+      // "2", "1" kommen im Countdown-Effekt unten, "go" beim Start der Übung.
       const nextIndex = state.itemIndex + 1;
       const nextItem = workout.items[nextIndex];
-      if (nextItem) announce(nextItem, nextIndex);
+      if (nextItem) announce(nextItem, nextIndex, { countdown: true });
       return;
     }
     const item = workout.items[state.itemIndex];
     if (!item) return;
     startBeep();
-    // Nach einem Übergang wurde die Übung bereits angesagt — nur der Start-Piep.
-    if (previousStep !== `${state.itemIndex - 1}:true`) announce(item, state.itemIndex);
+    // Nach einem Übergang wurde die Übung bereits angesagt — nur "go" + langer Ton.
+    if (previousStep === `${state.itemIndex - 1}:true`) callOut('go');
+    else announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, state.repeatCount, workout]);
 
   // Warnton + "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
@@ -1006,12 +1017,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     speak('10 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
+  // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
   useEffect(() => {
-    const item = workout.items[state.itemIndex];
-    if (!state.running || !item || state.remaining > 3 || state.remaining < 1) return;
-    if (lastCountdownBeep.current === state.remaining) return;
-    lastCountdownBeep.current = state.remaining;
-    shortBeep();
+    if (!state.running || !state.transition || state.remaining > 2 || state.remaining < 1) return;
+    if (lastCountdownCall.current === state.remaining) return;
+    lastCountdownCall.current = state.remaining;
+    callOut(String(state.remaining));
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // Dauerhafte Benachrichtigung (Android): aktuelle Übung, Dauer, nächste Übung; "Pausiert" bei Pause.
@@ -1182,7 +1193,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     announcedStep.current = null;
     announcedThirtySecondsStep.current = null;
     announcedTenSecondsStep.current = null;
-    lastCountdownBeep.current = null;
+    lastCountdownCall.current = null;
     setState(s => ({
       ...s,
       remaining: exercise.seconds,

@@ -55,6 +55,15 @@ function isProgramFile(filename) {
   return /_workouts\.yml$/.test(filename);
 }
 
+// Namen mit Ziffern, Schrägstrich oder Anführungszeichen ("90/90 Crunch") liest die Sprachausgabe
+// unzuverlässig vor. Dann nimmt die Ansage den ersten sprechbaren Alias ("Ninety Ninety Crunch").
+const UNSPEAKABLE = /[\d/"]/;
+
+function spokenNameFromAliases(ex) {
+  if (!UNSPEAKABLE.test(ex.name)) return null;
+  return (ex.aliases || []).find((alias) => alias !== ex.name && !UNSPEAKABLE.test(alias)) || null;
+}
+
 function buildExercises() {
   const muscles = loadMuscles(join(REPO_ROOT, 'catalog/muscles'));
   const files = readdirSync(SIXPACK_DIR).filter((f) => f.endsWith('.yml') && !isProgramFile(f));
@@ -65,9 +74,11 @@ function buildExercises() {
     const ex = doc.exercises?.[0];
     if (!ex) continue;
     const category = categoryFromTags(ex.tags);
+    const spokenName = spokenNameFromAliases(ex);
     exercises[ex.id] = {
       id: ex.id,
       name: ex.name,
+      ...(spokenName ? { spokenName } : {}),
       ...exerciseContent(ex, muscles),
       category,
       focusLabel: CATEGORY_LABELS[category] || 'Core',

@@ -41,3 +41,9 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Video-Cache:** Alle Datei-Videos des Workouts werden 5 s nach Laufbeginn nacheinander im Hintergrund gecacht (`cacheVideos`, sequentiell). YouTube/Vimeo-Embeds sind nicht cachebar.
 
 - **Eigene Clips (2026-10-24):** `public/videos/<exercise_id>.mp4` ersetzt beim Build die Katalog-Demo (`catalogContent.mjs`, URL mit `?v=<Hash>`); `videoCache.js` cached same-origin-Clips wie https-Videos. Import/Status: `node scripts/own-clips.mjs` (Details: `docs/VIDEO_URLS.md`, Abschnitt „Eigene Clips“). Tag 1 = 6 Clips, noch keine geliefert.
+
+- **Intro, Wechsel, Töne (User-Vorgabe 2026-10-24, ersetzt Start-Intro-Ablauf und "letzte 3 s Pieps"):**
+  - Intro: "Welcome to Six Pack Promise. Start today's workout in" → 5, 4, 3, 2, 1 → langer Ton → "<Übung>[, left side] for 30 seconds, begin in" → 2, 1, "go" + langer Ton → Zeit läuft (zweiter Teil = 5 s wie ein Wechsel).
+  - 5s-Wechsel: dieselbe Abfolge für die nächste Übung; Ansage per Sprechtempo (`LEAD_IN_SPEECH_SECONDS`) vor dem "2" fertig, "2"/"1" bei Restzeit 2/1, "go" beim Start. Der Wechsel wird nie verlängert.
+  - Keine Pieps in den letzten 3 s mehr; nur der lange Ton bei Zeitende (`endBeep`) und beim Start (`startBeep`). 30-s-Warnung bleibt.
+  - Sprechname: Namen mit Ziffer/`/`/`"` nehmen den ersten sprechbaren Katalog-Alias (`spokenName` aus `build-data.mjs`, z. B. "90/90 Crunch" → "Ninety Ninety Crunch"); "ISO" wird als "I-S-O" buchstabiert. Nicht auf Gerät gehört.
