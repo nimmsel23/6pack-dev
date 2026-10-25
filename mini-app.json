@@ -8,6 +8,11 @@
       "register": true,
       "sw": {
         "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"]
+      },
+      "splash": {
+        "minMs": 250,
+        "failsafeMs": 4000,
+        "updateWindowMs": 3000
       }
     }
   }
