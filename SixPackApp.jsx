@@ -1232,8 +1232,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   if (state.transition) {
     return (
-      <div className="p-6">
-        <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6">
+      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+        <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
         <div className="text-center">
@@ -1259,8 +1259,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   }
 
   return (
-    <div className="p-6">
-      <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6">
+    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+      <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
 
@@ -1273,8 +1273,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       </div>
 
       {!isRest && (
-        <div className="mt-6">
-          <div className="aspect-video rounded-2xl overflow-hidden flex items-center justify-center text-center" style={{ background: '#111', border: '1px solid var(--line)' }}>
+        <div className="mt-4 flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 rounded-2xl overflow-hidden flex items-center justify-center text-center" style={{ background: '#111', border: '1px solid var(--line)' }}>
             {videoUrl && !videoError ? (
               video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={remoteVideoUrl} ref={videoRef} src={videoUrl} autoPlay muted loop playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
             ) : (
@@ -1292,12 +1292,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       )}
 
       {next && (
-        <div className="text-center text-[11px] font-bold mt-6" style={{ color: 'var(--dim)' }}>
+        <div className="text-center text-[11px] font-bold mt-3" style={{ color: 'var(--dim)' }}>
           Als Nächstes: {next.name}
         </div>
       )}
 
-      <div className="flex justify-center gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-3">
         {repeatButton}
         <button
           type="button"
@@ -1312,6 +1312,14 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     </div>
   );
 }
+
+// Runner füllt den ganzen sichtbaren Bildschirm (kein Scrollen): Video nimmt den Restplatz.
+const RUNNER_FRAME = 'fixed inset-0 z-50 flex flex-col px-5 overflow-hidden';
+const RUNNER_FRAME_STYLE = {
+  background: 'var(--bg)',
+  paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+  paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
+};
 
 // Das 6Pack-Workout IST das Core HIIT: Die Session wird als HIIT-Activity im Fitness-Activity-Format
 // (type 'hiit', Muskelziel core) geloggt, damit sie in Coverage/Superkompensation zählt. Entscheidend
