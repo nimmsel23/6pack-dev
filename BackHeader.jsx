@@ -2,7 +2,7 @@ import { ChevronLeft } from 'lucide-react';
 
 export default function BackHeader({ label, onBack, backLabel = 'Home' }) {
   return (
-    <div className="px-4 py-3 flex items-center gap-3" style={{ background: '#111' }}>
+    <div className="px-4 py-3 flex items-center gap-3 sticky top-0 z-10" style={{ background: '#111' }}>
       <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold">
         <ChevronLeft size={18} /> {backLabel}
       </button>

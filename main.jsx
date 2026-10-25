@@ -24,7 +24,7 @@ function SyncBar({ state }) {
   }
   return (
     <>
-    <div className="flex items-center justify-between gap-3 px-4 pb-3 text-[11px] font-semibold" style={{ color: 'var(--dim, #888)' }}>
+    <div className="flex items-center justify-between gap-3 px-4 pb-3 text-[11px] shrink-0 font-semibold" style={{ color: 'var(--dim, #888)' }}>
       <span>
         {user ? `Sync: ${user.email || user.uid}` : 'Nicht angemeldet — Workouts bleiben auf diesem Gerät'}
         {pending > 0 && ` · ${pending} wartet`}
@@ -61,7 +61,7 @@ function Root() {
     return () => { disposed = true; stop?.(); };
   }, []);
   return (
-    <main className="w-full">
+    <main className="w-full h-dvh flex flex-col">
       <SyncBar state={state} />
       <SixPackPromiseCard uid={state.user?.uid || 'local'} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
     </main>
