@@ -4,6 +4,7 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
+import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
@@ -1231,7 +1232,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   );
 
   if (state.transition) {
-    return (
+    return createPortal(
       <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
         <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
@@ -1254,11 +1255,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
             {state.running || intro ? 'Pause' : 'Start'}
           </button>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
-  return (
+  return createPortal(
     <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
       <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
@@ -1309,12 +1311,15 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
           {state.running || intro ? 'Pause' : 'Start'}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
 // Runner füllt den ganzen sichtbaren Bildschirm (kein Scrollen): Video nimmt den Restplatz.
-const RUNNER_FRAME = 'fixed inset-0 z-50 flex flex-col px-5 overflow-hidden';
+// Per Portal an document.body, damit er auch in der Fitness-Einbettung (transformierte Eltern) wirklich
+// den ganzen Bildschirm belegt.
+const RUNNER_FRAME = 'fixed inset-0 z-[100] flex flex-col px-5 overflow-hidden';
 const RUNNER_FRAME_STYLE = {
   background: 'var(--bg)',
   paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
@@ -1603,7 +1608,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, []);
 
   return (
-    <section className={onSubNav ? 'w-full overflow-hidden' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
+    <section className={onSubNav ? 'w-full h-full overflow-hidden' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
