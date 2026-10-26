@@ -238,7 +238,9 @@ function HomeScreen({ program, onOpenToday, onNav }) {
         style={{ background: 'linear-gradient(135deg, #1a1a1a, #0a0a0a)' }}
       >
         <div className="flex-1 min-h-28 flex items-center justify-center" style={{ background: 'radial-gradient(circle at 30% 30%, #2a2a2a, #0a0a0a)' }}>
-          <Dumbbell size={72} color="#333" />
+          {trainedToday || restDayToday
+            ? <span className="text-5xl font-black tracking-[0.25em]" style={{ color: '#333' }}>REST</span>
+            : <Dumbbell size={72} color="#333" />}
         </div>
         <div className="px-4 py-2.5 text-center text-sm font-black uppercase tracking-[0.12em]" style={{ background: '#e2001a', color: '#fff' }}>
           {trainedToday ? 'Rest' : restDayToday ? 'Rest Day' : "Today's Workout"}
