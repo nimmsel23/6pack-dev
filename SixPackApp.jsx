@@ -217,6 +217,7 @@ function HomeScreen({ program, onOpenToday, onNav }) {
 
   return (
     <div className="h-full flex flex-col">
+      <div className="flex-1 basis-0 min-h-0 flex flex-col">
       <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ background: '#111' }}>
         <div className="text-xs font-black tracking-[0.3em]" style={{ color: '#e2001a' }}>6PP</div>
         <div className="flex items-center gap-3">
@@ -250,14 +251,15 @@ function HomeScreen({ program, onOpenToday, onNav }) {
           </div>
         )}
       </button>
+      </div>
 
-      <div className="grid grid-cols-3 gap-px mt-px shrink-0" style={{ background: 'var(--line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="grid grid-cols-3 grid-rows-2 gap-px mt-px flex-1 basis-0 min-h-0" style={{ background: 'var(--line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {menuButtons.map(({ id, label, Icon, href }) => {
           const Element = href ? 'a' : 'button';
           return (
-            <Element key={id} href={href} onClick={href ? undefined : () => onNav(id)} className="py-6 flex flex-col items-center gap-2" style={{ background: '#141414' }}>
-              <Icon size={18} color="#e2001a" />
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-fit-ink">{label}</span>
+            <Element key={id} href={href} onClick={href ? undefined : () => onNav(id)} className="flex flex-col items-center justify-center gap-2" style={{ background: '#141414' }}>
+              <Icon size={26} color="#e2001a" />
+              <span className="text-[11px] font-black uppercase tracking-[0.1em] text-fit-ink">{label}</span>
             </Element>
           );
         })}
