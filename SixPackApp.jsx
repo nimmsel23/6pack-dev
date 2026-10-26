@@ -734,6 +734,15 @@ function primeAudio() {
   }
 }
 
+// Cachebare Datei-Video-URLs eines Workouts (Embeds gehen nicht). Gleiche Auflösung wie im Runner.
+function workoutVideoSources(workout, videoUrls = {}) {
+  return (workout?.items || [])
+    .filter(i => i.type === 'exercise')
+    .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
+    .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
+    .map(v => v.src);
+}
+
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
@@ -1162,12 +1171,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (!state.running || cacheStarted) return undefined;
     const timer = window.setTimeout(() => {
       setCacheStarted(true);
-      const urls = workout.items
-        .filter(i => i.type === 'exercise')
-        .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
-        .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
-        .map(v => v.src);
-      cacheVideos(urls).catch(() => {});
+      cacheVideos(workoutVideoSources(workout, videoUrls)).catch(() => {});
     }, 5000);
     return () => window.clearTimeout(timer);
   }, [state.running, cacheStarted, workout, videoUrls]);
@@ -1623,6 +1627,21 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }
 
   const activeWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
+
+  // Videos liegen im Cache, bevor das Workout startet: das heutige Workout schon beim Öffnen der App,
+  // jedes geöffnete Tages-/Shuffle-/Favoriten-Workout sofort. Nacheinander im Hintergrund (cacheVideos).
+  const precacheDay = program.currentDay;
+  useEffect(() => {
+    if (!precacheDay || isRestDay(precacheDay)) return undefined;
+    const timer = window.setTimeout(() => {
+      const workout = getWorkout(precacheDay);
+      cacheVideos(workoutVideoSources(workout, loadVideoUrls())).catch(() => {});
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [precacheDay]);
+  useEffect(() => {
+    if (activeWorkout) cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls())).catch(() => {});
+  }, [activeWorkout]);
 
   // Solange dieser SubTab offen ist, kippt die ganze App ins 6-Pack-Promise
   // Rot/Schwarz (data-theme-Attribut auf documentElement, gleiches Pattern
