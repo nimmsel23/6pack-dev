@@ -8,12 +8,12 @@
       "register": true,
       "sw": {
         "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"],
-        "navTimeoutMs": 1500
+        "navTimeoutMs": 400
       },
       "splash": {
-        "minMs": 250,
+        "minMs": 0,
         "failsafeMs": 4000,
-        "updateWindowMs": 3000
+        "updateWindowMs": 800
       }
     }
   }

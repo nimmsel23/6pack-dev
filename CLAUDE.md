@@ -52,5 +52,6 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 ## Offline-first (User-Vorgabe 2026-10-26)
 
 - Die App muss ohne Netz vollständig laufen: Shell + gehashte Assets werden vom generierten `sw.js` vorab gecacht (`pnpm build` stempelt ihn; `npx vite build` allein erzeugt keinen SW). Programm/Favoriten liegen in localStorage, Workouts gehen über die Outbox, Firestore hat Persistent Cache. Videos vorab in `sixpack-videos-v1` (siehe Video-Cache).
-- Navigation: Netz zuerst, aber nur `navTimeoutMs` = 1500 (`mini-app.json`), danach Cache. Nicht kleiner stellen: kommt die Netzantwort nach dem Timeout, speichert der SW sie nicht, Updates kämen sonst nie an.
+- Navigation: Netz zuerst, aber nur `navTimeoutMs` = 400 (`mini-app.json`), danach Cache. Updates kommen trotzdem an: der Browser prüft `sw.js` selbst, der neue SW precacht die Shell. Splash: `minMs` 0, Update-Fenster 800 ms. Keine künstlichen Wartezeiten beim Start einbauen.
+- Runner-Video: Cache zuerst — solange die Cache-Abfrage läuft, ist keine Quelle gesetzt; gecachte Dateien gehen nie ans Netz.
 - Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.

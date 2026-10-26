@@ -1172,20 +1172,23 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const remoteVideoUrl = video?.src;
   const videoRef = useRef(null);
   const [cachedVideo, setCachedVideo] = useState({ url: '', blob: '' });
-  // Video darf den Runner nie aufhalten: es spielt sofort von der Quelle. Nur wenn die Datei schon
-  // im Cache liegt, wird auf die Blob-URL gewechselt; Laden in den Cache passiert erst im Hintergrund.
+  const [checkedVideo, setCheckedVideo] = useState('');
+  // Cache zuerst: Ist die Datei gecacht, geht der Runner nie ans Netz. Die Cache-Abfrage dauert Millisekunden;
+  // erst danach (nicht gecacht / Fehler) wird die Netz-URL als Quelle gesetzt. Video darf den Runner nie aufhalten.
   useEffect(() => {
     if (video?.kind !== 'file' || !isCacheableVideo(remoteVideoUrl)) return undefined;
     let cancelled = false;
     let blob = '';
     getCachedVideoBlobUrl(remoteVideoUrl).then(next => {
-      if (cancelled || !next) { if (next) URL.revokeObjectURL(next); return; }
+      if (cancelled || !next) { if (next) URL.revokeObjectURL(next); if (!cancelled) setCheckedVideo(remoteVideoUrl); return; }
       blob = next;
       setCachedVideo({ url: remoteVideoUrl, blob: next });
-    }).catch(() => {});
+      setCheckedVideo(remoteVideoUrl);
+    }).catch(() => { if (!cancelled) setCheckedVideo(remoteVideoUrl); });
     return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
   }, [remoteVideoUrl, video?.kind]);
-  const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
+  const cacheLookupPending = video?.kind === 'file' && isCacheableVideo(remoteVideoUrl) && checkedVideo !== remoteVideoUrl;
+  const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : (cacheLookupPending ? '' : remoteVideoUrl);
   // Loop startet automatisch (stumm); play() nach Quellwechsel, falls autoPlay allein nicht greift.
   useEffect(() => {
     const el = videoRef.current;
