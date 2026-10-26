@@ -34,6 +34,25 @@ const SPOKEN_NAMES_BY_NAME = Object.fromEntries(
 );
 // "ISO" würde als Wort gelesen → buchstabieren: "I-S-O Reverse Crunches".
 const spokenName = (name) => (SPOKEN_NAMES_BY_NAME[name] ?? name).replace(/\bISO\b/gi, 'I-S-O');
+// Equipment-Ansage im Intro: Katalog-Werte → sprechbare Namen. "bodyweight" zählt nicht als Equipment.
+const SPOKEN_EQUIPMENT = {
+  ball: 'a ball', tennis_ball: 'a tennis ball', band: 'a fitness band', resistance_band: 'a fitness band',
+  fitness_band: 'a fitness band', pull_up_bar: 'a pull-up bar', pullup_bar: 'a pull-up bar',
+};
+function equipmentSpeech(items) {
+  const names = new Set(items.filter(i => i.type === 'exercise').map(i => i.name));
+  const needed = [];
+  for (const ex of Object.values(SIXPACK_EXERCISE_DETAILS)) {
+    if (!names.has(ex.name)) continue;
+    for (const eq of SIXPACK_EXERCISE_COACHING[ex.id]?.equipment || []) {
+      if (eq === 'bodyweight') continue;
+      const spoken = SPOKEN_EQUIPMENT[eq] || `a ${String(eq).replace(/_/g, ' ')}`;
+      if (!needed.includes(spoken)) needed.push(spoken);
+    }
+  }
+  const list = needed.length > 1 ? `${needed.slice(0, -1).join(', ')} and ${needed[needed.length - 1]}` : needed[0];
+  return list || 'no equipment required for this workout';
+}
 // Einmal sortiert statt bei jedem Tastendruck in LearnScreen neu zu sortieren.
 const CORE_EXERCISES_SORTED = Object.values(SIXPACK_EXERCISE_DETAILS).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -950,8 +969,21 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       continued = true;
       countdown();
     };
-    speak("Welcome to Six Pack Promise. Start today's workout in", 'en-US', { onend: proceed });
-    later(proceed, 12000); // Sicherung, falls onend nie feuert (manche iOS-Versionen)
+    const startLine = () => {
+      if (!alive()) return;
+      speak("Start today's workout in", 'en-US', { onend: proceed });
+      later(proceed, 6000); // Sicherung, falls onend nie feuert (manche iOS-Versionen)
+    };
+    let equipmentDone = false;
+    const afterEquipment = () => {
+      if (equipmentDone || !alive()) return;
+      equipmentDone = true;
+      startLine();
+    };
+    const equipment = equipmentSpeech(workout.items);
+    const equipmentLine = equipment.startsWith('no equipment') ? equipment : `Today's workout will require the following pieces of equipment: ${equipment}`;
+    speak(`Welcome to Six Pack Promise. ${equipmentLine}.`, 'en-US', { onend: afterEquipment });
+    later(afterEquipment, 15000); // Sicherung, falls onend nie feuert
   }
 
   useEffect(() => {
