@@ -779,7 +779,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const lastCountdownCall = useRef(null);
   const audioContext = useRef(primedAudioContext);
   const speechUnlocked = useRef(primedSpeech);
-  // Start-Intro: Willkommen + "Start today's workout in 5…1" + langer Ton, dann erste Übung + "begin in 2, 1, go" + langer Ton, danach läuft die Zeit.
+  // Start-Intro: Willkommen + Equipment, dann 5…1 + langer Ton, dann erste Übung + "begin in 2, 1, go" + langer Ton, danach läuft die Zeit.
   const [intro, setIntro] = useState(false);
   const introTimers = useRef([]);
   const introDone = useRef(false);
@@ -920,7 +920,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     setIntro(false);
   }
 
-  // "Welcome to Six Pack Promise. Start today's workout in 5, 4, 3, 2, 1" + langer Ton, dann
+  // "Welcome to Six Pack Promise. <Equipment>", dann 5, 4, 3, 2, 1 + langer Ton, dann
   // "<Übung>[, left side] for 30 seconds, begin in 2, 1, go" + langer Ton, dann startet die Zeit.
   // Der zweite Teil dauert wie ein 5s-Wechsel (TRANSITION_SECONDS).
   function startIntro() {
@@ -969,21 +969,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       continued = true;
       countdown();
     };
-    const startLine = () => {
-      if (!alive()) return;
-      speak("Start today's workout in", 'en-US', { onend: proceed });
-      later(proceed, 6000); // Sicherung, falls onend nie feuert (manche iOS-Versionen)
-    };
-    let equipmentDone = false;
-    const afterEquipment = () => {
-      if (equipmentDone || !alive()) return;
-      equipmentDone = true;
-      startLine();
-    };
     const equipment = equipmentSpeech(workout.items);
     const equipmentLine = equipment.startsWith('no equipment') ? equipment : `Today's workout will require the following pieces of equipment: ${equipment}`;
-    speak(`Welcome to Six Pack Promise. ${equipmentLine}.`, 'en-US', { onend: afterEquipment });
-    later(afterEquipment, 15000); // Sicherung, falls onend nie feuert
+    speak(`Welcome to Six Pack Promise. ${equipmentLine}.`, 'en-US', { onend: proceed });
+    later(proceed, 15000); // Sicherung, falls onend nie feuert
   }
 
   useEffect(() => {
