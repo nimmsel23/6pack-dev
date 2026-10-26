@@ -840,12 +840,13 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     return voices[0];
   }
 
-  function speak(text, lang, { pitch = 1, rate = 1, onend } = {}) {
+  function speak(text, lang, { pitch = 1, rate = 1, onend, onstart } = {}) {
     keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.pitch = pitch;
     utterance.rate = rate;
+    if (onstart) utterance.onstart = onstart;
     if (onend) {
       utterance.onend = onend;
       utterance.onerror = onend;
@@ -973,8 +974,13 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     };
     const equipment = equipmentSpeech(workout.items);
     const equipmentLine = equipment.startsWith('no equipment') ? equipment : `Today's workout will require the following pieces of equipment: ${equipment}`;
-    speak(`Welcome to Six Pack Promise. ${equipmentLine}.`, 'en-US', { onend: proceed });
-    later(proceed, 15000); // Sicherung, falls onend nie feuert
+    const welcome = `Welcome to Six Pack Promise. ${equipmentLine}.`;
+    let spoken = false;
+    speak(welcome, 'en-US', { onstart: () => { spoken = true; }, onend: proceed });
+    // Sicherungen, damit der Start nie hängt: Sprachausgabe startet nicht (iOS/Android blockiert sie
+    // gelegentlich) → nach 1,5 s direkt zum Countdown; onend feuert nie → Sprechdauer-Schätzung + 2 s.
+    later(() => { if (!spoken) { window.speechSynthesis.cancel(); proceed(); } }, 1500);
+    later(proceed, welcome.length / 12 * 1000 + 2000); // Sicherung, falls onend nie feuert
   }
 
   useEffect(() => {
@@ -1074,7 +1080,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     introToken.current += 1;
     introTimers.current.forEach(window.clearTimeout);
     window.speechSynthesis?.cancel();
-    audioContext.current?.close();
+    // Der vorab freigeschaltete AudioContext gehört dem Modul (primeAudio) und wird beim nächsten Workout
+    // wiederverwendet — schließen würde dort alle Töne stumm machen.
+    if (audioContext.current !== primedAudioContext) audioContext.current?.close();
   }, []);
 
   // Bildschirm während des Workouts anlassen (Screen Wake Lock API). Der Lock
