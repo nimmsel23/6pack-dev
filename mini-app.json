@@ -5,7 +5,7 @@
       "short": "6Pack",
       "description": "6-Pack-Programm mit Workout-Runner",
       "accent": "#e5192b",
-      "register": true,
+      "register": { "expose": true },
       "sw": {
         "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"],
         "navTimeoutMs": 400
