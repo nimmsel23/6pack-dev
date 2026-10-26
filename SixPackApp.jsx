@@ -200,14 +200,14 @@ function syncProgramToDate(program, today = localDate()) {
   return p;
 }
 
-function HomeScreen({ program, onOpenToday, onNav }) {
+function HomeScreen({ program, onOpenToday, onNav, eatInApp }) {
   const today = localDate();
   // Heute schon trainiert → für den Rest des Tages Rest anzeigen.
   const trainedToday = program.lastCompletedOn === today;
   const restDayToday = !trainedToday && isRestDay(program.currentDay);
   const lastDone = program.currentDay - 1;
   const menuButtons = [
-    { id: 'eat', label: 'Eat', Icon: UtensilsCrossed, href: getFuelUrl() },
+    { id: 'eat', label: 'Eat', Icon: UtensilsCrossed, href: eatInApp ? undefined : getFuelUrl() },
     { id: 'track', label: 'Track', Icon: ListChecks },
     { id: 'learn', label: 'Learn', Icon: BookOpen },
     { id: 'shuffle', label: 'Shuffle', Icon: Shuffle },
@@ -270,6 +270,23 @@ function HomeScreen({ program, onOpenToday, onNav }) {
   );
 }
 
+
+// Fuel-Schnelleinstieg "Shutter" (Build unter public/eat/, siehe scripts/import-fuel-eat.mjs).
+// Same-origin-iframe: teilt den Firebase-Login von 6Pack und darf die Kamera nutzen.
+function EatScreen({ onBack }) {
+  return (
+    <div className="h-full flex flex-col">
+      <BackHeader label="Eat" onBack={onBack} />
+      <iframe
+        title="Eat"
+        src={`${import.meta.env.BASE_URL}eat/index.html`}
+        allow="camera; microphone"
+        className="flex-1 min-h-0 w-full border-0"
+        style={{ background: '#080b12' }}
+      />
+    </div>
+  );
+}
 
 function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coachingNotes }) {
   const [query, setQuery] = useState('');
@@ -1661,7 +1678,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
 
   return (
     <section className={onSubNav ? 'w-full h-full overflow-hidden' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
-        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} />}
+        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} eatInApp={!onSubNav} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
@@ -1681,6 +1698,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           />
         )}
         {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
+        {screen === 'eat' && <EatScreen onBack={goHome} />}
         {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
         {(screen === 'shuffle' || (screen === 'exercise' && exerciseReturnScreen === 'shuffle')) && <div hidden={screen !== 'shuffle'} className="h-full"><ShuffleScreen onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'shuffle', trigger)} /></div>}
         {(screen === 'day' || (screen === 'exercise' && exerciseReturnScreen === 'day')) && activeWorkout && (

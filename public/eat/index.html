@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#080b12" />
+    <!-- Ohne dieses Tag kennt der Browser das Manifest nicht — "Zum
+         Home-Bildschirm hinzufügen" fällt dann auf ein reines Lesezeichen
+         zurück statt eine installierbare/standalone PWA anzubieten (fehlte
+         hier bis 2026-08-23, siehe fitness-dev/index.html als Referenz, wo
+         der Tag von Anfang an vorhanden war). -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fuel" />
+    <title>Fuel Centre</title>
+    <script src="./offline-queue.js"></script>
+    <script type="module" crossorigin src="./assets/index-CKe_DyIc.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/vendor-charts-D2EBPNwo.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-query-DueLKoWb.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-CPSANZik.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-BDd-sT2h.css">
+  </head>
+  <body class="bg-slate-950 text-slate-100">
+    <div id="root"></div>
+  </body>
+</html>
