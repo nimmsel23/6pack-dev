@@ -7,7 +7,8 @@
       "accent": "#e5192b",
       "register": true,
       "sw": {
-        "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"]
+        "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"],
+        "navTimeoutMs": 1500
       },
       "splash": {
         "minMs": 250,

@@ -48,3 +48,9 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
   - Keine Pieps in den letzten 3 s mehr; nur der lange Ton bei Zeitende (`endBeep`) und beim Start (`startBeep`). 30-s-Warnung bleibt.
   - Sprechname: Namen mit Ziffer/`/`/`"` nehmen den ersten sprechbaren Katalog-Alias (`spokenName` aus `build-data.mjs`, z. B. "90/90 Crunch" → "Ninety Ninety Crunch"); "ISO" wird als "I-S-O" buchstabiert. Nicht auf Gerät gehört.
   - Seitenwechsel (dieselbe Übung direkt nochmal, User-Vorgabe 2026-10-24): statt Name + Dauer nur "Switch sides, begin in 2, 1, go".
+
+## Offline-first (User-Vorgabe 2026-10-26)
+
+- Die App muss ohne Netz vollständig laufen: Shell + gehashte Assets werden vom generierten `sw.js` vorab gecacht (`pnpm build` stempelt ihn; `npx vite build` allein erzeugt keinen SW). Programm/Favoriten liegen in localStorage, Workouts gehen über die Outbox, Firestore hat Persistent Cache. Videos vorab in `sixpack-videos-v1` (siehe Video-Cache).
+- Navigation: Netz zuerst, aber nur `navTimeoutMs` = 1500 (`mini-app.json`), danach Cache. Nicht kleiner stellen: kommt die Netzantwort nach dem Timeout, speichert der SW sie nicht, Updates kämen sonst nie an.
+- Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.
