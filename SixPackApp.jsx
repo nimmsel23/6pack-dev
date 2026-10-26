@@ -1185,15 +1185,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }).catch(() => {});
     return () => { cancelled = true; if (blob) URL.revokeObjectURL(blob); };
   }, [remoteVideoUrl, video?.kind]);
-  const [cacheStarted, setCacheStarted] = useState(false);
-  useEffect(() => {
-    if (!state.running || cacheStarted) return undefined;
-    const timer = window.setTimeout(() => {
-      setCacheStarted(true);
-      cacheVideos(workoutVideoSources(workout, videoUrls)).catch(() => {});
-    }, 5000);
-    return () => window.clearTimeout(timer);
-  }, [state.running, cacheStarted, workout, videoUrls]);
   const videoUrl = video?.kind === 'file' && cachedVideo.url === remoteVideoUrl && cachedVideo.blob ? cachedVideo.blob : remoteVideoUrl;
   // Loop startet automatisch (stumm); play() nach Quellwechsel, falls autoPlay allein nicht greift.
   useEffect(() => {
@@ -1659,8 +1650,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     return () => window.clearTimeout(timer);
   }, [precacheDay]);
   useEffect(() => {
-    if (activeWorkout) cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls())).catch(() => {});
-  }, [activeWorkout]);
+    if (activeWorkout && screen !== 'runner') cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls())).catch(() => {});
+  }, [activeWorkout, screen === 'runner']);
 
   // Solange dieser SubTab offen ist, kippt die ganze App ins 6-Pack-Promise
   // Rot/Schwarz (data-theme-Attribut auf documentElement, gleiches Pattern
