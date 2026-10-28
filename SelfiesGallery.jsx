@@ -18,7 +18,7 @@ function savePendingQueue(uid, queue) {
   window.localStorage.setItem(`${SIXPACK_PENDING_KEY}:${uid}`, JSON.stringify(queue));
 }
 
-export default function SelfiesGallery({ onBack, uid, client }) {
+export default function SelfiesGallery({ onBack, uid, client, initialFiles, onInitialFilesConsumed }) {
   const [serverPhotos, setServerPhotos] = useState([]);
   const [pending, setPending] = useState(() => { try { return loadPendingQueue(uid); } catch { return []; } });
   const [serverOk, setServerOk] = useState(null); // null = unbekannt, true/false
@@ -91,9 +91,20 @@ export default function SelfiesGallery({ onBack, uid, client }) {
     return () => { active.current = false; cancelled = true; window.removeEventListener('online', init); document.removeEventListener('visibilitychange', onVisible); };
   }, []);
 
-  async function onFile(e) {
+  // Direkt nach dem Workout aufgenommenes Selfie: wird nach dem Login/Mount einmal verarbeitet.
+  useEffect(() => {
+    if (!initialFiles?.length) return;
+    onInitialFilesConsumed?.();
+    processFiles(initialFiles);
+  }, []);
+
+  function onFile(e) {
     const files = Array.from(e.target.files || []);
     e.target.value = '';
+    return processFiles(files);
+  }
+
+  async function processFiles(files) {
     if (!hasUid || !files.length || busy.current) return;
     busy.current = true;
     setUploading(true);

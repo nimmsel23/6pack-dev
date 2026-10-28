@@ -4,7 +4,7 @@ import SelfiesGallery from './SelfiesGallery.jsx';
 import { cloudPhotoClient } from './selfieCloud.js';
 import { watchPhotoUser, loginGoogle, loginEmail, logoutPhotos } from './photoAuth.js';
 
-export default function SelfiesScreen({ onBack, uid }) {
+export default function SelfiesScreen({ onBack, uid, initialFiles, onInitialFilesConsumed }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +30,7 @@ export default function SelfiesScreen({ onBack, uid }) {
       <button onClick={() => login(logoutPhotos)} disabled={busy}>Abmelden</button>
     </div>
     {error && <p role="alert">{error}</p>}
-    <SelfiesGallery key={user.uid} onBack={onBack} uid={user.uid} client={client} />
+    <SelfiesGallery key={user.uid} onBack={onBack} uid={user.uid} client={client} initialFiles={initialFiles} onInitialFilesConsumed={onInitialFilesConsumed} />
   </div>;
   return <div>
     <BackHeader label="Selfies" onBack={onBack} />

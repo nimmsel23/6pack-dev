@@ -54,3 +54,9 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - Die App muss ohne Netz vollständig laufen: Shell + gehashte Assets werden vom generierten `sw.js` vorab gecacht (`pnpm build` stempelt ihn; `npx vite build` allein erzeugt keinen SW). Programm/Favoriten liegen in localStorage, Workouts gehen über die Outbox, Firestore hat Persistent Cache. Videos vorab in `sixpack-videos-v1` (siehe Video-Cache).
 - Navigation: Netz zuerst, aber nur `navTimeoutMs` = 1500 (`mini-app.json`), danach Cache. Nicht kleiner stellen: kommt die Netzantwort nach dem Timeout, speichert der SW sie nicht, Updates kämen sonst nie an.
 - Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.
+
+## Gym-Test 2026-10-28 (User-Vorgabe, ersetzt Intro-/Wechsel-Details oben)
+
+- **Intro ohne 5-4-3-2-1:** "Welcome to Six Pack Promise. <Equipment>" → langer Ton → "<Übung>[, left side] for 30 seconds, begin in" → 2, 1, go (`INTRO_LEAD_IN_SECONDS` = 7 s). Vorher gab es zwei Countdowns hintereinander (Ansage wirkte doppelt und dauerte zu lang).
+- **5s-Wechsel ohne Beschleunigung:** Ansage immer im normalen Sprechtempo (kein `rate` > 1 mehr); im Wechsel wird "for N seconds" nur gesagt, wenn die Dauer der nächsten Übung von der aktuellen abweicht. Der Wechsel bleibt genau 5 s.
+- **Abschluss:** Auf dem "Workout fertig"-Screen öffnet "Selfie aufnehmen" direkt die Kamera (`<input capture="user">` im Tap); das Foto geht als `initialFiles` an `SelfiesGallery` (Cloud-Sync wie gehabt, vorher Login falls nötig). Nicht auf Gerät getestet.

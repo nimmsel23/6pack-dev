@@ -767,7 +767,8 @@ function workoutVideoSources(workout, videoUrls = {}) {
 const TRANSITION_SECONDS = 5;
 // Im Wechsel läuft die Ansage "<Übung> for 30 seconds, begin in" und danach "2" (bei Restzeit 2), "1" (bei 1)
 // und "go" + langer Ton beim Start. Die Ansage muss vor dem "2" fertig sein → Zeitfenster abzüglich Puffer.
-const LEAD_IN_SPEECH_SECONDS = TRANSITION_SECONDS - 2.4;
+// Intro-Lead-In (nach der Begrüßung) ist etwas länger, weil dort zusätzlich die Dauer angesagt wird.
+const INTRO_LEAD_IN_SECONDS = 7;
 
 function needsTransition(items, index) {
   return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
@@ -800,7 +801,7 @@ function advanceRunnerState(state, workout) {
   return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
-function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
+function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const completionReported = useRef(false);
   const startedAtRef = useRef(Date.now());
@@ -898,9 +899,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
-  // `countdown`: Ansage vor dem Start ("… , begin in"), mit Sprechtempo so gewählt, dass sie vor dem
-  // gesprochenen "2" fertig ist — der 5s-Wechsel wird dadurch nie überschritten.
-  function announce(item, index, { countdown = false, side = '' } = {}) {
+  // `countdown`: Ansage vor dem Start ("… , begin in") in normalem Tempo; `withDuration: false` lässt
+  // "for 30 seconds" weg (im Wechsel nur, wenn die Dauer gleich bleibt) — der 5s-Wechsel wird nie überschritten.
+  function announce(item, index, { countdown = false, side = '', withDuration = true } = {}) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
@@ -910,14 +911,13 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
     const text = index != null && isSideSwitch(index)
       ? 'Switch sides'
-      : `${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
+      : `${spokenName(item.name)}${side ? `, ${side}` : ''}${withDuration ? ` for ${secondsText(item.seconds)}` : ''}`;
     if (!countdown) {
       speak(text, 'en-US');
       return;
     }
-    const withLeadIn = `${text}, begin in`;
-    const estimatedSeconds = withLeadIn.length / 14; // ca. 14 Zeichen/s bei Tempo 1
-    speak(withLeadIn, 'en-US', { rate: Math.min(1.6, Math.max(1, estimatedSeconds / LEAD_IN_SPEECH_SECONDS)) });
+    // Normales Sprechtempo (kein Beschleunigen mehr): der Text ist kurz genug, "2"/"1" schneiden sonst ab.
+    speak(`${text}, begin in`, 'en-US');
   }
 
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
@@ -951,9 +951,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     setIntro(false);
   }
 
-  // "Welcome to Six Pack Promise. <Equipment>", dann 5, 4, 3, 2, 1 + langer Ton, dann
+  // "Welcome to Six Pack Promise. <Equipment>", dann langer Ton und
   // "<Übung>[, left side] for 30 seconds, begin in 2, 1, go" + langer Ton, dann startet die Zeit.
-  // Der zweite Teil dauert wie ein 5s-Wechsel (TRANSITION_SECONDS).
+  // Kein zusätzlicher 5-4-3-2-1-Countdown davor (User-Vorgabe 2026-10-28: Ansage war doppelt und zu lang).
   function startIntro() {
     introDone.current = true;
     const token = (introToken.current += 1);
@@ -976,17 +976,14 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const exerciseLeadIn = () => {
       if (!alive()) return;
       if (first) announce(first, 0, { countdown: true, side });
-      later(() => callOut('2'), (TRANSITION_SECONDS - 2) * 1000);
-      later(() => callOut('1'), (TRANSITION_SECONDS - 1) * 1000);
-      later(go, TRANSITION_SECONDS * 1000);
+      later(() => callOut('2'), (INTRO_LEAD_IN_SECONDS - 2) * 1000);
+      later(() => callOut('1'), (INTRO_LEAD_IN_SECONDS - 1) * 1000);
+      later(go, INTRO_LEAD_IN_SECONDS * 1000);
     };
     const countdown = () => {
       if (!alive()) return;
-      [5, 4, 3, 2, 1].forEach((n, i) => later(() => callOut(String(n)), i * 1000));
-      later(() => {
-        startBeep();
-        exerciseLeadIn();
-      }, 5000);
+      startBeep();
+      exerciseLeadIn();
     };
 
     if (!('speechSynthesis' in window)) {
@@ -1031,7 +1028,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       // "2", "1" kommen im Countdown-Effekt unten, "go" beim Start der Übung.
       const nextIndex = state.itemIndex + 1;
       const nextItem = workout.items[nextIndex];
-      if (nextItem) announce(nextItem, nextIndex, { countdown: true });
+      if (nextItem) announce(nextItem, nextIndex, { countdown: true, withDuration: nextItem.seconds !== workout.items[state.itemIndex]?.seconds });
       return;
     }
     const item = workout.items[state.itemIndex];
@@ -1255,7 +1252,14 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       <div className="p-6 text-center">
         <Check size={32} color="#e2001a" className="mx-auto mb-3" />
         <div className="text-lg font-black text-fit-ink">Workout fertig</div>
-        <button onClick={onBack} className="mt-5 min-h-12 px-6 rounded-2xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>
+        {onSelfie && (
+          <label className="mt-5 min-h-12 px-6 rounded-2xl text-sm font-black inline-flex items-center justify-center gap-2 cursor-pointer" style={{ background: '#e2001a', color: '#fff' }}>
+            <Camera size={18} strokeWidth={2.5} /> Selfie aufnehmen
+            <input type="file" accept="image/*" capture="user" className="hidden" onChange={e => { const files = Array.from(e.target.files || []); e.target.value = ''; if (files.length) onSelfie(files); }} />
+          </label>
+        )}
+        <br />
+        <button onClick={onBack} className="mt-3 min-h-12 px-6 rounded-2xl text-sm font-black" style={onSelfie ? { background: 'var(--bg2)', color: 'inherit', border: '1px solid var(--line)' } : { background: '#e2001a', color: '#fff' }}>
           Zurück
         </button>
       </div>
@@ -1432,6 +1436,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   const [screen, setScreen] = useState('home');
   const [viewDay, setViewDay] = useState(null);
   const [adhocWorkout, setAdhocWorkout] = useState(null);
+  const [pendingSelfieFiles, setPendingSelfieFiles] = useState(null);
   const [viewExerciseId, setViewExerciseId] = useState(null);
   const [viewExerciseItem, setViewExerciseItem] = useState(null);
   const [exerciseReturnScreen, setExerciseReturnScreen] = useState('learn');
@@ -1690,7 +1695,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         )}
         {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
         {screen === 'eat' && <EatScreen onBack={goHome} />}
-        {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
+        {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} initialFiles={pendingSelfieFiles} onInitialFilesConsumed={() => setPendingSelfieFiles(null)} />}
         {(screen === 'shuffle' || (screen === 'exercise' && exerciseReturnScreen === 'shuffle')) && <div hidden={screen !== 'shuffle'} className="h-full"><ShuffleScreen onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'shuffle', trigger)} /></div>}
         {(screen === 'day' || (screen === 'exercise' && exerciseReturnScreen === 'day')) && activeWorkout && (
           <div hidden={screen !== 'day'} className="h-full">{
@@ -1706,7 +1711,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} />
+          <RunnerScreen autoStart onSelfie={files => { setPendingSelfieFiles(files); setScreen('selfies'); }} workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} />
         )}
     </section>
   );
