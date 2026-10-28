@@ -1116,8 +1116,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     }
     if (announcedTenSecondsStep.current === step) return;
     announcedTenSecondsStep.current = step;
-    if (speechOn()) speak('10 seconds left', 'en-US');
-    else shortBeep();
+    speak('10 seconds left', 'en-US'); // nur Sprache, nie ein Piep (User-Vorgabe 2026-10-28)
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
