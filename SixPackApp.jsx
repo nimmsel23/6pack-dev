@@ -972,7 +972,11 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
   // abgebrochen, damit der Takt hält. Ohne Sprachausgabe ersetzt ein kurzer Piep die Zahl.
   function callOut(text) {
-    if (!speechOn()) return; // ohne Sprache keine Pieps für "2"/"1"/"go" im Wechsel (User-Vorgabe 2026-10-28)
+    if (!speechOn()) {
+      // Musik-Modus (Sprache aus): "2"/"1" im Wechsel als kurzer Piep; "go" ersetzt der lange Ton (startBeep).
+      if (text !== 'go') shortBeep();
+      return;
+    }
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
     speak(text, 'en-US');
   }
@@ -1116,7 +1120,8 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     }
     if (announcedTenSecondsStep.current === step) return;
     announcedTenSecondsStep.current = step;
-    speak('10 seconds left', 'en-US'); // nur Sprache, nie ein Piep (User-Vorgabe 2026-10-28)
+    if (speechOn()) speak('10 seconds left', 'en-US');
+    else [0, 0.2, 0.4].forEach(delay => beep(1000, { duration: 0.12, delay })); // Musik-Modus: dreifacher Piep
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
