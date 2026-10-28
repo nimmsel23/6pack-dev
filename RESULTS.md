@@ -1,3 +1,17 @@
+# 2026-10-25 — Vollflächige Screens, kürzerer Splash, Fitness-Wrapper, Releases
+
+Auf User-Wunsch („die App soll die ganze Bildschirmfläche nutzen, ohne scrollen zu müssen“, „Splashscreen darf nicht so lange laden“, „Fitness-Wrapper anpassen“) umgebaut und zweimal veröffentlicht. Commits auf `dev`: `ac5cb26`, `bf5a0fa`, `4831162`, `4b5f729`. Neue Arbeitsregel: in 6pack-dev direkt committen (Feedback-Memory `always-commit`), Push separat.
+
+- **`SixPackApp.jsx` / `index.html` (Runner):** Runner belegt den ganzen sichtbaren Bildschirm, das Video füllt den Platz zwischen Timer und Buttons (statt festem 16:9); gilt für Übungs- und Wechsel-Ansicht. `viewport-fit=cover`, Abstand zu Notch und Home-Indikator (`ac5cb26`). Später wird der Runner per Portal an `document.body` gehängt, weil transformierte Eltern im Fitness-Shell `fixed` einsperren; Einbettung füllt die vorgegebene Höhe (`h-full`) (`4b5f729`).
+- **`SixPackApp.jsx` (übrige Screens):** Home mit `h-dvh`, Today’s-Workout-Karte wächst, Menü mit sechs Buttons unten. Track, Day, Learn, Favorites, Shuffle, Settings, Note: Header bleibt stehen, bei Day/Shuffle auch „Start Workout“, nur der Bereich dazwischen scrollt (`4831162`). Nur Standalone-App; in der Fitness-Einbettung (`onSubNav`) unverändert. Exercise-Detail und Selfies nicht gezielt angepasst.
+- **`mini-app.json` (Splash):** Mindestanzeige 700 → 250 ms, Update-Loader bis 10 → 3 s, Failsafe 12 → 4 s. Hauptursache war „Update wird geladen …“ nach jedem Release (`bf5a0fa`); gemeinsame Shell `scripts/mini-app-shell/` unberührt.
+- **fitness-dev (`SixPackFrame.jsx`, neu in `src/views/Session/`):** Wrapper gibt der 6Pack-Karte feste Höhe bis zur Mobile-Nav; `Session/index.jsx` nutzt ihn im Timer-Tab (`cd0e4ea`). Submodul `6pack` auf `4b5f729` gehoben (`dc31730`); Branch `fitness` in 6pack-dev per Fast-Forward auf `4b5f729`.
+- **Releases:** `6pack-release --yes` (User): `ac5cb26` live auf `vos-6pack.web.app`, später `4831162` inkl. Splash-Fix (Parent-Bump `a8e3158`). Danach Fitness-Release (`vitalos`-Merge `bce6522..003d888`, Parent-Bump `c8b5fb4`), `fitness-aos.web.app` mit `4b5f729` + `SixPackFrame`, Deploy fehlerfrei.
+- **`vos-release`:** Syntaxfehler „Zeile 634“ nach „release flow complete“ ist harmlos (Skript wurde während des Laufs durch Commit `6082eae` überschrieben); `bash -n` sauber.
+- **Nicht geprüft:** Alles nur per Build/Deploy-Ausgabe; auf dem Handy oder im Browser nichts angesehen (Runner ohne Scrollen, Splash-Dauer, Fitness-Tab bis über die Mobile-Nav).
+
+---
+
 # 2026-10-24 — Runner-Fixes nach Gym-Test (Jakob), Release
 
 Jakob meldete per WhatsApp Fehler im Runner der 6Pack-App; der User ergänzte eine Mängelliste (Videos blockieren die App, Workout startet nicht automatisch, Töne unpassend, Wiederholen bei Rest fehlt, Pause-Button sinnlos, Sprachansagen weg). Fixes auf `dev` (`fba285f`, `b682690`, `e7e83e8`, `dc52a08`, `7622cf6`), danach veröffentlicht.
