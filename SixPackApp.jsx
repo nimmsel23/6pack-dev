@@ -972,9 +972,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
   // abgebrochen, damit der Takt hält. Ohne Sprachausgabe ersetzt ein kurzer Piep die Zahl.
   function callOut(text) {
-    if (!speechOn()) {
-      if (text !== 'go') shortBeep();
-      return;
+    if (!speechOn()) return; // ohne Sprache keine Pieps für "2"/"1"/"go" im Wechsel (User-Vorgabe 2026-10-28)
     }
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
     speak(text, 'en-US');
