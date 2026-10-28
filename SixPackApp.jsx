@@ -579,7 +579,7 @@ function SpeechSetting() {
         </button>
       </div>
       <div className="px-4 py-3 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
-        {isIOS() ? 'Auf dem iPhone pausiert die Sprachausgabe Musik (Spotify etc.). Aus = nur Pieptöne, die Musik läuft durch.' : 'Aus = nur Pieptöne.'}
+        {isIOS() ? 'An = Ansagen, aber auf dem iPhone pausiert Musik (Spotify etc.) bei jeder Ansage. Aus = nur Pieptöne, die Musik läuft durch.' : 'Aus = nur Pieptöne.'}
       </div>
     </>
   );
@@ -741,8 +741,8 @@ function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite
 }
 
 // Sprachausgabe: speechSynthesis übernimmt auf iOS die Audio-Session und pausiert Spotify & Co. (auch
-// mit audioSession 'ambient'; User-Test 2026-10-28). Darum auf iOS standardmäßig nur Pieptöne; im
-// Settings-Tab ("Sprachansagen") lässt sich die Sprache einschalten. TODO: vorgefertigte Audio-Clips.
+// mit audioSession 'ambient'; User-Test 2026-10-28). Standard ist trotzdem Sprache an (lieber keine Musik
+// als keine Ansagen); im Settings-Tab ("Sprachansagen") lässt sie sich ausschalten → nur Pieptöne, Musik läuft. TODO: vorgefertigte Audio-Clips.
 const SPEECH_KEY = 'sixpack-speech';
 const isIOS = () => typeof navigator !== 'undefined'
   && (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
@@ -751,7 +751,7 @@ function speechPreference() {
     const stored = window.localStorage.getItem(SPEECH_KEY);
     if (stored === 'on' || stored === 'off') return stored === 'on';
   } catch { /* localStorage gesperrt: Standard */ }
-  return !isIOS();
+  return true; // User-Vorgabe 2026-10-28: lieber Sprache als Musik, auch auf iOS
 }
 function setSpeechPreference(on) {
   try { window.localStorage.setItem(SPEECH_KEY, on ? 'on' : 'off'); } catch { /* ignorieren */ }
