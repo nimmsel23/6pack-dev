@@ -1,0 +1,45 @@
+# Check für 6Pack: Build + Regressionstests auf jedem PR/dev-Push, ohne Deploy und ohne Firebase-Secrets.
+#
+# Gleicher Aufbau wie deploy.yml (6Pack deploy), aber ohne Pfadfilter und ohne Deploy
+# (Muster aus fitness-dev/check.yml).
+
+name: Check (6Pack)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [vitalos, dev]
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4   # Version aus package.json "packageManager"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: pnpm install --ignore-scripts
+
+      - name: Build (inkl. build:data aus catalog/; Stempel = Splash + Service Worker)
+        run: pnpm run build
+
+      - name: Calendar reminder regression checks
+        run: pnpm run test:calendar
+
+      - name: Exercise preview regression checks
+        run: node scripts/test-exercise-details.mjs
