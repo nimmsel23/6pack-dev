@@ -36,3 +36,4 @@
 - [x] 2026-10-24: Genau einen kommenden 6Pack-Termin im vorhandenen Google-Kalender „Fitness“ nach Programm-Abschluss serverseitig aktualisieren; keine Terminserie/kein Kalender-Spam.
 - [x] 2026-10-24: Kalender-OAuth/Secret und Calendar-Functions in Production einrichten; alle vier Functions ACTIVE und Live-Auth-Sperren geprüft.
 - [ ] Google Kalender in den App-Einstellungen verbinden und echten nächsten Workout-Termin/Handy-Reminder abnehmen (docs/GOOGLE-CALENDAR.md).
+- [ ] 2026-10-28: Vorgefertigte Audio-Clips für die Ansagen (Übungsnamen, Zahlen, "begin in", "Switch sides", Equipment …) erzeugen und per Web Audio abspielen, damit iOS-Musik (Spotify) durchläuft — speechSynthesis pausiert sie. Bis dahin: auf iOS standardmäßig nur Pieptöne, Sprache im Settings-Tab zuschaltbar.

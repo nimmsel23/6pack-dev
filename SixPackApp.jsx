@@ -558,6 +558,33 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
   );
 }
 
+function SpeechSetting() {
+  const [on, setOn] = useState(speechPreference);
+  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+  return (
+    <>
+      <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Workout</div>
+      <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
+        <span className="text-sm font-bold" style={{ color: '#fff' }}>Sprachansagen</span>
+        <button
+          role="switch"
+          aria-checked={on && supported}
+          aria-label="Sprachansagen im Workout"
+          disabled={!supported}
+          onClick={() => { setSpeechPreference(!on); setOn(!on); }}
+          className="relative w-12 h-7 rounded-full transition-colors"
+          style={{ background: on && supported ? '#e2001a' : '#444' }}
+        >
+          <span className="absolute top-0.5 w-6 h-6 rounded-full bg-white transition-all" style={{ left: on && supported ? 22 : 2 }} />
+        </button>
+      </div>
+      <div className="px-4 py-3 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
+        {isIOS() ? 'Auf dem iPhone pausiert die Sprachausgabe Musik (Spotify etc.). Aus = nur Pieptöne, die Musik läuft durch.' : 'Aus = nur Pieptöne.'}
+      </div>
+    </>
+  );
+}
+
 function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders }) {
   const [permission, setPermission] = useState(localReminders ? 'default' : reminderSupported() ? Notification.permission : 'unsupported');
   const blocked = permission === 'denied' || permission === 'unsupported';
@@ -623,6 +650,7 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
           ? 'Benachrichtigungen sind für diese App blockiert oder nicht verfügbar. Bitte in den Browser-/System-Einstellungen erlauben.'
           : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Push kommt auch bei geschlossener App an. Dieses Gerät muss angemeldet, registriert und mit dem Internet verbunden sein. Auf dem iPhone die App zum Home-Bildschirm hinzufügen und dort öffnen.'}
       </div>
+      <SpeechSetting />
       <CalendarReminderSettings uid={uid} />
     </div>
   );
@@ -712,6 +740,26 @@ function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite
   );
 }
 
+// Sprachausgabe: speechSynthesis übernimmt auf iOS die Audio-Session und pausiert Spotify & Co. (auch
+// mit audioSession 'ambient'; User-Test 2026-10-28). Darum auf iOS standardmäßig nur Pieptöne; im
+// Settings-Tab ("Sprachansagen") lässt sich die Sprache einschalten. TODO: vorgefertigte Audio-Clips.
+const SPEECH_KEY = 'sixpack-speech';
+const isIOS = () => typeof navigator !== 'undefined'
+  && (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+function speechPreference() {
+  try {
+    const stored = window.localStorage.getItem(SPEECH_KEY);
+    if (stored === 'on' || stored === 'off') return stored === 'on';
+  } catch { /* localStorage gesperrt: Standard */ }
+  return !isIOS();
+}
+function setSpeechPreference(on) {
+  try { window.localStorage.setItem(SPEECH_KEY, on ? 'on' : 'off'); } catch { /* ignorieren */ }
+}
+function speechOn() {
+  return typeof window !== 'undefined' && 'speechSynthesis' in window && speechPreference();
+}
+
 // Musik anderer Apps (Spotify etc.) darf NIE pausieren — weder beim Öffnen der App noch beim
 // Start einer Übung. iOS: Kategorie "ambient" mischt mit laufender Musik; sie muss gesetzt sein,
 // BEVOR irgendein Audio (AudioContext, Sprachausgabe) startet. Darum schon beim Laden des Moduls,
@@ -742,7 +790,7 @@ function primeAudio() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (AudioContextClass && !primedAudioContext) primedAudioContext = new AudioContextClass();
     primedAudioContext?.resume();
-    if ('speechSynthesis' in window && !primedSpeech) {
+    if (speechOn() && !primedSpeech) {
       const unlock = new SpeechSynthesisUtterance(' ');
       unlock.volume = 0;
       window.speechSynthesis.speak(unlock);
@@ -870,6 +918,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   }
 
   function speak(text, lang, { pitch = 1, rate = 1, onend, onstart } = {}) {
+    if (!speechOn()) { onend?.(); return; }
     keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
@@ -902,7 +951,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   // `countdown`: Ansage vor dem Start ("… , begin in") in normalem Tempo; `withDuration: false` lässt
   // "for 30 seconds" weg (im Wechsel nur, wenn die Dauer gleich bleibt) — der 5s-Wechsel wird nie überschritten.
   function announce(item, index, { countdown = false, side = '', withDuration = true } = {}) {
-    if (!('speechSynthesis' in window)) return;
+    if (!speechOn()) return;
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
       speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US');
@@ -923,8 +972,8 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
   // abgebrochen, damit der Takt hält. Ohne Sprachausgabe ersetzt ein kurzer Piep die Zahl.
   function callOut(text) {
-    if (!('speechSynthesis' in window)) {
-      shortBeep();
+    if (!speechOn()) {
+      if (text !== 'go') shortBeep();
       return;
     }
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
@@ -986,7 +1035,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
       exerciseLeadIn();
     };
 
-    if (!('speechSynthesis' in window)) {
+    if (!speechOn()) {
       countdown();
       return;
     }
@@ -1020,7 +1069,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     const itemEnded = previousStep !== null && !previousStep.endsWith(':true');
     if (itemEnded && (state.transition || state.done)) endBeep();
     if (state.done) {
-      if ('speechSynthesis' in window) speak("Congratulations. You've completed today's workout.", 'en-US');
+      if (speechOn()) speak("Congratulations. You've completed today's workout.", 'en-US');
       return;
     }
     if (state.transition) {
@@ -1070,7 +1119,8 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     }
     if (announcedTenSecondsStep.current === step) return;
     announcedTenSecondsStep.current = step;
-    speak('10 seconds left', 'en-US');
+    if (speechOn()) speak('10 seconds left', 'en-US');
+    else shortBeep();
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
@@ -1204,7 +1254,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
       audioContext.current?.resume();
       // iOS Safari gibt Sprachausgabe erst frei, wenn speak() direkt im Tap
       // aufgerufen wurde — die eigentlichen Ansagen laufen aber im useEffect.
-      if ('speechSynthesis' in window && !speechUnlocked.current) {
+      if (speechOn() && !speechUnlocked.current) {
         const unlock = new SpeechSynthesisUtterance(' ');
         unlock.volume = 0;
         window.speechSynthesis.speak(unlock);
