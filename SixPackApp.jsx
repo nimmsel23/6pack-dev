@@ -973,7 +973,6 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
   // abgebrochen, damit der Takt hält. Ohne Sprachausgabe ersetzt ein kurzer Piep die Zahl.
   function callOut(text) {
     if (!speechOn()) return; // ohne Sprache keine Pieps für "2"/"1"/"go" im Wechsel (User-Vorgabe 2026-10-28)
-    }
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
     speak(text, 'en-US');
   }
