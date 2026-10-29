@@ -808,6 +808,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const runIdRef = useRef(newRunId());
   const announcedStep = useRef(null);
   const lastCountdownCall = useRef(null);
+  const silentNavigationStep = useRef(null);
   const audioContext = useRef(primedAudioContext);
   const speechUnlocked = useRef(primedSpeech);
   // Start-Intro: Willkommen + Equipment, dann 5…1 + langer Ton, dann erste Übung + "begin in 2, 1, go" + langer Ton, danach läuft die Zeit.
@@ -1066,6 +1067,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     announcedStep.current = step;
     lastCountdownCall.current = null;
     setVideoError(false);
+    if (silentNavigationStep.current === step) {
+      silentNavigationStep.current = null;
+      return;
+    }
     // Ton nur beim Ende einer Übung, auch wenn danach direkt eine Pause folgt.
     const previousIndex = previousStep === null ? -1 : Number(previousStep.split(':')[0]);
     const previousItemEnded = previousStep !== null && !previousStep.endsWith(':true');
@@ -1257,6 +1262,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (itemIndex == null || itemIndex === state.itemIndex) return;
     if (intro) cancelIntro();
     window.speechSynthesis?.cancel();
+    silentNavigationStep.current = state.running ? `${itemIndex}:false` : null;
     announcedStep.current = null;
     announcedThirtySecondsStep.current = null;
     announcedTenSecondsStep.current = null;
