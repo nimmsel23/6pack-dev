@@ -39,7 +39,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Autostart (2026-10-24):** "Start Workout" startet Intro + Timer direkt (`autoStart`, Audio wird im Tap per `primeAudio()` freigeschaltet). Vimeo-Link von `bent_knee_windshield_wipers` deaktiviert (Einbettung gesperrt).
 - **Runner-Bedienung (2026-10-29):** Keine manuelle Pause. Workout startet über "Start Workout"; "Wiederholen" setzt die aktuelle Übung zurück und läuft direkt weiter.
 - **Töne (User-Vorgabe 2026-10-29):** Nur ein langer hoher Ton (1000 Hz, 0,8 s) beim Start einer Übung und ein langer tiefer Ton (700 Hz, 0,8 s) beim Ende einer Übung. Keine Töne bei 30/10-s-Ansagen oder Pausen.
-- **Video-Cache (User-Vorgabe 2026-10-26, ersetzt "5 s nach Laufbeginn"):** Videos müssen vor dem Workout-Start im Cache liegen: das heutige Workout wird beim Öffnen der App, jedes geöffnete Tages-/Shuffle-/Favoriten-Workout sofort nacheinander im Hintergrund gecacht (`cacheVideos`, sequentiell, `workoutVideoSources()`); im Runner läuft kein Cache-Timer mehr (der Runner wird nie aufgehalten), fehlende Videos spielen direkt von der Quelle. YouTube/Vimeo-Embeds sind nicht cachebar.
+- **Video-Cache (User-Vorgabe 2026-10-26, ersetzt "5 s nach Laufbeginn"):** Cachefähige Datei-Videos werden beim Öffnen der App bzw. eines Tages-/Shuffle-/Favoriten-Workouts nacheinander im Hintergrund vorgeladen (`cacheVideos`, `workoutVideoSources()`); der Runner wartet nicht auf Netzabrufe. YouTube/Vimeo-Embeds sind nicht cachebar. Stand Katalogprüfung 2026-10-29: 24 Embed-URLs, 4 Datei-URLs, 4 ohne Video; iPhone-Offline-Abnahme und CORS-Verfügbarkeit der Datei-Quellen sind offen (siehe `TODO.md`).
 
 - **Eigene Clips (2026-10-24):** `public/videos/<exercise_id>.mp4` ersetzt beim Build die Katalog-Demo (`catalogContent.mjs`, URL mit `?v=<Hash>`); `videoCache.js` cached same-origin-Clips wie https-Videos. Import/Status: `node scripts/own-clips.mjs` (Details: `docs/VIDEO_URLS.md`, Abschnitt „Eigene Clips“). Tag 1 = 6 Clips, noch keine geliefert.
 
@@ -52,7 +52,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 
 ## Offline-first (User-Vorgabe 2026-10-26)
 
-- Die App muss ohne Netz vollständig laufen: Shell + gehashte Assets werden vom generierten `sw.js` vorab gecacht (`pnpm build` stempelt ihn; `npx vite build` allein erzeugt keinen SW). Programm/Favoriten liegen in localStorage, Workouts gehen über die Outbox, Firestore hat Persistent Cache. Videos vorab in `sixpack-videos-v1` (siehe Video-Cache).
+- Die Shell und gehashte Assets werden vom generierten `sw.js` vorab gecacht (`pnpm build` stempelt ihn; `npx vite build` allein erzeugt keinen SW). Programm/Favoriten liegen in localStorage, Workouts gehen über die Outbox, Firestore hat Persistent Cache. Video-Offline-Abdeckung ist eingeschränkt auf cachefähige Datei-Videos; Embed- und Geräte-Abnahme siehe `TODO.md`.
 - Navigation: Netz zuerst, aber nur `navTimeoutMs` = 400 (`mini-app.json`), danach Cache. Updates kommen trotzdem an: der Browser prüft `sw.js` selbst, der neue SW precacht die Shell. Splash: `minMs` 0, Update-Fenster 800 ms. Keine künstlichen Wartezeiten beim Start einbauen.
 - Runner-Video: Cache zuerst — solange die Cache-Abfrage läuft, ist keine Quelle gesetzt; gecachte Dateien gehen nie ans Netz.
 - Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.

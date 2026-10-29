@@ -802,6 +802,7 @@ function advanceRunnerState(state, workout) {
 
 function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
+  const [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   const completionReported = useRef(false);
   const startedAtRef = useRef(Date.now());
   const runIdRef = useRef(newRunId());
@@ -817,6 +818,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const introStartBeepPending = useRef(false);
   const [videoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
+  const abortCancelButton = useRef(null);
+  const abortConfirmButton = useRef(null);
 
   function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
     const context = audioContext.current;
@@ -949,6 +952,41 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     introDone.current = false; // beim nächsten Start wieder von vorn
     setIntro(false);
   }
+
+  useEffect(() => {
+    if (!abortConfirmationOpen) return undefined;
+    abortCancelButton.current?.focus();
+    const onKeyDown = event => {
+      if (event.key === 'Escape') setAbortConfirmationOpen(false);
+      if (event.key === 'Tab' && event.shiftKey && document.activeElement === abortCancelButton.current) {
+        event.preventDefault();
+        abortConfirmButton.current?.focus();
+      } else if (event.key === 'Tab' && !event.shiftKey && document.activeElement === abortConfirmButton.current) {
+        event.preventDefault();
+        abortCancelButton.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [abortConfirmationOpen]);
+
+  function confirmAbort() {
+    setAbortConfirmationOpen(false);
+    onBack();
+  }
+
+  const abortDialog = abortConfirmationOpen && (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,0.78)' }}>
+      <div role="alertdialog" aria-modal="true" aria-labelledby="runner-abort-title" aria-describedby="runner-abort-description" className="w-full max-w-sm rounded-2xl p-5" style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}>
+        <h2 id="runner-abort-title" className="text-lg font-black text-fit-ink">Workout abbrechen?</h2>
+        <p id="runner-abort-description" className="text-sm mt-2" style={{ color: 'var(--dim)' }}>Der bisherige Fortschritt dieses Workouts wird nicht gespeichert.</p>
+        <div className="flex justify-end gap-2 mt-5">
+          <button ref={abortCancelButton} type="button" onClick={() => setAbortConfirmationOpen(false)} className="min-h-12 px-4 rounded-xl text-sm font-bold text-fit-ink" style={{ background: 'var(--bg)', border: '1px solid var(--line)' }}>Weiter trainieren</button>
+          <button ref={abortConfirmButton} type="button" onClick={confirmAbort} className="min-h-12 px-4 rounded-xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  );
 
   // Welcome → Equipment → kurze Satzpause → Übungsansage + Begin in 5, 4, 3, 2, 1.
   // Erst nach der 1 startet der Timer und der erste lange Startton erklingt.
@@ -1297,7 +1335,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   if (state.transition) {
     return createPortal(
       <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
-        <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
+        <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
         <div className="text-center">
@@ -1309,6 +1347,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         <div className="flex justify-center gap-2 mt-6">
           {repeatButton}
         </div>
+        {abortDialog}
       </div>,
       document.body
     );
@@ -1316,7 +1355,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   return createPortal(
     <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
-      <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
+      <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
 
@@ -1356,6 +1395,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       <div className="flex justify-center gap-2 mt-3">
         {repeatButton}
       </div>
+      {abortDialog}
     </div>,
     document.body
   );
