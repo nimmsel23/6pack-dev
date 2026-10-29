@@ -223,3 +223,9 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - `scripts/pnpm-cloud.sh` prüft Schreibbarkeit der XDG-Runtime-/Datenpfade. Falls sie gesperrt sind, nutzt pnpm ignorierte `.pnpm-cloud/runtime`- und `.pnpm-cloud/data`-Verzeichnisse im Workspace.
 - README und AGENTS.md dokumentieren den Cloud-Dev-Aufruf; keine `.npmrc`-Store-Option, da pnpm 11/12 diese Einstellungen aus YAML liest.
 - Mit pnpm 11.3.0: `./scripts/pnpm-cloud.sh run build` erfolgreich, inklusive Daten- und Shell-Stamp-Build. Die Sandbox brauchte für den Zugriff auf ihren vorhandenen Cloud-XDG-Store eine Ausführungsfreigabe.
+
+# 2026-10-29 — Startansage und Runner-Startton
+
+- Welcome wird nicht mehr nach 1,5 Sekunden abgebrochen. Der Intro-Ablauf bleibt linear: Welcome → Equipment-Einleitung; ohne Equipment folgt nach weiterer Satzpause ausdrücklich „No equipment required for this workout.“
+- Danach folgen Übungsansage + „begin in“ und 5, 4, 3, 2, 1. Kein zusätzlicher Countdown davor und kein gesprochenes „go“.
+- Nach der 1 startet der Runner-Timer; der erste lange Startton erklingt erst anschließend.
