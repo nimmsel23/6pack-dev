@@ -765,8 +765,8 @@ function workoutVideoSources(workout, videoUrls = {}) {
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
-// Im Wechsel läuft die Ansage "<Übung> for 30 seconds, begin in" und danach "2" (bei Restzeit 2), "1" (bei 1)
-// und "go" + langer Ton beim Start. Die Ansage muss vor dem "2" fertig sein → Zeitfenster abzüglich Puffer.
+// Zwischen zwei Übungen liegen fünf echte Timer-Sekunden. Nach der Übungsansage
+// werden im verbleibenden Countdown die jeweils noch übrigen 3, 2 und 1 Sekunden gesprochen.
 
 function needsTransition(items, index) {
   return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
@@ -1121,9 +1121,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     speak('10 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
-  // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
+  // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 3, 2 und 1 die tatsächlich
+  // verbleibende Zahl ansagen. Bei verzögerten Ticks wird die aktuelle Zahl verwendet.
   useEffect(() => {
-    if (!state.running || !state.transition || state.transitionLeadIn || state.remaining > 2 || state.remaining < 1) return;
+    if (!state.running || !state.transition || state.transitionLeadIn || state.remaining > 3 || state.remaining < 1) return;
     if (lastCountdownCall.current === state.remaining) return;
     lastCountdownCall.current = state.remaining;
     callOut(String(state.remaining));

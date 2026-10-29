@@ -251,3 +251,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 # Runner: Rest-Ansage umgestellt (2026-10-29)
 
 - Die Pausenansage nennt jetzt zuerst die Dauer, z. B. „45 seconds rest“ statt „Rest, 45 seconds“; der optionale Countdown-Zusatz bleibt erhalten.
+
+# Runner: Countdown in der 5-Sekunden-Übergangspause (2026-10-29)
+
+- Zwischen direkt aufeinanderfolgenden Übungen läuft weiterhin eine volle 5-Sekunden-Pause. Im letzten Abschnitt werden die aktuell verbleibenden 3, 2 und 1 Sekunden angesagt; nach verzögerten Ticks wird die tatsächlich verbleibende Zahl verwendet.
