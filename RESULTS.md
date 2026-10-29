@@ -269,3 +269,9 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 
 - Die Stimmenauswahl bevorzugt jetzt zuerst eine exakte Sprachvariante (z. B. en-US), dann natürlich/hochwertig markierte Stimmen, Google und bekannte expressive Systemstimmen vor dem beliebigen ersten Eintrag.
 - Die Prosodie wurde etwas lebendiger eingestellt. Die tatsächliche Qualität hängt weiterhin von den auf dem Gerät verfügbaren Stimmen ab.
+
+# pnpm: exakten Patch-Pin entfernt (2026-10-29)
+
+- `packageManager: pnpm@11.3.0` und der Functions-Unterprojekt-Pin waren nur für implizite Toolauswahl/Versionsprüfung nötig, nicht für Lockfile-Kompatibilität. Beide Lockfiles sind Version 9 und blieben unverändert.
+- Exakte Engine-Pins entfernt; Actions wählen jetzt explizit pnpm 12 (Major-Linie). Die Cloud-Dev-Wrapper bleiben für beschreibbare Runtime-/Store-Pfade nötig, nicht für einen alten pnpm-Pin.
+- Mit pnpm 12.15.0 bestanden Frozen-Install in Root und Functions sowie `pnpm run build` inklusive Daten- und Shell-Stamp-Build. Der bisherige Engine-Store-Lock-Fehler trat nicht mehr auf.

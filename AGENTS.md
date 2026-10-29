@@ -75,10 +75,11 @@ Production-Weg ist VitalOS-CI (`deploy-firestore-rules.yml`), kein direkter Agen
 
 ## Build, Tests und generierte Dateien
 
-Paketmanager: **pnpm**, Version aus `package.json`.
-In Cloud-Dev-Sitzungen Befehle über `./scripts/pnpm-cloud.sh` starten. Der
-Wrapper verwendet beschreibbare XDG-Verzeichnisse und fällt bei gesperrten
-Host-Pfaden auf ignorierte Workspace-Verzeichnisse zurück.
+Paketmanager: **pnpm 12** (CI installiert die aktuelle Version der Major-Linie;
+kein exakter Patch-Pin im Repo). In Cloud-Dev-Sitzungen Befehle über
+`./scripts/pnpm-cloud.sh` starten. Der Wrapper verwendet beschreibbare
+XDG-Verzeichnisse und fällt bei gesperrten Host-Pfaden auf ignorierte
+Workspace-Verzeichnisse zurück.
 
 ```sh
 node build-data.mjs
