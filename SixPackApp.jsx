@@ -1129,11 +1129,18 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     callOut(String(state.remaining));
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
-  // Dauerhafte Benachrichtigung (Android): aktuelle Übung, Dauer, nächste Übung; "Pausiert" bei Pause.
-  // Aktualisiert bei Übungswechsel und Pause/Start, nicht jede Sekunde (Akku, kein Flackern).
+  // Dauerhafte Benachrichtigung nur ab echtem Timerstart; das Intro darf keinen
+  // vorläufigen Hinweis für Übung 1 erzeugen, der beim Start doppelt erscheint.
+  // Aktualisiert bei Übungswechsel, nicht jede Sekunde (Akku, kein Flackern).
+  const notifiedRunnerStep = useRef(null);
   useEffect(() => {
-    if (state.done) return;
-    if (!state.running && !intro && state.itemIndex === 0 && !state.transition && !introDone.current) return;
+    if (!state.running || state.done) {
+      if (!state.running) notifiedRunnerStep.current = null;
+      return;
+    }
+    const step = `${state.itemIndex}:${state.transition}`;
+    if (notifiedRunnerStep.current === step) return;
+    notifiedRunnerStep.current = step;
     const item = workout.items[state.itemIndex];
     const following = workout.items[state.itemIndex + 1];
     if (!item) return;
@@ -1141,10 +1148,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const label = state.transition ? `Wechsel → ${following?.name ?? ''}` : item.type === 'rest' ? `Pause · ${item.seconds} s` : `${item.name} · ${item.seconds} s`;
     const position = `${workout.items.slice(0, state.itemIndex + 1).filter(i => i.type === 'exercise').length}/${workout.items.filter(i => i.type === 'exercise').length}`;
     showWorkoutNotification({
-      title: state.running || intro ? `6Pack läuft · Übung ${position}` : `6Pack pausiert · Übung ${position}`,
+      title: `6Pack läuft · Übung ${position}`,
       body: `${label}${state.transition ? '' : nextName}`,
     });
-  }, [state.itemIndex, state.transition, state.running, state.done, intro, workout]);
+  }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
   useEffect(() => { if (state.done) clearWorkoutNotification(); }, [state.done]);
   useEffect(() => () => { clearWorkoutNotification(); }, []);
@@ -1182,6 +1189,24 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       lock?.release();
     };
   }, [state.done, state.running]);
+
+  // iOS can suspend Web Audio and speech while the app is obscured. Restore them
+  // when it becomes visible again; the workout clock remains wall-clock based.
+  useEffect(() => {
+    if ((!state.running && !intro) || state.done) return undefined;
+    const restoreAudio = () => {
+      if (document.visibilityState !== 'visible') return;
+      keepMusicPlaying();
+      if (audioContext.current?.state === 'suspended') audioContext.current.resume?.().catch(() => {});
+      window.speechSynthesis?.resume?.();
+    };
+    document.addEventListener('visibilitychange', restoreAudio);
+    window.addEventListener('pageshow', restoreAudio);
+    return () => {
+      document.removeEventListener('visibilitychange', restoreAudio);
+      window.removeEventListener('pageshow', restoreAudio);
+    };
+  }, [state.running, state.done, intro]);
 
   useEffect(() => {
     if (!state.running || state.done || state.transitionLeadIn) return undefined;

@@ -43,8 +43,8 @@
 - [ ] Keine Video-URL vorhanden: `accordian_crunches` (Accordian Crunches), `bent_knee_windshield_wipers` (Bent Knee Windshield Wipers), `rolling_jackknifes` (Rolling Jackknifes), `any_ball_btb_pass` (The "Any Ball" BTB Pass). Eigene MP4s ergänzen, falls für diese Übungen Video-Abdeckung gewünscht ist.
 - [ ] Cache-Prüfung: für die vier bereits vorhandenen MP4-Quellen CORS-/Cache-Antworten im Browser verifizieren; der Cloud-Checkout konnte deren Host wegen DNS-Ausfall nicht erreichen. Cache-Fehler werden derzeit still behandelt.
 - [ ] Video-Cache auf echtem iPhone online vorladen, danach Flugmodus aktivieren und mehrere Workout-Wechsel abnehmen; insbesondere Cache-Einträge und Playback prüfen.
-- [ ] Vom Nutzer gemeldet: iPhone-Mitteilungsfeld dimmt den Bildschirm; Workout-Timer läuft im Hintergrund weiter, Voice/Töne bleiben dabei stumm. Verhalten und Wiederaufnahme mit iOS/PWA auf Gerät prüfen.
-- [ ] Vom Nutzer gemeldet: beim Workout-Start erscheinen zwei Push-/Runner-Benachrichtigungen, eine beim Workout-Intro und eine beim Beginn der ersten Übung. Auf iPhone reproduzieren und Ursache/Ersetzung durch denselben Tag prüfen.
+- [ ] iPhone/PWA: Das Mitteilungsfeld dimmt den sichtbaren Inhalt als iOS-Systemoberfläche; Screen Wake Lock gilt nur für sichtbare Dokumente. iOS suspendiert Web-Audio im Hintergrund. Runner setzt Audio bei Rückkehr jetzt erneut fort; auf echtem iPhone prüfen. Kontinuierliches Audio bei verdeckter/gesperrter PWA würde eine native iOS-Audio-Session mit Background-Audio-Konfiguration erfordern.
+- [x] 2026-10-29: Doppelte erste Workout-Benachrichtigung verhindert: Runner-Benachrichtigungen erscheinen erst nach dem tatsächlichen Timerstart, pro Übungsschritt höchstens einmal.
 - [ ] Passende öffentliche Demo für Any Ball BTB Pass ergänzen.
 - [ ] Neue Übungsdetails am Handy inklusive Video-Wiedergabe abnehmen.
 - [x] 2026-10-23: Drehplan für die 9 offenen bzw. unsicheren Woche-2-Videos mit Priorität, Bewegungshinweisen und Dateinamen erstellt (`docs/VIDEO-DREHPLAN-WOCHE-2.md`).
