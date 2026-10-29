@@ -247,3 +247,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Statusbenachrichtigungen werden nicht mehr im Workout-Intro erzeugt, sondern erst nach dem tatsächlichen Timerstart; pro Runner-Schritt wird nur eine Benachrichtigung angefordert.
 - Bei Rückkehr der Seite in den Vordergrund setzt der Runner einen suspendierten AudioContext und pausierte Sprachsynthese fort.
 - iOS dimmt den Inhalt hinter dem Mitteilungsfeld selbst; Screen Wake Lock ist nur für sichtbare Dokumente vorgesehen. Eine PWA kann Audio im Hintergrund nicht zuverlässig erzwingen. Fortlaufende Hintergrundansagen erfordern eine native Audio-Session; iPhone-Abnahme bleibt offen.
+
+# Runner: Rest-Ansage umgestellt (2026-10-29)
+
+- Die Pausenansage nennt jetzt zuerst die Dauer, z. B. „45 seconds rest“ statt „Rest, 45 seconds“; der optionale Countdown-Zusatz bleibt erhalten.

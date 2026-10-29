@@ -899,7 +899,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Alle Sprachansagen sind komplett Englisch (en-US).
   const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
 
-  // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
+  // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "45 seconds rest".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
   // `countdown`: Ansage vor dem Start ("… , begin in"); danach beginnen die echten fünf Sekunden.
@@ -907,7 +907,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (!('speechSynthesis' in window)) { onend?.(); return; }
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
-      speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US', { onend });
+      speak(`${secondsText(item.seconds)} rest${countdown ? ', begin in' : ''}`, 'en-US', { onend });
       return;
     }
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
