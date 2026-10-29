@@ -212,3 +212,14 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Kalender-Deploy `40082517530` erfolgreich: `sixpackCalendarBegin`, `sixpackCalendarCallback`, `sixpackCalendarDisconnect`, `sixpackCalendarOnTrack` in europe-west1 alle ACTIVE. Live-Trigger filtert `users/{uid}/meta/sixpack`, RETRY_POLICY_RETRY; GCLOUD_PROJECT korrekt `fitness-aos`.
 - Nach ausdrücklicher separater Freigabe nur die drei neuen HTTP-Services per service-lokalem `roles/run.invoker` für Browser/Google-OAuth erreichbar gemacht. Live: Begin/Disconnect anonym HTTP 401 mit UNAUTHENTICATED, Callback ohne State HTTP 400. Internen Track-Trigger nicht öffentlich gemacht.
 - Nutzer muss jetzt in 6Pack unter Einstellungen einmal „Google Kalender verbinden“ und die Google-Kalenderfreigabe bestätigen. Danach hält der Server genau einen kommenden eigenen Workout-Termin im vorhandenen Kalender Fitness aktuell. Echter Kalender-/Handytest noch offen; keine persönlichen Termine durch den Agenten angelegt. Parallele Runner-/Gitignore-/Clips-Arbeitsstände erhalten.
+# 2026-10-29 — Runner-Voice und Bedienung
+
+- Startintro spricht „Welcome to Six Pack Promise.“ und nach 650 ms die Equipment-Zeile als eigenen Satz.
+- Übungsname und Dauer werden mit normalem Sprechtempo angesagt. Erst danach läuft der volle 5-Sekunden-Countdown bis „go“, sowohl beim Workout-Start als auch bei Übungswechseln.
+- „Wiederholen“ setzt die Übung zurück und lässt den Runner direkt weiterlaufen. Die manuellen Start-/Pause-Buttons sind entfernt.
+- `pnpm run build` scheiterte am schreibgeschützten pnpm-Store-Lock; der vorhandene Vite-Build plus Shell-Stamp lief erfolgreich.
+# 2026-10-29 — Cloud-Dev-pnpm-Laufzeit
+
+- `scripts/pnpm-cloud.sh` prüft Schreibbarkeit der XDG-Runtime-/Datenpfade. Falls sie gesperrt sind, nutzt pnpm ignorierte `.pnpm-cloud/runtime`- und `.pnpm-cloud/data`-Verzeichnisse im Workspace.
+- README und AGENTS.md dokumentieren den Cloud-Dev-Aufruf; keine `.npmrc`-Store-Option, da pnpm 11/12 diese Einstellungen aus YAML liest.
+- Mit pnpm 11.3.0: `./scripts/pnpm-cloud.sh run build` erfolgreich, inklusive Daten- und Shell-Stamp-Build. Die Sandbox brauchte für den Zugriff auf ihren vorhandenen Cloud-XDG-Store eine Ausführungsfreigabe.

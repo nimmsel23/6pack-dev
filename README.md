@@ -3,6 +3,23 @@
 Eigenständig baubare 6Pack-App. Der Fitness-Tab nutzt eine veröffentlichte Kopie
 von Oberfläche, Theme und Daten-Adapter unter `fitness-dev/6pack/`.
 
+## Entwicklung in Cloud Dev
+
+Das Repo pinnt pnpm `11.3.0`. In Cloud-Dev-Sitzungen pnpm über den Wrapper
+starten; er verwendet vorhandene beschreibbare XDG-Verzeichnisse und legt
+Runtime-Lock sowie Paketdaten bei Bedarf in ignorierten Repo-Verzeichnissen
+ab. So hängt der Build weder von einem Laptop noch von beschreibbaren
+Host-Verzeichnissen ab.
+
+```sh
+./scripts/pnpm-cloud.sh install --frozen-lockfile
+./scripts/pnpm-cloud.sh run build
+```
+
+Die Cache-Verzeichnisse `.pnpm-cloud/` sind workspace-lokal und nicht Teil des
+Commits. Außerhalb von Cloud Dev funktionieren die üblichen `pnpm`-Befehle
+weiterhin.
+
 ## Lokal
 
 ```sh
