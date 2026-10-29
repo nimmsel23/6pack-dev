@@ -229,3 +229,8 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Welcome wird nicht mehr nach 1,5 Sekunden abgebrochen. Der Intro-Ablauf bleibt linear: Welcome → Equipment-Einleitung; ohne Equipment folgt nach weiterer Satzpause ausdrücklich „No equipment required for this workout.“
 - Danach folgen Übungsansage + „begin in“ und 5, 4, 3, 2, 1. Kein zusätzlicher Countdown davor und kein gesprochenes „go“.
 - Nach der 1 startet der Runner-Timer; der erste lange Startton erklingt erst anschließend.
+
+# 2026-10-29 — Runner-Töne auf Übungsgrenzen beschränkt
+
+- Doppelpieps bei 30 Sekunden entfernt; „30 seconds left“ und „10 seconds left“ bleiben reine Sprachansagen.
+- Lange Töne erklingen nur beim Start und Ende einer Übung, nicht bei Pausen.

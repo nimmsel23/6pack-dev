@@ -1024,9 +1024,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     announcedStep.current = step;
     lastCountdownCall.current = null;
     setVideoError(false);
-    // Eine Übung/Pause ist gerade zu Ende gegangen (nicht der 5s-Wechsel).
-    const itemEnded = previousStep !== null && !previousStep.endsWith(':true');
-    if (itemEnded && (state.transition || state.done)) endBeep();
+    // Ton nur beim Ende einer Übung, auch wenn danach direkt eine Pause folgt.
+    const previousIndex = previousStep === null ? -1 : Number(previousStep.split(':')[0]);
+    const previousItemEnded = previousStep !== null && !previousStep.endsWith(':true');
+    if (previousItemEnded && workout.items[previousIndex]?.type === 'exercise') endBeep();
     if (state.done) {
       if ('speechSynthesis' in window) speak("Congratulations. You've completed today's workout.", 'en-US');
       return;
@@ -1044,13 +1045,13 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }
     const item = workout.items[state.itemIndex];
     if (!item) return;
-    startBeep();
+    if (item.type === 'exercise') startBeep();
     // Nach einem Übergang wurde die Übung bereits angesagt — nur "go" + langer Ton.
     if (previousStep === `${state.itemIndex - 1}:true`) callOut('go');
     else announce(item, state.itemIndex);
   }, [state.itemIndex, state.transition, state.running, state.done, state.repeatCount, workout]);
 
-  // Warnton + "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
+  // Sprachansage "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
   // 30 s dauern (bei genau 30 s wäre es der Start) und nicht in Rest/Wechsel.
   const announcedThirtySecondsStep = useRef(null);
   useEffect(() => {
@@ -1063,8 +1064,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }
     if (announcedThirtySecondsStep.current === step) return;
     announcedThirtySecondsStep.current = step;
-    shortBeep();
-    beep(1000, { duration: 0.12, delay: 0.2 });
     speak('30 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
