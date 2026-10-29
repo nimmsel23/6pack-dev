@@ -5,11 +5,11 @@ von Oberfläche, Theme und Daten-Adapter unter `fitness-dev/6pack/`.
 
 ## Entwicklung in Cloud Dev
 
-Das Repo pinnt pnpm `11.3.0`. In Cloud-Dev-Sitzungen pnpm über den Wrapper
-starten; er verwendet vorhandene beschreibbare XDG-Verzeichnisse und legt
-Runtime-Lock sowie Paketdaten bei Bedarf in ignorierten Repo-Verzeichnissen
-ab. So hängt der Build weder von einem Laptop noch von beschreibbaren
-Host-Verzeichnissen ab.
+CI verwendet pnpm 12. Lokal kann die verfügbare pnpm-12-Version laufen. In
+Cloud-Dev-Sitzungen pnpm über den Wrapper starten; er verwendet vorhandene
+beschreibbare XDG-Verzeichnisse und legt Runtime-Lock sowie Paketdaten bei
+Bedarf in ignorierten Repo-Verzeichnissen ab. So hängt der Build weder von
+einem Laptop noch von beschreibbaren Host-Verzeichnissen ab.
 
 ```sh
 ./scripts/pnpm-cloud.sh install --frozen-lockfile
