@@ -1241,6 +1241,57 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   const current = workout.items[state.itemIndex];
   const next = workout.items[state.itemIndex + 1];
+  const exercisePositions = workout.items
+    .map((item, index) => item.type === 'exercise' ? index : -1)
+    .filter(index => index >= 0);
+  const activeExercisePosition = Math.max(0, exercisePositions.filter(index => index <= state.itemIndex).length - 1);
+  const swipeStart = useRef(null);
+
+  function goToExercise(position) {
+    const itemIndex = exercisePositions[position];
+    if (itemIndex == null || itemIndex === state.itemIndex) return;
+    if (intro) cancelIntro();
+    window.speechSynthesis?.cancel();
+    announcedStep.current = null;
+    announcedThirtySecondsStep.current = null;
+    announcedTenSecondsStep.current = null;
+    lastCountdownCall.current = null;
+    setVideoError(false);
+    setState(s => ({ ...s, itemIndex, remaining: workout.items[itemIndex].seconds, transition: false, transitionLeadIn: false, done: false }));
+  }
+
+  function handleSwipeStart(event) {
+    if (event.touches.length !== 1) { swipeStart.current = null; return; }
+    swipeStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+
+  function handleSwipeEnd(event) {
+    if (!swipeStart.current || !event.changedTouches.length) return;
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    const dx = event.changedTouches[0].clientX - start.x;
+    const dy = event.changedTouches[0].clientY - start.y;
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+    goToExercise(activeExercisePosition + (dx < 0 ? 1 : -1));
+  }
+
+  const exerciseNavigator = exercisePositions.length > 1 && (
+    <div className="flex items-center justify-center gap-2 mt-3" aria-label="Übungsnavigation">
+      {exercisePositions.map((itemIndex, position) => (
+        <button
+          key={`${itemIndex}-${position}`}
+          type="button"
+          onClick={() => goToExercise(position)}
+          aria-label={`Zu Übung ${position + 1}: ${workout.items[itemIndex].name}`}
+          aria-current={position === activeExercisePosition ? 'step' : undefined}
+          className="rounded-full p-1.5"
+          style={{ touchAction: 'manipulation' }}
+        >
+          <span className="block rounded-full transition-all" style={{ width: position === activeExercisePosition ? 18 : 7, height: 7, background: position === activeExercisePosition ? '#e2001a' : 'var(--line)' }} />
+        </button>
+      ))}
+    </div>
+  );
   const selectedVideoUrl = current?.type === 'exercise'
     ? (videoUrls[current.name] ?? current.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[current.name] ?? '')
     : '';
@@ -1359,7 +1410,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   if (state.transition) {
     return createPortal(
-      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
         <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
@@ -1368,6 +1419,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
           <div className="text-sm font-bold mt-2" style={{ color: 'var(--dim)' }}>Als Nächstes</div>
           <div className="text-2xl font-black text-fit-ink mt-1">{next?.name}</div>
           <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
+          {exerciseNavigator}
         </div>
         <div className="flex justify-center gap-2 mt-6">
           {repeatButton}
@@ -1379,7 +1431,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   }
 
   return createPortal(
-    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
@@ -1390,6 +1442,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         </div>
         <div className="text-2xl font-black text-fit-ink mt-2">{current.name}</div>
         <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
+        {exerciseNavigator}
       </div>
 
       {!isRest && (
