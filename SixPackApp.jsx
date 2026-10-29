@@ -558,7 +558,7 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
   );
 }
 
-function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders }) {
+function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders, setupContent }) {
   const [permission, setPermission] = useState(localReminders ? 'default' : reminderSupported() ? Notification.permission : 'unsupported');
   const blocked = permission === 'denied' || permission === 'unsupported';
 
@@ -585,6 +585,10 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
   return (
     <div className="h-full overflow-y-auto">
       <BackHeader label="Settings" onBack={onBack} />
+      {setupContent && <>
+        <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Konto & Workout-Sync</div>
+        {setupContent}
+      </>}
       <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Erinnerung</div>
       <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
         <span className="text-sm font-bold" style={{ color: '#fff' }}>Tägliche Benachrichtigung</span>
@@ -1515,7 +1519,7 @@ function coreHiitActivity(items) {
   };
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders, setupContent }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1799,7 +1803,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   return (
     <section className={onSubNav ? 'w-full h-full overflow-hidden' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} eatInApp={!onSubNav} />}
-        {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} />}
+        {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (

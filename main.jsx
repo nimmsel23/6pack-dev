@@ -8,7 +8,7 @@ import { isNativeApp, nativeReminderDelivery, watchNativeResume } from './native
 
 // Login nur für den Workout-Sync: dieselbe Firebase-uid wie in der Fitness-App,
 // damit dort das hier geloggte Workout am selben Tag gelesen wird.
-function SyncBar({ state }) {
+function SyncSettings({ state }) {
   const { user, pending } = state;
   const [loginOpen, setLoginOpen] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -23,29 +23,29 @@ function SyncBar({ state }) {
     finally { setBusy(false); }
   }
   return (
-    <>
-    <div className="flex items-center justify-between gap-3 px-4 pb-3 text-[11px] shrink-0 font-semibold" style={{ color: 'var(--dim, #888)' }}>
-      <span>
-        {user ? `Sync: ${user.email || user.uid}` : 'Nicht angemeldet — Workouts bleiben auf diesem Gerät'}
-        {pending > 0 && ` · ${pending} wartet`}
-      </span>
-      <button
-        onClick={() => {
-          if (isNativeApp && !user) return setLoginOpen(open => !open);
-          (user ? signOutUser() : signInGoogle()).catch((e) => console.warn('[sixpack] Auth:', e));
-        }}
-        className="underline"
-      >
-        {user ? 'Abmelden' : 'Anmelden'}
-      </button>
+    <div className="px-4 pb-4">
+      <div className="flex items-center justify-between gap-3 text-[11px] font-semibold" style={{ color: 'var(--dim, #888)' }}>
+        <span>
+          {user ? `Sync: ${user.email || user.uid}` : 'Nicht angemeldet — Workouts bleiben auf diesem Gerät'}
+          {pending > 0 && ` · ${pending} wartet`}
+        </span>
+        <button
+          onClick={() => {
+            if (isNativeApp && !user) return setLoginOpen(open => !open);
+            (user ? signOutUser() : signInGoogle()).catch((e) => console.warn('[sixpack] Auth:', e));
+          }}
+          className="underline"
+        >
+          {user ? 'Abmelden' : 'Anmelden'}
+        </button>
+      </div>
+      {loginOpen && !user && <form onSubmit={submitLogin} className="pt-3 flex flex-col gap-2">
+        <label>E-Mail<input name="email" type="email" autoComplete="username" required className="block w-full bg-black text-white border p-2" /></label>
+        <label>Passwort<input name="password" type="password" autoComplete="current-password" required className="block w-full bg-black text-white border p-2" /></label>
+        <button type="submit" disabled={busy}>{busy ? 'Anmelden …' : 'Mit E-Mail anmelden'}</button>
+        {loginError && <p role="alert">{loginError}</p>}
+      </form>}
     </div>
-    {loginOpen && !user && <form onSubmit={submitLogin} className="px-4 pb-4 flex flex-col gap-2">
-      <label>E-Mail<input name="email" type="email" autoComplete="username" required className="block w-full bg-black text-white border p-2" /></label>
-      <label>Passwort<input name="password" type="password" autoComplete="current-password" required className="block w-full bg-black text-white border p-2" /></label>
-      <button type="submit" disabled={busy}>{busy ? 'Anmelden …' : 'Mit E-Mail anmelden'}</button>
-      {loginError && <p role="alert">{loginError}</p>}
-    </form>}
-    </>
   );
 }
 
@@ -63,8 +63,7 @@ function Root() {
   return (
     <main className="w-full h-dvh flex flex-col">
       <UpdateBanner />
-      <SyncBar state={state} />
-      <SixPackPromiseCard uid={state.user?.uid || 'local'} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
+      <SixPackPromiseCard uid={state.user?.uid || 'local'} setupContent={<SyncSettings state={state} />} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
     </main>
   );
 }

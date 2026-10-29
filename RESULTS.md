@@ -275,3 +275,9 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - `packageManager: pnpm@11.3.0` und der Functions-Unterprojekt-Pin waren nur für implizite Toolauswahl/Versionsprüfung nötig, nicht für Lockfile-Kompatibilität. Beide Lockfiles sind Version 9 und blieben unverändert.
 - Exakte Engine-Pins entfernt; Actions wählen jetzt explizit pnpm 12 (Major-Linie). Die Cloud-Dev-Wrapper bleiben für beschreibbare Runtime-/Store-Pfade nötig, nicht für einen alten pnpm-Pin.
 - Mit pnpm 12.15.0 bestanden Frozen-Install in Root und Functions sowie `pnpm run build` inklusive Daten- und Shell-Stamp-Build. Der bisherige Engine-Store-Lock-Fehler trat nicht mehr auf.
+
+# Runner-Benachrichtigung und Setup-Konto (2026-10-29)
+
+- Tippen auf die laufende Workout-Benachrichtigung fokussiert jetzt das bestehende 6Pack-Fenster ohne Navigation/Reload, damit der aktive Runner-Zustand erhalten bleibt. Andere Benachrichtigungen behalten ihr normales App-Ziel.
+- Die Standalone-Headline mit Sync-Status und Anmelden/Abmelden liegt jetzt im Setup/Settings-Tab; der dauerhaft sichtbare Streifen wurde entfernt.
+- Build und erzeugter Service Worker geprüft. Ein Klick bei vollständig vom Betriebssystem beendetem App-Prozess kann den flüchtigen Runner-Zustand nicht wiederherstellen; dafür wäre zusätzlich persistente Session-Wiederaufnahme nötig.
