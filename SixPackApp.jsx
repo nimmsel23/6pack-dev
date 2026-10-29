@@ -1032,8 +1032,7 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     };
     const countdown = () => {
       if (!alive()) return;
-      startBeep();
-      exerciseLeadIn();
+      exerciseLeadIn(); // kein Tüt hier: der lange Ton kommt nur beim Start der Übung (go)
     };
 
     if (!speechOn()) {
@@ -1102,9 +1101,12 @@ function RunnerScreen({ workout, onFinish, onBack, onSelfie, autoStart = false }
     }
     if (announcedThirtySecondsStep.current === step) return;
     announcedThirtySecondsStep.current = step;
-    shortBeep();
-    beep(1000, { duration: 0.12, delay: 0.2 });
-    speak('30 seconds left', 'en-US');
+    // Kein Ton, nur Ansage (User-Vorgabe 2026-10-29); im Musik-Modus (Sprache aus) bleibt der Doppel-Piep.
+    if (speechOn()) speak('30 seconds left', 'en-US');
+    else {
+      shortBeep();
+      beep(1000, { duration: 0.12, delay: 0.2 });
+    }
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // "10 seconds left" während einer laufenden Übung (nicht Rest/Wechsel) —
