@@ -863,16 +863,20 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     // dauerhaft leer cachen, sonst bleibt die App für die ganze Session auf
     // der blechernen Default-Stimme stehen.
     if (!voicesCache.current || voicesCache.current.length === 0) voicesCache.current = window.speechSynthesis.getVoices();
-    const voices = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+    const available = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+    const exact = available.filter(v => v.lang.toLowerCase() === lang.toLowerCase());
+    const voices = exact.length ? exact : available;
     if (voices.length === 0) return null;
-    const premium = voices.find(v => /natural|enhanced|premium/i.test(v.name));
-    if (premium) return premium;
+    const natural = voices.find(v => /natural|neural|enhanced|premium/i.test(v.name));
+    if (natural) return natural;
     const google = voices.find(v => /google/i.test(v.name));
     if (google) return google;
+    const expressive = voices.find(v => /samantha|ava|serena|aria|jenny|allison/i.test(v.name));
+    if (expressive) return expressive;
     return voices[0];
   }
 
-  function speak(text, lang, { pitch = 1.08, rate = 1.02, onend, onstart } = {}) {
+  function speak(text, lang, { pitch = 1.12, rate = 1.06, onend, onstart } = {}) {
     keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;

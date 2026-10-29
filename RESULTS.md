@@ -264,3 +264,8 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 # Runner: lebendigere Sprachprosodie (2026-10-29)
 
 - Die Verlangsamung wurde zurückgenommen; leicht höheres Sprechtempo und mehr Tonhöhenvariation sollen die Stimme wacher wirken lassen. Welcome und Abschluss haben eine natürlichere, ermutigende Betonung.
+
+# Runner: monotone Systemstimme vermeiden (2026-10-29)
+
+- Die Stimmenauswahl bevorzugt jetzt zuerst eine exakte Sprachvariante (z. B. en-US), dann natürlich/hochwertig markierte Stimmen, Google und bekannte expressive Systemstimmen vor dem beliebigen ersten Eintrag.
+- Die Prosodie wurde etwas lebendiger eingestellt. Die tatsächliche Qualität hängt weiterhin von den auf dem Gerät verfügbaren Stimmen ab.
