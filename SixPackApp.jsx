@@ -765,8 +765,8 @@ function workoutVideoSources(workout, videoUrls = {}) {
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
-// Im Wechsel läuft die Ansage "<Übung> for 30 seconds, begin in" und danach "2" (bei Restzeit 2), "1" (bei 1)
-// und "go" + langer Ton beim Start. Die Ansage muss vor dem "2" fertig sein → Zeitfenster abzüglich Puffer.
+// Zwischen zwei Übungen liegen fünf echte Timer-Sekunden. Nach der Übungsansage
+// werden im verbleibenden Countdown die jeweils noch übrigen 3, 2 und 1 Sekunden gesprochen.
 
 function needsTransition(items, index) {
   return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
@@ -863,16 +863,20 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     // dauerhaft leer cachen, sonst bleibt die App für die ganze Session auf
     // der blechernen Default-Stimme stehen.
     if (!voicesCache.current || voicesCache.current.length === 0) voicesCache.current = window.speechSynthesis.getVoices();
-    const voices = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+    const available = voicesCache.current.filter(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+    const exact = available.filter(v => v.lang.toLowerCase() === lang.toLowerCase());
+    const voices = exact.length ? exact : available;
     if (voices.length === 0) return null;
-    const premium = voices.find(v => /natural|enhanced|premium/i.test(v.name));
-    if (premium) return premium;
+    const natural = voices.find(v => /natural|neural|enhanced|premium/i.test(v.name));
+    if (natural) return natural;
     const google = voices.find(v => /google/i.test(v.name));
     if (google) return google;
+    const expressive = voices.find(v => /samantha|ava|serena|aria|jenny|allison/i.test(v.name));
+    if (expressive) return expressive;
     return voices[0];
   }
 
-  function speak(text, lang, { pitch = 1, rate = 1, onend, onstart } = {}) {
+  function speak(text, lang, { pitch = 1.12, rate = 1.06, onend, onstart } = {}) {
     keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
@@ -899,7 +903,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Alle Sprachansagen sind komplett Englisch (en-US).
   const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
 
-  // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
+  // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "45 seconds rest".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
   // `countdown`: Ansage vor dem Start ("… , begin in"); danach beginnen die echten fünf Sekunden.
@@ -907,7 +911,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (!('speechSynthesis' in window)) { onend?.(); return; }
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
-      speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US', { onend });
+      speak(`${secondsText(item.seconds)} rest${countdown ? ', begin in' : ''}`, 'en-US', { onend });
       return;
     }
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
@@ -1036,7 +1040,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const equipmentLine = noEquipment
       ? "Today's workout will require the following pieces of equipment."
       : `Today's workout will require the following pieces of equipment: ${equipment}.`;
-    const welcome = 'Welcome to Six Pack Promise.';
+    const welcome = "Welcome to Six Pack Promise! Let's get ready!";
     let equipmentScheduled = false;
     const speakNoEquipment = () => {
       if (alive()) speak('No equipment required for this workout.', 'en-US', { onend: proceed });
@@ -1065,9 +1069,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     // Ton nur beim Ende einer Übung, auch wenn danach direkt eine Pause folgt.
     const previousIndex = previousStep === null ? -1 : Number(previousStep.split(':')[0]);
     const previousItemEnded = previousStep !== null && !previousStep.endsWith(':true');
-    if (previousItemEnded && workout.items[previousIndex]?.type === 'exercise') endBeep();
+    if (!state.done && previousItemEnded && workout.items[previousIndex]?.type === 'exercise') endBeep();
     if (state.done) {
-      if ('speechSynthesis' in window) speak("Congratulations. You've completed today's workout.", 'en-US');
+      if ('speechSynthesis' in window) speak("Great work! You've completed today's workout.", 'en-US');
       return;
     }
     if (state.transition) {
@@ -1121,9 +1125,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     speak('10 seconds left', 'en-US');
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
-  // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
+  // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 3, 2 und 1 die tatsächlich
+  // verbleibende Zahl ansagen. Bei verzögerten Ticks wird die aktuelle Zahl verwendet.
   useEffect(() => {
-    if (!state.running || !state.transition || state.transitionLeadIn || state.remaining > 2 || state.remaining < 1) return;
+    if (!state.running || !state.transition || state.transitionLeadIn || state.remaining > 3 || state.remaining < 1) return;
     if (lastCountdownCall.current === state.remaining) return;
     lastCountdownCall.current = state.remaining;
     callOut(String(state.remaining));
@@ -1241,6 +1246,57 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   const current = workout.items[state.itemIndex];
   const next = workout.items[state.itemIndex + 1];
+  const exercisePositions = workout.items
+    .map((item, index) => item.type === 'exercise' ? index : -1)
+    .filter(index => index >= 0);
+  const activeExercisePosition = Math.max(0, exercisePositions.filter(index => index <= state.itemIndex).length - 1);
+  const swipeStart = useRef(null);
+
+  function goToExercise(position) {
+    const itemIndex = exercisePositions[position];
+    if (itemIndex == null || itemIndex === state.itemIndex) return;
+    if (intro) cancelIntro();
+    window.speechSynthesis?.cancel();
+    announcedStep.current = null;
+    announcedThirtySecondsStep.current = null;
+    announcedTenSecondsStep.current = null;
+    lastCountdownCall.current = null;
+    setVideoError(false);
+    setState(s => ({ ...s, itemIndex, remaining: workout.items[itemIndex].seconds, transition: false, transitionLeadIn: false, done: false }));
+  }
+
+  function handleSwipeStart(event) {
+    if (event.touches.length !== 1) { swipeStart.current = null; return; }
+    swipeStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+
+  function handleSwipeEnd(event) {
+    if (!swipeStart.current || !event.changedTouches.length) return;
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    const dx = event.changedTouches[0].clientX - start.x;
+    const dy = event.changedTouches[0].clientY - start.y;
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+    goToExercise(activeExercisePosition + (dx < 0 ? 1 : -1));
+  }
+
+  const exerciseNavigator = exercisePositions.length > 1 && (
+    <div className="flex items-center justify-center gap-2 mt-3" aria-label="Übungsnavigation">
+      {exercisePositions.map((itemIndex, position) => (
+        <button
+          key={`${itemIndex}-${position}`}
+          type="button"
+          onClick={() => goToExercise(position)}
+          aria-label={`Zu Übung ${position + 1}: ${workout.items[itemIndex].name}`}
+          aria-current={position === activeExercisePosition ? 'step' : undefined}
+          className="rounded-full p-1.5"
+          style={{ touchAction: 'manipulation' }}
+        >
+          <span className="block rounded-full transition-all" style={{ width: position === activeExercisePosition ? 18 : 7, height: 7, background: position === activeExercisePosition ? '#e2001a' : 'var(--line)' }} />
+        </button>
+      ))}
+    </div>
+  );
   const selectedVideoUrl = current?.type === 'exercise'
     ? (videoUrls[current.name] ?? current.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[current.name] ?? '')
     : '';
@@ -1359,7 +1415,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   if (state.transition) {
     return createPortal(
-      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
         <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
@@ -1368,6 +1424,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
           <div className="text-sm font-bold mt-2" style={{ color: 'var(--dim)' }}>Als Nächstes</div>
           <div className="text-2xl font-black text-fit-ink mt-1">{next?.name}</div>
           <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
+          {exerciseNavigator}
         </div>
         <div className="flex justify-center gap-2 mt-6">
           {repeatButton}
@@ -1379,7 +1436,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   }
 
   return createPortal(
-    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
+    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
@@ -1390,6 +1447,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         </div>
         <div className="text-2xl font-black text-fit-ink mt-2">{current.name}</div>
         <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
+        {exerciseNavigator}
       </div>
 
       {!isRest && (

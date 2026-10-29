@@ -247,3 +247,25 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Statusbenachrichtigungen werden nicht mehr im Workout-Intro erzeugt, sondern erst nach dem tatsächlichen Timerstart; pro Runner-Schritt wird nur eine Benachrichtigung angefordert.
 - Bei Rückkehr der Seite in den Vordergrund setzt der Runner einen suspendierten AudioContext und pausierte Sprachsynthese fort.
 - iOS dimmt den Inhalt hinter dem Mitteilungsfeld selbst; Screen Wake Lock ist nur für sichtbare Dokumente vorgesehen. Eine PWA kann Audio im Hintergrund nicht zuverlässig erzwingen. Fortlaufende Hintergrundansagen erfordern eine native Audio-Session; iPhone-Abnahme bleibt offen.
+
+# Runner: Rest-Ansage umgestellt (2026-10-29)
+
+- Die Pausenansage nennt jetzt zuerst die Dauer, z. B. „45 seconds rest“ statt „Rest, 45 seconds“; der optionale Countdown-Zusatz bleibt erhalten.
+
+# Runner: Countdown in der 5-Sekunden-Übergangspause (2026-10-29)
+
+- Zwischen direkt aufeinanderfolgenden Übungen läuft weiterhin eine volle 5-Sekunden-Pause. Im letzten Abschnitt werden die aktuell verbleibenden 3, 2 und 1 Sekunden angesagt; nach verzögerten Ticks wird die tatsächlich verbleibende Zahl verwendet.
+
+# Runner: Abschluss ohne Tüt-Ton, wärmere Stimme (2026-10-29)
+
+- Beim Ende der letzten Übung entfällt der Endton; Endtöne an Übungswechseln bleiben erhalten.
+- Sprachsynthese spricht standardmäßig etwas langsamer und mit leicht angehobener Tonhöhe. Welcome und Abschlussformulierung sind einladender.
+
+# Runner: lebendigere Sprachprosodie (2026-10-29)
+
+- Die Verlangsamung wurde zurückgenommen; leicht höheres Sprechtempo und mehr Tonhöhenvariation sollen die Stimme wacher wirken lassen. Welcome und Abschluss haben eine natürlichere, ermutigende Betonung.
+
+# Runner: monotone Systemstimme vermeiden (2026-10-29)
+
+- Die Stimmenauswahl bevorzugt jetzt zuerst eine exakte Sprachvariante (z. B. en-US), dann natürlich/hochwertig markierte Stimmen, Google und bekannte expressive Systemstimmen vor dem beliebigen ersten Eintrag.
+- Die Prosodie wurde etwas lebendiger eingestellt. Die tatsächliche Qualität hängt weiterhin von den auf dem Gerät verfügbaren Stimmen ab.
