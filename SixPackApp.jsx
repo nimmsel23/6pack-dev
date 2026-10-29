@@ -872,7 +872,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     return voices[0];
   }
 
-  function speak(text, lang, { pitch = 1.04, rate = 0.95, onend, onstart } = {}) {
+  function speak(text, lang, { pitch = 1.08, rate = 1.02, onend, onstart } = {}) {
     keepMusicPlaying();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
@@ -1036,7 +1036,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const equipmentLine = noEquipment
       ? "Today's workout will require the following pieces of equipment."
       : `Today's workout will require the following pieces of equipment: ${equipment}.`;
-    const welcome = "Welcome to Six Pack Promise. Let's get ready.";
+    const welcome = "Welcome to Six Pack Promise! Let's get ready!";
     let equipmentScheduled = false;
     const speakNoEquipment = () => {
       if (alive()) speak('No equipment required for this workout.', 'en-US', { onend: proceed });
@@ -1067,7 +1067,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const previousItemEnded = previousStep !== null && !previousStep.endsWith(':true');
     if (!state.done && previousItemEnded && workout.items[previousIndex]?.type === 'exercise') endBeep();
     if (state.done) {
-      if ('speechSynthesis' in window) speak("Great work. You've completed today's workout.", 'en-US');
+      if ('speechSynthesis' in window) speak("Great work! You've completed today's workout.", 'en-US');
       return;
     }
     if (state.transition) {

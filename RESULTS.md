@@ -260,3 +260,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 
 - Beim Ende der letzten Übung entfällt der Endton; Endtöne an Übungswechseln bleiben erhalten.
 - Sprachsynthese spricht standardmäßig etwas langsamer und mit leicht angehobener Tonhöhe. Welcome und Abschlussformulierung sind einladender.
+
+# Runner: lebendigere Sprachprosodie (2026-10-29)
+
+- Die Verlangsamung wurde zurückgenommen; leicht höheres Sprechtempo und mehr Tonhöhenvariation sollen die Stimme wacher wirken lassen. Welcome und Abschluss haben eine natürlichere, ermutigende Betonung.
