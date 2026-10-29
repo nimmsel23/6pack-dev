@@ -8,7 +8,9 @@
       "register": { "expose": true, "reloadWindowMs": 0 },
       "sw": {
         "shell": ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png"],
-        "navTimeoutMs": 400
+        "navTimeoutMs": 400,
+        "notificationClick": false,
+        "extraFile": "workoutNotificationSW.js"
       },
       "splash": {
         "minMs": 0,

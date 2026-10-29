@@ -68,3 +68,4 @@
 - [x] 2026-10-24: Genau einen kommenden 6Pack-Termin im vorhandenen Google-Kalender „Fitness“ nach Programm-Abschluss serverseitig aktualisieren; keine Terminserie/kein Kalender-Spam.
 - [x] 2026-10-24: Kalender-OAuth/Secret und Calendar-Functions in Production einrichten; alle vier Functions ACTIVE und Live-Auth-Sperren geprüft.
 - [ ] Google Kalender in den App-Einstellungen verbinden und echten nächsten Workout-Termin/Handy-Reminder abnehmen (docs/GOOGLE-CALENDAR.md).
+- [x] 2026-10-29: Workout-Benachrichtigung fokussiert das laufende App-Fenster ohne Reload; Sync-Kontoanzeige und Abmelden in den Setup-Tab verschoben.

@@ -59,7 +59,15 @@ export async function showWorkoutNotification({ title, body }) {
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
     const registration = await webRegistration();
     // silent: keine Töne/Vibration; requireInteraction: bleibt stehen, bis sie geschlossen wird (Android/Desktop).
-    if (registration?.showNotification) await registration.showNotification(title, { body, tag: WEB_TAG, icon: '/icon-192.png', silent: true, renotify: false, requireInteraction: true });
+    if (registration?.showNotification) await registration.showNotification(title, {
+      body,
+      tag: WEB_TAG,
+      icon: '/icon-192.png',
+      silent: true,
+      renotify: false,
+      requireInteraction: true,
+      data: { kind: 'workout-live' },
+    });
   } catch {
     // Die Benachrichtigung ist optional — der Runner läuft auch ohne.
   }
