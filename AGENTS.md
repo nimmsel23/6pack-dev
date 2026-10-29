@@ -76,13 +76,16 @@ Production-Weg ist VitalOS-CI (`deploy-firestore-rules.yml`), kein direkter Agen
 ## Build, Tests und generierte Dateien
 
 Paketmanager: **pnpm**, Version aus `package.json`.
+In Cloud-Dev-Sitzungen Befehle über `./scripts/pnpm-cloud.sh` starten. Der
+Wrapper verwendet beschreibbare XDG-Verzeichnisse und fällt bei gesperrten
+Host-Pfaden auf ignorierte Workspace-Verzeichnisse zurück.
 
 ```sh
 node build-data.mjs
 node scripts/test-exercise-details.mjs
 node scripts/test-selfie-cloud.mjs
-pnpm run build
-pnpm run vendor:check
+./scripts/pnpm-cloud.sh run build
+./scripts/pnpm-cloud.sh run vendor:check
 ```
 
 Bei Auth-/Rules-Änderungen zusätzlich `scripts/test-selfie-emulator.mjs` gegen
@@ -119,3 +122,26 @@ Dev-Prozesse über `aos-kitty-launch` starten.
 
 Runner-Anforderungen (englische Ansagen, Intro, 30s/10s-Cues, Wake Lock,
 Musik-Mischung und Finisher) stehen ergänzend in `CLAUDE.md` und bleiben erhalten.
+
+<!-- release-weg:start -->
+## Release-Weg und Branches (6Pack)
+
+Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel23/vitalos, `docs/DEPLOYMENT.md`).
+
+**dev → master → vitalos**
+
+| Branch | Rolle | Lokal |
+|---|---|---|
+| `dev` | Edits und Previews (Preview-Channel `dev`, PR-Channel je PR) | ja — dieser Klon steht fest auf `dev` |
+| `master` | **Standalone-Prod** (Hosting-Target `sixpack` = vos-6pack.web.app (Workflow `deploy.yml`, Push auf `master`)); deployt nur per CI (`Live Deploy (6Pack master)`) | nein, muss nicht existieren |
+| `vitalos` | Stand für die Shell (`~/vitalos/6pack-app`); darf hinter `master` liegen | nur als `-app`-Checkout im Meta-Repo |
+
+- Release: `vos-release-pr 6pack` öffnet den PR `dev → master`. `Check (6Pack)` läuft, bei Grün mergt der Auto-Merge
+  (Merge-Commit) und startet den Live-Deploy per Dispatch. Nie von Hand auf `master` pushen, außer Hotfix.
+- Shell: `vos-release 6pack` merged `origin/master` nach `vitalos` und bumpt den Pointer im Meta-Repo (deployt die Shell).
+  Vorher `vos-overview`.
+- `master` wird nie lokal ausgecheckt; `git fetch` genügt. Das Meta-Repo `vitalos` deployt nur noch die Shell.
+- Nicht auf `dev` im Hauptordner arbeiten, wenn ein Agent-/Feature-Branch nötig ist: Worktree
+  (`git worktree add .worktrees/<name> <branch>`).
+- Default-Branch des Repos ist `master`; die `.github/workflows/*.yml` auf `master` bestimmen das Live-Verhalten.
+<!-- release-weg:end -->

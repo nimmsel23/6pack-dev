@@ -6,7 +6,7 @@ import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Play, Pause, Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
+import { Dumbbell, Shuffle, Check, ChevronLeft, ListChecks, UtensilsCrossed, BookOpen, Star, Camera, Video, Lightbulb, ChevronRight, Settings, RotateCcw } from 'lucide-react';
 import { newRunId } from './workoutDoc.js';
 import { showWorkoutNotification, clearWorkoutNotification, requestWorkoutNotificationPermission } from './workoutNotification.js';
 import { getReminder, reminderSupported, requestReminderPermission } from './reminder.js';
@@ -767,7 +767,6 @@ function workoutVideoSources(workout, videoUrls = {}) {
 const TRANSITION_SECONDS = 5;
 // Im Wechsel läuft die Ansage "<Übung> for 30 seconds, begin in" und danach "2" (bei Restzeit 2), "1" (bei 1)
 // und "go" + langer Ton beim Start. Die Ansage muss vor dem "2" fertig sein → Zeitfenster abzüglich Puffer.
-const LEAD_IN_SPEECH_SECONDS = TRANSITION_SECONDS - 2.4;
 
 function needsTransition(items, index) {
   return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
@@ -782,6 +781,7 @@ function createRunnerState(workout) {
     itemIndex: 0,
     remaining: workout.items[0]?.seconds || 0,
     transition: false,
+    transitionLeadIn: false,
     running: false,
     done: workout.items.length === 0,
     repeatCount: 0,
@@ -793,7 +793,7 @@ function advanceRunnerState(state, workout) {
   const remaining = state.remaining - 1;
   if (remaining > 0) return { ...state, remaining };
   if (!state.transition && needsTransition(workout.items, state.itemIndex)) {
-    return { ...state, transition: true, remaining: TRANSITION_SECONDS };
+    return { ...state, transition: true, transitionLeadIn: true, remaining: TRANSITION_SECONDS };
   }
   const nextIndex = state.itemIndex + 1;
   if (nextIndex >= workout.items.length) return { ...state, remaining: 0, transition: false, running: false, done: true };
@@ -898,13 +898,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "Rest, 45 seconds".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
-  // `countdown`: Ansage vor dem Start ("… , begin in"), mit Sprechtempo so gewählt, dass sie vor dem
-  // gesprochenen "2" fertig ist — der 5s-Wechsel wird dadurch nie überschritten.
-  function announce(item, index, { countdown = false, side = '' } = {}) {
-    if (!('speechSynthesis' in window)) return;
+  // `countdown`: Ansage vor dem Start ("… , begin in"); danach beginnen die echten fünf Sekunden.
+  function announce(item, index, { countdown = false, side = '', onend } = {}) {
+    if (!('speechSynthesis' in window)) { onend?.(); return; }
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
-      speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US');
+      speak(`Rest, ${secondsText(item.seconds)}${countdown ? ', begin in' : ''}`, 'en-US', { onend });
       return;
     }
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
@@ -912,12 +911,11 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       ? 'Switch sides'
       : `${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
     if (!countdown) {
-      speak(text, 'en-US');
+      speak(text, 'en-US', { onend });
       return;
     }
     const withLeadIn = `${text}, begin in`;
-    const estimatedSeconds = withLeadIn.length / 14; // ca. 14 Zeichen/s bei Tempo 1
-    speak(withLeadIn, 'en-US', { rate: Math.min(1.6, Math.max(1, estimatedSeconds / LEAD_IN_SPEECH_SECONDS)) });
+    speak(withLeadIn, 'en-US', { onend });
   }
 
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
@@ -975,10 +973,14 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     };
     const exerciseLeadIn = () => {
       if (!alive()) return;
-      if (first) announce(first, 0, { countdown: true, side });
-      later(() => callOut('2'), (TRANSITION_SECONDS - 2) * 1000);
-      later(() => callOut('1'), (TRANSITION_SECONDS - 1) * 1000);
-      later(go, TRANSITION_SECONDS * 1000);
+      const beginFiveSeconds = () => {
+        if (!alive()) return;
+        later(() => callOut('2'), (TRANSITION_SECONDS - 2) * 1000);
+        later(() => callOut('1'), (TRANSITION_SECONDS - 1) * 1000);
+        later(go, TRANSITION_SECONDS * 1000);
+      };
+      if (first) announce(first, 0, { countdown: true, side, onend: beginFiveSeconds });
+      else beginFiveSeconds();
     };
     const countdown = () => {
       if (!alive()) return;
@@ -1002,13 +1004,19 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     };
     const equipment = equipmentSpeech(workout.items);
     const equipmentLine = equipment.startsWith('no equipment') ? equipment : `Today's workout will require the following pieces of equipment: ${equipment}`;
-    const welcome = `Welcome to Six Pack Promise. ${equipmentLine}.`;
+    const welcome = 'Welcome to Six Pack Promise.';
     let spoken = false;
-    speak(welcome, 'en-US', { onstart: () => { spoken = true; }, onend: proceed });
+    speak(welcome, 'en-US', { onstart: () => { spoken = true; }, onend: () => {
+      if (!alive()) return;
+      later(() => {
+        if (!alive()) return;
+        speak(`${equipmentLine}.`, 'en-US', { onend: proceed });
+      }, 650);
+    } });
     // Sicherungen, damit der Start nie hängt: Sprachausgabe startet nicht (iOS/Android blockiert sie
     // gelegentlich) → nach 1,5 s direkt zum Countdown; onend feuert nie → Sprechdauer-Schätzung + 2 s.
     later(() => { if (!spoken) { window.speechSynthesis.cancel(); proceed(); } }, 1500);
-    later(proceed, welcome.length / 12 * 1000 + 2000); // Sicherung, falls onend nie feuert
+    later(proceed, 9000); // Sicherung, falls onend nie feuert
   }
 
   useEffect(() => {
@@ -1031,7 +1039,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       // "2", "1" kommen im Countdown-Effekt unten, "go" beim Start der Übung.
       const nextIndex = state.itemIndex + 1;
       const nextItem = workout.items[nextIndex];
-      if (nextItem) announce(nextItem, nextIndex, { countdown: true });
+      if (nextItem) announce(nextItem, nextIndex, {
+        countdown: true,
+        onend: () => setState(s => s.transition ? { ...s, transitionLeadIn: false, remaining: TRANSITION_SECONDS } : s),
+      });
       return;
     }
     const item = workout.items[state.itemIndex];
@@ -1078,7 +1089,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 2 und 1 "2", "1" (keine Pieps mehr vor dem Ende).
   useEffect(() => {
-    if (!state.running || !state.transition || state.remaining > 2 || state.remaining < 1) return;
+    if (!state.running || !state.transition || state.transitionLeadIn || state.remaining > 2 || state.remaining < 1) return;
     if (lastCountdownCall.current === state.remaining) return;
     lastCountdownCall.current = state.remaining;
     callOut(String(state.remaining));
@@ -1139,7 +1150,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   }, [state.done, state.running]);
 
   useEffect(() => {
-    if (!state.running || state.done) return undefined;
+    if (!state.running || state.done || state.transitionLeadIn) return undefined;
     // Zeit aus der Uhr ableiten: wird der Timer gedrosselt (iOS, Sperrbildschirm, schwere
     // Iframes), holt der nächste Tick die verpassten Sekunden nach, statt stehen zu bleiben.
     let lastTick = Date.now();
@@ -1154,7 +1165,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       });
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [state.running, state.done, workout]);
+  }, [state.running, state.done, state.transitionLeadIn, workout]);
 
   useEffect(() => {
     if (state.done && !completionReported.current) {
@@ -1248,6 +1259,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       ...s,
       remaining: exercise.seconds,
       transition: false,
+      transitionLeadIn: false,
+      running: true,
       done: false,
       repeatCount: s.repeatCount + 1,
     }));
@@ -1293,15 +1306,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         </div>
         <div className="flex justify-center gap-2 mt-6">
           {repeatButton}
-          <button
-            type="button"
-            onClick={toggleRunning}
-            className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
-            style={{ background: '#e2001a', color: '#fff' }}
-          >
-            {state.running || intro ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
-            {state.running || intro ? 'Pause' : 'Start'}
-          </button>
         </div>
       </div>,
       document.body
@@ -1349,15 +1353,6 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
       <div className="flex justify-center gap-2 mt-3">
         {repeatButton}
-        <button
-          type="button"
-          onClick={toggleRunning}
-          className="min-h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em]"
-          style={{ background: '#e2001a', color: '#fff' }}
-        >
-          {state.running || intro ? <Pause size={16} strokeWidth={3} /> : <Play size={16} strokeWidth={3} />}
-          {state.running || intro ? 'Pause' : 'Start'}
-        </button>
       </div>
     </div>,
     document.body
