@@ -255,3 +255,8 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 # Runner: Countdown in der 5-Sekunden-Übergangspause (2026-10-29)
 
 - Zwischen direkt aufeinanderfolgenden Übungen läuft weiterhin eine volle 5-Sekunden-Pause. Im letzten Abschnitt werden die aktuell verbleibenden 3, 2 und 1 Sekunden angesagt; nach verzögerten Ticks wird die tatsächlich verbleibende Zahl verwendet.
+
+# Runner: Abschluss ohne Tüt-Ton, wärmere Stimme (2026-10-29)
+
+- Beim Ende der letzten Übung entfällt der Endton; Endtöne an Übungswechseln bleiben erhalten.
+- Sprachsynthese spricht standardmäßig etwas langsamer und mit leicht angehobener Tonhöhe. Welcome und Abschlussformulierung sind einladender.
