@@ -26,7 +26,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
   "left side" nur bei einseitigen Übungen (dieselbe Übung zweimal direkt hintereinander; die zweite Hälfte sagt weiter "Switch sides"). Tippen während des Intros bricht ab.
 - **Musik darf nie pausieren** — weder beim Öffnen der App noch beim Übungsstart: `keepMusicPlaying()` setzt `navigator.audioSession.type = 'ambient'` schon beim Laden des Moduls, vor jedem Audio-Start und nach jeder Rückkehr in die App (iOS). Videos immer `muted`. Nichts Audio-Relevantes vor dem ersten Tap erzeugen.
 - **6Pack-Session (2026-10-23):** Bleibt eine Kraft-Session (`sessionMode: 'strength'`, wie Calisthenics), aber ohne Sets/Reps/Weight: Übungen stehen schlank als `{ name, duration }` (Sekunden, `setsArray: []`); entscheidend ist die Dauer. Zusätzlich `activity` = Core HIIT (`type: 'hiit'`, `muscleTarget: 'core'`, `duration` = tatsächliche Workout-Länge in Minuten, min. 1; `coreHiitActivity()` in `SixPackApp.jsx`).
-- **30-s-Warnton:** Bei 30 s Restzeit einer Übung (nur wenn sie länger als 30 s dauert): kurzer Ton (660 Hz) + "30 seconds left"; bei 10 s weiter "10 seconds left".
+- **30-s-Ansage:** Bei 30 s Restzeit einer Übung (nur wenn sie länger als 30 s dauert) "30 seconds left"; bei 10 s weiter "10 seconds left". Beide bleiben reine Sprachansagen.
 
 
 ## Runner-Videos (2026-10-23)
@@ -38,7 +38,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Update 2026-10-24:** Embeds (YouTube/Vimeo) starten NICHT mehr automatisch (kein `autoplay`/`loop`, kein `allow="autoplay"`): Verdacht, dass autoplay-Iframes auf iOS die Audio-Session an sich ziehen und damit Sprachansagen/Töne des Runners verstummen (seit `12c5e53`, 2026-10-23). Nicht auf Gerät verifiziert. Datei-Videos bleiben Autoplay-Loops. `beep()` weckt einen unterbrochenen AudioContext per `resume()` auf. Videos dürfen den Runner nie blockieren: kein Bulk-Vorladen, Cache nur für das aktuelle Video 5 s nach Laufbeginn.
 - **Autostart (2026-10-24):** "Start Workout" startet Intro + Timer direkt (`autoStart`, Audio wird im Tap per `primeAudio()` freigeschaltet). Vimeo-Link von `bent_knee_windshield_wipers` deaktiviert (Einbettung gesperrt).
 - **Runner-Bedienung (2026-10-29):** Keine manuelle Pause. Workout startet über "Start Workout"; "Wiederholen" setzt die aktuelle Übung zurück und läuft direkt weiter.
-- **Töne = Gym-Timer (User-Vorgabe 2026-10-24, ersetzt "hoher Piep / tiefer Tüt"):** Rechteckwelle; letzte 3 s jeder Übung/Pause/Wechsel kurze Pieps (1000 Hz, 0,12 s); an jeder Grenze ein langer Ton (0,8 s): hoch (1000 Hz) beim Start einer Übung/Pause, tiefer (700 Hz) beim Wechsel/Ende; 30-s-Warnung = Doppel-Piep + Ansage. Nicht auf Gerät gehört.
+- **Töne (User-Vorgabe 2026-10-29):** Nur ein langer hoher Ton (1000 Hz, 0,8 s) beim Start einer Übung und ein langer tiefer Ton (700 Hz, 0,8 s) beim Ende einer Übung. Keine Töne bei 30/10-s-Ansagen oder Pausen.
 - **Video-Cache (User-Vorgabe 2026-10-26, ersetzt "5 s nach Laufbeginn"):** Videos müssen vor dem Workout-Start im Cache liegen: das heutige Workout wird beim Öffnen der App, jedes geöffnete Tages-/Shuffle-/Favoriten-Workout sofort nacheinander im Hintergrund gecacht (`cacheVideos`, sequentiell, `workoutVideoSources()`); im Runner läuft kein Cache-Timer mehr (der Runner wird nie aufgehalten), fehlende Videos spielen direkt von der Quelle. YouTube/Vimeo-Embeds sind nicht cachebar.
 
 - **Eigene Clips (2026-10-24):** `public/videos/<exercise_id>.mp4` ersetzt beim Build die Katalog-Demo (`catalogContent.mjs`, URL mit `?v=<Hash>`); `videoCache.js` cached same-origin-Clips wie https-Videos. Import/Status: `node scripts/own-clips.mjs` (Details: `docs/VIDEO_URLS.md`, Abschnitt „Eigene Clips“). Tag 1 = 6 Clips, noch keine geliefert.
@@ -46,7 +46,7 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - **Intro, Wechsel, Töne (User-Vorgabe 2026-10-24, ersetzt Start-Intro-Ablauf und "letzte 3 s Pieps"):**
   - Intro: "Welcome to Six Pack Promise." → 650 ms Pause → immer "Today's workout will require the following pieces of equipment"; danach entweder die Equipment-Liste oder nach einer weiteren Satzpause "No equipment required for this workout." → kurze Satzpause → Übungsansage in normalem Tempo plus "begin in" → 5, 4, 3, 2, 1 → Timer startet und unmittelbar danach der erste lange Startton. Kein vorgelagerter Countdown und kein zusätzliches "go".
   - 5s-Wechsel: Übungsansage in normalem Sprechtempo; nach Ende der Ansage volle 5 s mit 2, 1, "go". Die Ansage verlängert den Countdown nicht.
-  - Keine Pieps in den letzten 3 s mehr; nur der lange Ton bei Zeitende (`endBeep`) und beim Start (`startBeep`). 30-s-Warnung bleibt.
+  - Keine Pieps in den letzten 3 s; Töne nur bei Start und Ende einer Übung. 30/10-s-Hinweise bleiben Sprachansagen ohne Ton.
   - Sprechname: Namen mit Ziffer/`/`/`"` nehmen den ersten sprechbaren Katalog-Alias (`spokenName` aus `build-data.mjs`, z. B. "90/90 Crunch" → "Ninety Ninety Crunch"); "ISO" wird als "I-S-O" buchstabiert. Nicht auf Gerät gehört.
   - Seitenwechsel (dieselbe Übung direkt nochmal, User-Vorgabe 2026-10-24): statt Name + Dauer nur "Switch sides, begin in 2, 1, go".
 

@@ -32,6 +32,7 @@
 - [x] 2026-10-24: Push-Registrierungsfehler sichtbar machen, bestehende Geräte erneut registrieren und verspäteten App-Start-Timer entfernen.
 - [x] 2026-10-29: Runner-Intro mit Satzpause; Übungsansage in natürlichem Tempo und danach voller 5-Sekunden-Countdown; Wiederholen startet sofort weiter, manuelle Start-/Pause-Buttons entfernt.
 - [x] 2026-10-29: Welcome nicht abbrechen; Equipment-Einleitung immer sprechen; danach Übungsansage + 5–1 und erst nach Timerstart den ersten Ton.
+- [x] 2026-10-29: Runner-Töne nur bei Übungsstart/-ende; 30/10-Sekunden-Hinweise bleiben Sprachansagen ohne Töne.
 - [x] 2026-10-29: Cloud-Dev-pnpm-Wrapper für beschreibbare XDG-Locks/-Stores ohne Laptop- oder Host-Pfad-Abhängigkeit.
 - [x] 2026-10-24: Native Android-/iOS-Projekte mit lokal geplanten Workout-Remindern aus dem Track ergänzen.
 - [ ] Native Builds in Android/Xcode bzw. manuellem Native-CI-Workflow ausführen; iPhone signieren und Offline-Reminder auf beiden Geräten abnehmen (siehe docs/NATIVE-REMINDERS.md).
