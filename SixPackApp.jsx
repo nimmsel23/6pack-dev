@@ -814,6 +814,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const introTimers = useRef([]);
   const introDone = useRef(false);
   const introToken = useRef(0); // macht abgebrochene Intros wirkungslos (speechSynthesis.cancel() feuert onend/onerror)
+  const introStartBeepPending = useRef(false);
   const [videoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
 
@@ -949,9 +950,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     setIntro(false);
   }
 
-  // "Welcome to Six Pack Promise. <Equipment>", dann 5, 4, 3, 2, 1 + langer Ton, dann
-  // "<Übung>[, left side] for 30 seconds, begin in 2, 1, go" + langer Ton, dann startet die Zeit.
-  // Der zweite Teil dauert wie ein 5s-Wechsel (TRANSITION_SECONDS).
+  // Welcome → Equipment → kurze Satzpause → Übungsansage + Begin in 5, 4, 3, 2, 1.
+  // Erst nach der 1 startet der Timer und der erste lange Startton erklingt.
   function startIntro() {
     introDone.current = true;
     const token = (introToken.current += 1);
@@ -960,14 +960,15 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const first = workout.items[0];
     const side = firstSideLabel(0);
     const later = (fn, ms) => introTimers.current.push(window.setTimeout(fn, ms));
+    let started = false;
 
     const go = () => {
-      if (!alive()) return;
+      if (!alive() || started) return;
+      started = true;
       // Intro hat die erste Übung bereits angesagt → der normale Start-Effekt soll sie nicht doppelt ansagen.
       announcedStep.current = '0:false';
       lastCountdownCall.current = null;
-      startBeep();
-      callOut('go');
+      introStartBeepPending.current = true;
       setIntro(false);
       setState(s => ({ ...s, running: true }));
     };
@@ -975,24 +976,14 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       if (!alive()) return;
       const beginFiveSeconds = () => {
         if (!alive()) return;
-        later(() => callOut('2'), (TRANSITION_SECONDS - 2) * 1000);
-        later(() => callOut('1'), (TRANSITION_SECONDS - 1) * 1000);
+        [5, 4, 3, 2, 1].forEach((n, i) => later(() => callOut(String(n)), i * 1000));
         later(go, TRANSITION_SECONDS * 1000);
       };
       if (first) announce(first, 0, { countdown: true, side, onend: beginFiveSeconds });
       else beginFiveSeconds();
     };
-    const countdown = () => {
-      if (!alive()) return;
-      [5, 4, 3, 2, 1].forEach((n, i) => later(() => callOut(String(n)), i * 1000));
-      later(() => {
-        startBeep();
-        exerciseLeadIn();
-      }, 5000);
-    };
-
     if (!('speechSynthesis' in window)) {
-      countdown();
+      exerciseLeadIn();
       return;
     }
     window.speechSynthesis.cancel();
@@ -1000,23 +991,29 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const proceed = () => {
       if (continued || !alive()) return;
       continued = true;
-      countdown();
+      later(exerciseLeadIn, 650);
     };
     const equipment = equipmentSpeech(workout.items);
-    const equipmentLine = equipment.startsWith('no equipment') ? equipment : `Today's workout will require the following pieces of equipment: ${equipment}`;
+    const noEquipment = equipment === 'no equipment required for this workout';
+    const equipmentLine = noEquipment
+      ? "Today's workout will require the following pieces of equipment."
+      : `Today's workout will require the following pieces of equipment: ${equipment}.`;
     const welcome = 'Welcome to Six Pack Promise.';
-    let spoken = false;
-    speak(welcome, 'en-US', { onstart: () => { spoken = true; }, onend: () => {
-      if (!alive()) return;
+    let equipmentScheduled = false;
+    const speakNoEquipment = () => {
+      if (alive()) speak('No equipment required for this workout.', 'en-US', { onend: proceed });
+    };
+    const speakEquipment = () => {
+      if (!alive() || equipmentScheduled) return;
+      equipmentScheduled = true;
       later(() => {
         if (!alive()) return;
-        speak(`${equipmentLine}.`, 'en-US', { onend: proceed });
+        speak(equipmentLine, 'en-US', {
+          onend: noEquipment ? () => later(speakNoEquipment, 650) : proceed,
+        });
       }, 650);
-    } });
-    // Sicherungen, damit der Start nie hängt: Sprachausgabe startet nicht (iOS/Android blockiert sie
-    // gelegentlich) → nach 1,5 s direkt zum Countdown; onend feuert nie → Sprechdauer-Schätzung + 2 s.
-    later(() => { if (!spoken) { window.speechSynthesis.cancel(); proceed(); } }, 1500);
-    later(proceed, 9000); // Sicherung, falls onend nie feuert
+    };
+    speak(welcome, 'en-US', { onend: speakEquipment });
   }
 
   useEffect(() => {
@@ -1166,6 +1163,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     }, 1000);
     return () => window.clearInterval(interval);
   }, [state.running, state.done, state.transitionLeadIn, workout]);
+
+  useEffect(() => {
+    if (!state.running || !introStartBeepPending.current) return;
+    introStartBeepPending.current = false;
+    startBeep();
+  }, [state.running]);
 
   useEffect(() => {
     if (state.done && !completionReported.current) {
