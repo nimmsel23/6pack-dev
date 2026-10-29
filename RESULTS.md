@@ -234,3 +234,16 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 
 - Doppelpieps bei 30 Sekunden entfernt; „30 seconds left“ und „10 seconds left“ bleiben reine Sprachansagen.
 - Lange Töne erklingen nur beim Start und Ende einer Übung, nicht bei Pausen.
+
+# 2026-10-29 — Abbruchschutz und Offline-Video-Befund
+
+- Runner-Abbruch fragt jetzt in einem barrierearmen Dialog nach; „Weiter trainieren“, Escape und Fokus auf der sicheren Aktion schließen den Dialog ohne abzubrechen.
+- Video-Cache-Befund aus `sixpackData.generated.js`: 24 Übungs-Demos sind YouTube/Vimeo-Embeds und werden vom Datei-Cache ausgeschlossen; vier sind direkte MP4-URLs, vier Übungen haben keine URL. Die eingebetteten Videos können so nicht offline verfügbar sein.
+- Die CDN-/CORS-Antworten der vier MP4-Quellen und das Playback im Flugmodus konnten hier nicht verifiziert werden: DNS-Auflösung zum Medienhost schlug in der Cloud-Umgebung fehl. Der Cache fängt diese Fehler außerdem still ab.
+- Weitere vom Nutzer gemeldete, hier nicht auf Gerät behobene Punkte stehen als konkrete Abnahmen in `TODO.md`: doppelte Benachrichtigung am Anfang sowie gedimmtes iPhone-Mitteilungsfeld und stummes Runner-Audio im Hintergrund.
+
+# 2026-10-29 — Runner-Benachrichtigung und iOS-Audio-Wiederaufnahme
+
+- Statusbenachrichtigungen werden nicht mehr im Workout-Intro erzeugt, sondern erst nach dem tatsächlichen Timerstart; pro Runner-Schritt wird nur eine Benachrichtigung angefordert.
+- Bei Rückkehr der Seite in den Vordergrund setzt der Runner einen suspendierten AudioContext und pausierte Sprachsynthese fort.
+- iOS dimmt den Inhalt hinter dem Mitteilungsfeld selbst; Screen Wake Lock ist nur für sichtbare Dokumente vorgesehen. Eine PWA kann Audio im Hintergrund nicht zuverlässig erzwingen. Fortlaufende Hintergrundansagen erfordern eine native Audio-Session; iPhone-Abnahme bleibt offen.

@@ -802,6 +802,7 @@ function advanceRunnerState(state, workout) {
 
 function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
+  const [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   const completionReported = useRef(false);
   const startedAtRef = useRef(Date.now());
   const runIdRef = useRef(newRunId());
@@ -817,6 +818,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const introStartBeepPending = useRef(false);
   const [videoUrls] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
+  const abortCancelButton = useRef(null);
+  const abortConfirmButton = useRef(null);
 
   function beep(frequency = 880, { duration = 0.18, delay = 0 } = {}) {
     const context = audioContext.current;
@@ -949,6 +952,41 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     introDone.current = false; // beim nächsten Start wieder von vorn
     setIntro(false);
   }
+
+  useEffect(() => {
+    if (!abortConfirmationOpen) return undefined;
+    abortCancelButton.current?.focus();
+    const onKeyDown = event => {
+      if (event.key === 'Escape') setAbortConfirmationOpen(false);
+      if (event.key === 'Tab' && event.shiftKey && document.activeElement === abortCancelButton.current) {
+        event.preventDefault();
+        abortConfirmButton.current?.focus();
+      } else if (event.key === 'Tab' && !event.shiftKey && document.activeElement === abortConfirmButton.current) {
+        event.preventDefault();
+        abortCancelButton.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [abortConfirmationOpen]);
+
+  function confirmAbort() {
+    setAbortConfirmationOpen(false);
+    onBack();
+  }
+
+  const abortDialog = abortConfirmationOpen && (
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,0.78)' }}>
+      <div role="alertdialog" aria-modal="true" aria-labelledby="runner-abort-title" aria-describedby="runner-abort-description" className="w-full max-w-sm rounded-2xl p-5" style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}>
+        <h2 id="runner-abort-title" className="text-lg font-black text-fit-ink">Workout abbrechen?</h2>
+        <p id="runner-abort-description" className="text-sm mt-2" style={{ color: 'var(--dim)' }}>Der bisherige Fortschritt dieses Workouts wird nicht gespeichert.</p>
+        <div className="flex justify-end gap-2 mt-5">
+          <button ref={abortCancelButton} type="button" onClick={() => setAbortConfirmationOpen(false)} className="min-h-12 px-4 rounded-xl text-sm font-bold text-fit-ink" style={{ background: 'var(--bg)', border: '1px solid var(--line)' }}>Weiter trainieren</button>
+          <button ref={abortConfirmButton} type="button" onClick={confirmAbort} className="min-h-12 px-4 rounded-xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>Abbrechen</button>
+        </div>
+      </div>
+    </div>
+  );
 
   // Welcome → Equipment → kurze Satzpause → Übungsansage + Begin in 5, 4, 3, 2, 1.
   // Erst nach der 1 startet der Timer und der erste lange Startton erklingt.
@@ -1091,11 +1129,18 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     callOut(String(state.remaining));
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
-  // Dauerhafte Benachrichtigung (Android): aktuelle Übung, Dauer, nächste Übung; "Pausiert" bei Pause.
-  // Aktualisiert bei Übungswechsel und Pause/Start, nicht jede Sekunde (Akku, kein Flackern).
+  // Dauerhafte Benachrichtigung nur ab echtem Timerstart; das Intro darf keinen
+  // vorläufigen Hinweis für Übung 1 erzeugen, der beim Start doppelt erscheint.
+  // Aktualisiert bei Übungswechsel, nicht jede Sekunde (Akku, kein Flackern).
+  const notifiedRunnerStep = useRef(null);
   useEffect(() => {
-    if (state.done) return;
-    if (!state.running && !intro && state.itemIndex === 0 && !state.transition && !introDone.current) return;
+    if (!state.running || state.done) {
+      if (!state.running) notifiedRunnerStep.current = null;
+      return;
+    }
+    const step = `${state.itemIndex}:${state.transition}`;
+    if (notifiedRunnerStep.current === step) return;
+    notifiedRunnerStep.current = step;
     const item = workout.items[state.itemIndex];
     const following = workout.items[state.itemIndex + 1];
     if (!item) return;
@@ -1103,10 +1148,10 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const label = state.transition ? `Wechsel → ${following?.name ?? ''}` : item.type === 'rest' ? `Pause · ${item.seconds} s` : `${item.name} · ${item.seconds} s`;
     const position = `${workout.items.slice(0, state.itemIndex + 1).filter(i => i.type === 'exercise').length}/${workout.items.filter(i => i.type === 'exercise').length}`;
     showWorkoutNotification({
-      title: state.running || intro ? `6Pack läuft · Übung ${position}` : `6Pack pausiert · Übung ${position}`,
+      title: `6Pack läuft · Übung ${position}`,
       body: `${label}${state.transition ? '' : nextName}`,
     });
-  }, [state.itemIndex, state.transition, state.running, state.done, intro, workout]);
+  }, [state.itemIndex, state.transition, state.running, state.done, workout]);
 
   useEffect(() => { if (state.done) clearWorkoutNotification(); }, [state.done]);
   useEffect(() => () => { clearWorkoutNotification(); }, []);
@@ -1144,6 +1189,24 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       lock?.release();
     };
   }, [state.done, state.running]);
+
+  // iOS can suspend Web Audio and speech while the app is obscured. Restore them
+  // when it becomes visible again; the workout clock remains wall-clock based.
+  useEffect(() => {
+    if ((!state.running && !intro) || state.done) return undefined;
+    const restoreAudio = () => {
+      if (document.visibilityState !== 'visible') return;
+      keepMusicPlaying();
+      if (audioContext.current?.state === 'suspended') audioContext.current.resume?.().catch(() => {});
+      window.speechSynthesis?.resume?.();
+    };
+    document.addEventListener('visibilitychange', restoreAudio);
+    window.addEventListener('pageshow', restoreAudio);
+    return () => {
+      document.removeEventListener('visibilitychange', restoreAudio);
+      window.removeEventListener('pageshow', restoreAudio);
+    };
+  }, [state.running, state.done, intro]);
 
   useEffect(() => {
     if (!state.running || state.done || state.transitionLeadIn) return undefined;
@@ -1297,7 +1360,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   if (state.transition) {
     return createPortal(
       <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
-        <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
+        <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
         <div className="text-center">
@@ -1309,6 +1372,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
         <div className="flex justify-center gap-2 mt-6">
           {repeatButton}
         </div>
+        {abortDialog}
       </div>,
       document.body
     );
@@ -1316,7 +1380,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
 
   return createPortal(
     <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE}>
-      <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
+      <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
 
@@ -1356,6 +1420,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       <div className="flex justify-center gap-2 mt-3">
         {repeatButton}
       </div>
+      {abortDialog}
     </div>,
     document.body
   );
