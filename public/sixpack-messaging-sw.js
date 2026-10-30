@@ -1,6 +1,7 @@
 /* global importScripts, firebase */
 // Push-Empfang der Standalone-6Pack-App (Scope /sixpack-push/, getrennt vom Haupt-SW sw.js).
-// Die Fitness-App hat eigenen Empfang (fitness-messaging-sw.js) und kennt data.app === "sixpack" ebenfalls.
+// Der Reminder kommt ausschließlich von scheduledSixpackReminders (functions/index.js) an Geräte,
+// die diese App in sixpackPush registriert hat; die Fitness-App ist nicht beteiligt.
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();

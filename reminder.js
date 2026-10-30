@@ -1,6 +1,6 @@
 // Tägliche Trainings-Erinnerung (Settings). Einstellungen liegen im Programm-Dokument
 // (`program.settings.reminder`), werden also mit users/{uid}/meta/sixpack synchronisiert.
-// Auslieferung über scheduledSixpackReminders (Fitness Functions) und FCM.
+// Auslieferung über scheduledSixpackReminders (functions/index.js dieses Repos) und FCM.
 // Die UI plant keine Benachrichtigungen mit einem Timer beim App-Start.
 
 export const DEFAULT_REMINDER = { enabled: false, time: '18:00' };
