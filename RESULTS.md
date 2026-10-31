@@ -281,3 +281,8 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Tippen auf die laufende Workout-Benachrichtigung fokussiert jetzt das bestehende 6Pack-Fenster ohne Navigation/Reload, damit der aktive Runner-Zustand erhalten bleibt. Andere Benachrichtigungen behalten ihr normales App-Ziel.
 - Die Standalone-Headline mit Sync-Status und Anmelden/Abmelden liegt jetzt im Setup/Settings-Tab; der dauerhaft sichtbare Streifen wurde entfernt.
 - Build und erzeugter Service Worker geprüft. Ein Klick bei vollständig vom Betriebssystem beendetem App-Prozess kann den flüchtigen Runner-Zustand nicht wiederherstellen; dafür wäre zusätzlich persistente Session-Wiederaufnahme nötig.
+
+
+## 2026-10-31 — Dev-Projekte unter ~/dev
+
+Lokale Entwicklungspfade und betroffene Verknüpfungen auf `~/dev/*-dev` umgestellt. Runtime-Daten, Branches und Release-Checkouts behalten ihre Zuständigkeit. Keine Pushes oder Releases. Gesamter Umzug und Prüfungen: `~/RESULTS.md`.
