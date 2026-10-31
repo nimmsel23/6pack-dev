@@ -281,3 +281,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Tippen auf die laufende Workout-Benachrichtigung fokussiert jetzt das bestehende 6Pack-Fenster ohne Navigation/Reload, damit der aktive Runner-Zustand erhalten bleibt. Andere Benachrichtigungen behalten ihr normales App-Ziel.
 - Die Standalone-Headline mit Sync-Status und Anmelden/Abmelden liegt jetzt im Setup/Settings-Tab; der dauerhaft sichtbare Streifen wurde entfernt.
 - Build und erzeugter Service Worker geprüft. Ein Klick bei vollständig vom Betriebssystem beendetem App-Prozess kann den flüchtigen Runner-Zustand nicht wiederherstellen; dafür wäre zusätzlich persistente Session-Wiederaufnahme nötig.
+
+## 2026-10-31 — Dependabot
+
+Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.
