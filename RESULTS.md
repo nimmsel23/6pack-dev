@@ -285,3 +285,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 ## 2026-10-31 — Dependabot
 
 Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.
+
+### 2026-10-31 — Native Dependabot coverage
+
+Added weekly Gradle updates for `android/` and Swift Package Manager updates for `ios/App/CapApp-SPM/`, targeting `dev`. Validated manifest directories and YAML.
