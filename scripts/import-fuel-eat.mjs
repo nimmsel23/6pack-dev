@@ -1,6 +1,6 @@
 // Holt den Fuel-Schnelleinstieg "Shutter" (Kamera → Foto → Mahlzeit loggen) als fertigen Build nach public/eat/.
 // Der Eat-Screen bettet ihn same-origin per iframe ein, damit der Firebase-Login von 6Pack gilt (kein Sandbox-Browser).
-// Aufruf: node scripts/import-fuel-eat.mjs [--no-build]   (FUEL_DIR überschreibt ~/fuel-dev)
+// Aufruf: node scripts/import-fuel-eat.mjs [--no-build]   (FUEL_DIR überschreibt ~/dev/fuel-dev)
 // Die Ausgabe wird committet, weil CI/Release-Checkout kein fuel-dev daneben haben.
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';

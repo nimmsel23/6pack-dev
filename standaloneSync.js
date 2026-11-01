@@ -110,7 +110,7 @@ export function saveProgram(uid, program) {
 }
 
 // 6Pack-eigene Push-Registrierung: Token liegen in users/{uid}/meta/sixpackPush
-// (getrennt vom Fitness-Push-Panel). Die Cloud Function scheduledSixpackReminders liest dort.
+// Die Cloud Function scheduledSixpackReminders (functions/index.js) liest dort.
 export async function enableSixpackPush(uid) {
   if (!uid || uid === 'local') throw new Error('Bitte zuerst anmelden.');
   if (typeof Notification === 'undefined' || !('serviceWorker' in navigator) || !(await isMessagingSupported())) {

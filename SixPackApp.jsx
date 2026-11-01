@@ -769,6 +769,9 @@ function workoutVideoSources(workout, videoUrls = {}) {
 // Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
 // Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
 const TRANSITION_SECONDS = 5;
+// "30/10 seconds left": langsamer sprechen und entsprechend früher (Sekunden vor der Marke) beginnen.
+const HINT_SPEECH_RATE = 0.8;
+const HINT_LEAD_SECONDS = 1;
 // Zwischen zwei Übungen liegen fünf echte Timer-Sekunden. Nach der Übungsansage
 // werden im verbleibenden Countdown die jeweils noch übrigen 3, 2 und 1 Sekunden gesprochen.
 
@@ -804,7 +807,7 @@ function advanceRunnerState(state, workout) {
   return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
-function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
+function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   const completionReported = useRef(false);
@@ -812,7 +815,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   const runIdRef = useRef(newRunId());
   const announcedStep = useRef(null);
   const lastCountdownCall = useRef(null);
-  const silentNavigationStep = useRef(null);
+  // Schritt, der durch manuelles Wischen/Tippen/Wiederholen entstanden ist: Name + Dauer werden komplett neu angesagt.
+  const manualAnnounceStep = useRef(null);
   const audioContext = useRef(primedAudioContext);
   const speechUnlocked = useRef(primedSpeech);
   // Start-Intro: Willkommen + Equipment, dann 5…1 + langer Ton, dann erste Übung + "begin in 2, 1, go" + langer Ton, danach läuft die Zeit.
@@ -911,8 +915,9 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
   // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "45 seconds rest".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
-  // `countdown`: Ansage vor dem Start ("… , begin in"); danach beginnen die echten fünf Sekunden.
-  function announce(item, index, { countdown = false, side = '', onend } = {}) {
+  // `countdown`: Ansage vor dem Start ("… , begin in"); nur im Start-Intro. Beim Übungswechsel wird ohne "begin in" angesagt.
+  // `full`: immer Name + Dauer, auch bei der zweiten Seite (manuelles Überspringen/Wiederholen).
+  function announce(item, index, { countdown = false, full = false, side = '', onend } = {}) {
     if (!('speechSynthesis' in window)) { onend?.(); return; }
     window.speechSynthesis.cancel();
     if (item.type === 'rest') {
@@ -920,7 +925,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       return;
     }
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
-    const text = index != null && isSideSwitch(index)
+    const text = !full && index != null && isSideSwitch(index)
       ? 'Switch sides'
       : `${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
     if (!countdown) {
@@ -1045,7 +1050,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const equipmentLine = noEquipment
       ? "Today's workout will require the following pieces of equipment."
       : `Today's workout will require the following pieces of equipment: ${equipment}.`;
-    const welcome = "Welcome to Six Pack Promise! Let's get ready!";
+    const welcome = "Welcome to Six Pack Promise.";
     let equipmentScheduled = false;
     const speakNoEquipment = () => {
       if (alive()) speak('No equipment required for this workout.', 'en-US', { onend: proceed });
@@ -1071,10 +1076,8 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     announcedStep.current = step;
     lastCountdownCall.current = null;
     setVideoError(false);
-    if (silentNavigationStep.current === step) {
-      silentNavigationStep.current = null;
-      return;
-    }
+    const manual = manualAnnounceStep.current === step;
+    if (manual) manualAnnounceStep.current = null;
     // Ton nur beim Ende einer Übung, auch wenn danach direkt eine Pause folgt.
     const previousIndex = previousStep === null ? -1 : Number(previousStep.split(':')[0]);
     const previousItemEnded = previousStep !== null && !previousStep.endsWith(':true');
@@ -1084,12 +1087,11 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       return;
     }
     if (state.transition) {
-      // Nächste Übung schon im Übergang ansagen ("… begin in"), damit man sich in Position bringen kann.
-      // "2", "1" kommen im Countdown-Effekt unten, "go" beim Start der Übung.
+      // Nächste Übung schon im Übergang ansagen (ohne "begin in"), damit man sich in Position bringen kann.
+      // Die Zahlen kommen im Countdown-Effekt unten; beim Start der Übung folgt nur der Startton (kein "go").
       const nextIndex = state.itemIndex + 1;
       const nextItem = workout.items[nextIndex];
       if (nextItem) announce(nextItem, nextIndex, {
-        countdown: true,
         onend: () => setState(s => s.transition ? { ...s, transitionLeadIn: false, remaining: TRANSITION_SECONDS } : s),
       });
       return;
@@ -1097,41 +1099,42 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     const item = workout.items[state.itemIndex];
     if (!item) return;
     if (item.type === 'exercise') startBeep();
-    // Nach einem Übergang wurde die Übung bereits angesagt — nur "go" + langer Ton.
-    if (previousStep === `${state.itemIndex - 1}:true`) callOut('go');
-    else announce(item, state.itemIndex);
+    // Nach einem Übergang wurde die Übung bereits angesagt — nur der lange Ton, kein "go".
+    if (previousStep === `${state.itemIndex - 1}:true`) return;
+    announce(item, state.itemIndex, { full: manual });
   }, [state.itemIndex, state.transition, state.running, state.done, state.repeatCount, workout]);
 
-  // Sprachansage "30 seconds left" bei 30 s Restzeit einer laufenden Übung. Nur bei Übungen, die länger als
-  // 30 s dauern (bei genau 30 s wäre es der Start) und nicht in Rest/Wechsel.
+  // Sprachansage "30 seconds left": langsam gesprochen und eine Sekunde früher (bei 31 s Restzeit) gestartet,
+  // damit sie ungefähr bei 30 s endet. Nur bei Übungen, die länger als 31 s dauern (sonst wäre es der Start)
+  // und nicht in Rest/Wechsel.
   const announcedThirtySecondsStep = useRef(null);
   useEffect(() => {
     const item = workout.items[state.itemIndex];
     const step = `${state.itemIndex}:${state.transition}`;
-    if (!state.running || state.transition || item?.type !== 'exercise' || item.seconds <= 30) return;
-    if (state.remaining !== 30) {
-      if (state.remaining > 30) announcedThirtySecondsStep.current = null;
+    if (!state.running || state.transition || item?.type !== 'exercise' || item.seconds <= HINT_LEAD_SECONDS + 30) return;
+    if (state.remaining !== HINT_LEAD_SECONDS + 30) {
+      if (state.remaining > HINT_LEAD_SECONDS + 30) announcedThirtySecondsStep.current = null;
       return;
     }
     if (announcedThirtySecondsStep.current === step) return;
     announcedThirtySecondsStep.current = step;
-    speak('30 seconds left', 'en-US');
+    speak('30 seconds left', 'en-US', { rate: HINT_SPEECH_RATE });
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
-  // "10 seconds left" während einer laufenden Übung (nicht Rest/Wechsel) —
-  // Zeit genug, den letzten Rep anzusetzen statt vom Pieps-Ende überrascht zu werden.
+  // "10 seconds left" während einer laufenden Übung (nicht Rest/Wechsel), langsam gesprochen und eine Sekunde früher
+  // (bei 11 s Restzeit) — Zeit genug, den letzten Rep anzusetzen statt vom Ende überrascht zu werden.
   const announcedTenSecondsStep = useRef(null);
   useEffect(() => {
     const item = workout.items[state.itemIndex];
     const step = `${state.itemIndex}:${state.transition}`;
-    if (!state.running || state.transition || item?.type !== 'exercise') return;
-    if (state.remaining !== 10) {
-      if (state.remaining > 10) announcedTenSecondsStep.current = null;
+    if (!state.running || state.transition || item?.type !== 'exercise' || item.seconds <= HINT_LEAD_SECONDS + 10) return;
+    if (state.remaining !== HINT_LEAD_SECONDS + 10) {
+      if (state.remaining > HINT_LEAD_SECONDS + 10) announcedTenSecondsStep.current = null;
       return;
     }
     if (announcedTenSecondsStep.current === step) return;
     announcedTenSecondsStep.current = step;
-    speak('10 seconds left', 'en-US');
+    speak('10 seconds left', 'en-US', { rate: HINT_SPEECH_RATE });
   }, [state.itemIndex, state.transition, state.remaining, state.running, workout]);
 
   // Gesprochener Countdown im 5s-Wechsel: bei Restzeit 3, 2 und 1 die tatsächlich
@@ -1266,7 +1269,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (itemIndex == null || itemIndex === state.itemIndex) return;
     if (intro) cancelIntro();
     window.speechSynthesis?.cancel();
-    silentNavigationStep.current = state.running ? `${itemIndex}:false` : null;
+    manualAnnounceStep.current = state.running ? `${itemIndex}:false` : null;
     announcedStep.current = null;
     announcedThirtySecondsStep.current = null;
     announcedTenSecondsStep.current = null;
@@ -1382,6 +1385,7 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
     if (!exercise) return;
     if (intro) cancelIntro();
     window.speechSynthesis?.cancel();
+    manualAnnounceStep.current = `${state.itemIndex}:false`;
     announcedStep.current = null;
     announcedThirtySecondsStep.current = null;
     announcedTenSecondsStep.current = null;
@@ -1402,7 +1406,12 @@ function RunnerScreen({ workout, onFinish, onBack, autoStart = false }) {
       <div className="p-6 text-center">
         <Check size={32} color="#e2001a" className="mx-auto mb-3" />
         <div className="text-lg font-black text-fit-ink">Workout fertig</div>
-        <button onClick={onBack} className="mt-5 min-h-12 px-6 rounded-2xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>
+        {onCamera && (
+          <button onClick={onCamera} className="mt-5 min-h-12 px-6 rounded-2xl text-sm font-black inline-flex items-center justify-center gap-2" style={{ background: '#e2001a', color: '#fff' }}>
+            <Camera size={18} /> Foto aufnehmen
+          </button>
+        )}
+        <button onClick={onBack} className={`${onCamera ? 'mt-3 block mx-auto text-fit-ink' : 'mt-5'} min-h-12 px-6 rounded-2xl text-sm font-black`} style={onCamera ? { background: 'var(--bg2)', border: '1px solid var(--line)' } : { background: '#e2001a', color: '#fff' }}>
           Zurück
         </button>
       </div>
@@ -1839,7 +1848,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} />
+          <RunnerScreen autoStart workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={() => setScreen('selfies')} />
         )}
     </section>
   );

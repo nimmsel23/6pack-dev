@@ -282,6 +282,11 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 - Die Standalone-Headline mit Sync-Status und Anmelden/Abmelden liegt jetzt im Setup/Settings-Tab; der dauerhaft sichtbare Streifen wurde entfernt.
 - Build und erzeugter Service Worker geprüft. Ein Klick bei vollständig vom Betriebssystem beendetem App-Prozess kann den flüchtigen Runner-Zustand nicht wiederherstellen; dafür wäre zusätzlich persistente Session-Wiederaufnahme nötig.
 
+
+## 2026-10-31 — Dev-Projekte unter ~/dev
+
+Lokale Entwicklungspfade und betroffene Verknüpfungen auf `~/dev/*-dev` umgestellt. Runtime-Daten, Branches und Release-Checkouts behalten ihre Zuständigkeit. Keine Pushes oder Releases. Gesamter Umzug und Prüfungen: `~/RESULTS.md`.
+
 ## 2026-10-31 — Dependabot
 
 Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions and npm/pnpm updates; version updates target `dev`. Minor/patch updates are grouped; vendored mini-app-shell copies stay maintained at their source. Validated YAML, repository manifest paths and update targets.
@@ -289,3 +294,7 @@ Enabled Dependabot alerts and security updates. Configured weekly GitHub Actions
 ### 2026-10-31 — Native Dependabot coverage
 
 Added weekly Gradle updates for `android/` and Swift Package Manager updates for `ios/App/CapApp-SPM/`, targeting `dev`. Validated manifest directories and YAML.
+
+## 2026-11-01 — Runner-Ansagen und Kamera-Button
+
+Übergang zwischen Übungen ohne "begin in" und ohne "go"; "30/10 seconds left" langsamer (Rate 0,8) und eine Sekunde früher; Überspringen/Wiederholen sagt Übung und Dauer komplett neu an; Welcome-Satz ohne "Let's get ready!"; am Workout-Ende Button "Foto aufnehmen" zum Selfies-Screen. Build geprüft (`vite build`), nicht auf dem Gerät gehört.

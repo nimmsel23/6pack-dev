@@ -49,7 +49,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 done <<< "$pushed_refs"
 
 if [ "$should_publish_fitness" = true ]; then
-  fitness_repo="${FITNESS_DEV_REPO:-$HOME/fitness-dev}"
+  fitness_repo="${FITNESS_DEV_REPO:-$HOME/dev/fitness-dev}"
   publisher="$fitness_repo/scripts/publish-mini-app-to-fitness.mjs"
   if [ ! -f "$publisher" ]; then
     echo "⚠️ Fitness publisher not found at $publisher; 6Pack source sync skipped until fitness-dev is updated." >&2

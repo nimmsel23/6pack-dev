@@ -4,9 +4,12 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { getMessaging } from 'firebase-admin/messaging';
 import { defineString, defineSecret } from 'firebase-functions/params';
 import { CALENDAR_SCOPES, createCalendarApi } from './calendarApi.mjs';
 import { syncNextWorkout } from './calendarSync.mjs';
+import { sixpackReminderDecision, sixpackReminderText, getLocalDateParts } from './sixpackReminder.mjs';
 
 initializeApp();
 const db = getFirestore();
@@ -168,4 +171,46 @@ export const sixpackCalendarOnTrack = onDocumentWritten({ region, timeoutSeconds
   const relevant = data => JSON.stringify(data ? { day: data.currentDay, last: data.lastCompletedOn, rest: data.restDate, time: data.settings?.reminder?.time || '18:00' } : null);
   if (relevant(event.data?.before.data()) === relevant(event.data?.after.data())) return;
   await sync(event.params.uid);
+});
+
+// Trainings-Erinnerung per Push. Uhrzeit/An-Aus: users/{uid}/meta/sixpack (settings.reminder),
+// Geräte: users/{uid}/meta/sixpackPush (tokens[], von der 6Pack-App registriert).
+// Dedup pro Tag über lastReminderDate im sixpackPush-Dokument (das Programm-Dokument wird
+// vom Client komplett überschrieben). Tag "sixpack-reminder" = wie die lokale Erinnerung.
+export const scheduledSixpackReminders = onSchedule({ region, schedule: 'every 5 minutes', timeZone: 'Europe/Berlin' }, async () => {
+  const local = getLocalDateParts();
+  let sentCount = 0;
+  let failureCount = 0;
+  // listDocuments() findet auch Parent-Docs ohne eigene Felder.
+  for (const userRef of await db.collection('users').listDocuments()) {
+    const metaRef = userRef.collection('meta');
+    const programSnap = await metaRef.doc('sixpack').get();
+    if (!programSnap.exists) continue;
+    const program = programSnap.data() || {};
+    if (!program.settings?.reminder?.enabled) continue;
+
+    const pushSnap = await metaRef.doc('sixpackPush').get();
+    const push = pushSnap.exists ? pushSnap.data() || {} : null;
+    const decision = sixpackReminderDecision({ program, push, local });
+    if (!decision.send) continue;
+
+    const text = sixpackReminderText(decision.vars);
+    const response = await getMessaging().sendEachForMulticast({
+      data: { app: 'sixpack', title: text.title, body: text.body, tag: 'sixpack-reminder' },
+      tokens: push.tokens,
+    });
+    sentCount += response.successCount;
+    failureCount += response.failureCount;
+
+    // Ungültige Tokens (Gerät abgemeldet/App deinstalliert) entfernen.
+    const dead = push.tokens.filter((_, i) => {
+      const code = response.responses[i]?.error?.code;
+      return code === 'messaging/registration-token-not-registered' || code === 'messaging/invalid-registration-token';
+    });
+    const update = {};
+    if (response.successCount > 0) update.lastReminderDate = local.date;
+    if (dead.length > 0) update.tokens = FieldValue.arrayRemove(...dead);
+    if (Object.keys(update).length > 0) await pushSnap.ref.set(update, { merge: true });
+  }
+  console.log(`6Pack reminders: ${sentCount} sent, ${failureCount} failed`);
 });
