@@ -59,3 +59,10 @@ Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
 - Runner-Video: Cache zuerst — solange die Cache-Abfrage läuft, ist keine Quelle gesetzt; gecachte Dateien gehen nie ans Netz.
 - Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.
 - Updates (User-Vorgabe 2026-10-26): wie die anderen Apps erst im Nachhinein melden — `mini-app.json` `register: { expose: true }` feuert `sw-update-available`, `UpdateBanner` in `main.jsx` zeigt "Update verfügbar · Neu laden". Kein Auto-Reload: `register.reloadWindowMs: 0` in `mini-app.json` (Option im Paket `~/vitalos/packages/mini-app-shell` ergänzt, hier nur `stamp.mjs` vendored; die übrige Vendor-Drift wurde bewusst nicht übernommen).
+
+- **Ansagen-Korrekturen (User-Vorgabe 2026-11-01, ersetzt entsprechende Punkte oben):**
+  - Welcome-Satz im Intro nur noch "Welcome to Six Pack Promise." (kein "Let's get ready!").
+  - 5s-Wechsel zwischen Übungen: Übung + Dauer wird ohne "begin in" angesagt, danach 3, 2, 1; beim Start nur der Startton, **kein "go"**. "begin in" gibt es nur im Start-Intro.
+  - "30 seconds left" / "10 seconds left": langsamer gesprochen (`HINT_SPEECH_RATE` 0,8) und eine Sekunde früher gestartet (`HINT_LEAD_SECONDS` = 1, d. h. bei 31 s bzw. 11 s Restzeit). Übungen ≤ 31 s bzw. ≤ 11 s bekommen den jeweiligen Hinweis nicht.
+  - Manuelles Überspringen (Wischen/Punkte) und "Wiederholen": Übungsname + Dauer werden komplett neu angesagt, auch bei der zweiten Seite einer einseitigen Übung (kein "Switch sides" in diesem Fall).
+  - Workout-Ende ("Workout fertig"): Button "Foto aufnehmen" öffnet den Selfies-Screen (dort `capture="user"`), zusätzlich "Zurück".
