@@ -1,0 +1,74 @@
+# Managed dependency updates; vendored mini-app-shell copies are maintained at their source.
+version: 2
+updates:
+- package-ecosystem: github-actions
+  schedule:
+    interval: weekly
+    day: monday
+    time: 07:00
+    timezone: Europe/Vienna
+  open-pull-requests-limit: 5
+  commit-message:
+    prefix: ci
+  directory: /
+  target-branch: dev
+  groups:
+    actions:
+      patterns:
+      - '*'
+- package-ecosystem: npm
+  schedule:
+    interval: weekly
+    day: monday
+    time: 07:00
+    timezone: Europe/Vienna
+  open-pull-requests-limit: 5
+  commit-message:
+    prefix: deps
+  directories:
+  - /
+  - /functions
+  target-branch: dev
+  cooldown:
+    default-days: 7
+  groups:
+    minor-and-patch:
+      update-types:
+      - minor
+      - patch
+- package-ecosystem: gradle
+  directory: /android
+  target-branch: dev
+  schedule:
+    interval: weekly
+    day: monday
+    time: 07:00
+    timezone: Europe/Vienna
+  open-pull-requests-limit: 5
+  commit-message:
+    prefix: deps
+  cooldown:
+    default-days: 7
+  groups:
+    minor-and-patch:
+      update-types:
+      - minor
+      - patch
+- package-ecosystem: swift
+  directory: /ios/App/CapApp-SPM
+  target-branch: dev
+  schedule:
+    interval: weekly
+    day: monday
+    time: 07:00
+    timezone: Europe/Vienna
+  open-pull-requests-limit: 5
+  commit-message:
+    prefix: deps
+  cooldown:
+    default-days: 7
+  groups:
+    minor-and-patch:
+      update-types:
+      - minor
+      - patch
