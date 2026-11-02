@@ -298,3 +298,7 @@ Added weekly Gradle updates for `android/` and Swift Package Manager updates for
 ## 2026-11-01 — Runner-Ansagen und Kamera-Button
 
 Übergang zwischen Übungen ohne "begin in" und ohne "go"; "30/10 seconds left" langsamer (Rate 0,8) und eine Sekunde früher; Überspringen/Wiederholen sagt Übung und Dauer komplett neu an; Welcome-Satz ohne "Let's get ready!"; am Workout-Ende Button "Foto aufnehmen" zum Selfies-Screen. Build geprüft (`vite build`), nicht auf dem Gerät gehört.
+
+## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
+
+Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
