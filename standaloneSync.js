@@ -70,10 +70,25 @@ export function flushOutbox() {
   return flushing;
 }
 
+// Coach-Klientenliste liest nur fitness/{uid}/profile/metadata. Wer sich nur hier einloggt,
+// fehlte dort bisher. Einmalig anlegen; vorhandene Felder (z. B. clientStatus) bleiben unberührt.
+async function ensureCoachProfile(user) {
+  try {
+    const ref = doc(db, 'fitness', user.uid, 'profile', 'metadata');
+    if ((await getDoc(ref)).exists()) return;
+    await setDoc(ref, {
+      displayName: user.displayName || user.email || '',
+      email: user.email || '',
+      clientStatus: 'friend',
+      updated_at: serverTimestamp(),
+    }, { merge: true });
+  } catch (err) { console.warn('[sixpack] Coach-Profil nicht angelegt:', err); }
+}
+
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
   emit();
-  if (user) flushOutbox();
+  if (user) { flushOutbox(); ensureCoachProfile(user); }
 });
 
 export function subscribeSync(fn) {
