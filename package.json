@@ -17,6 +17,8 @@
     "native:sync": "pnpm run build:native && cap sync",
     "native:android": "cap open android",
     "native:ios": "cap open ios",
+    "build:android": "pnpm run native:sync && cd android && ./gradlew assembleDebug",
+    "run:android": "pnpm run native:sync && cap run android",
     "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs",
     "test:calendar": "node scripts/test-calendar-reminders.mjs"
   },
