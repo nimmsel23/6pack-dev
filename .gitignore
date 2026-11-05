@@ -22,3 +22,4 @@ public/release-info.json
 functions/.env*
 functions/.secret*
 .claude/hooks/.fill-docs.lock
+.idea/

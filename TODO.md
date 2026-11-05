@@ -69,3 +69,8 @@
 - [x] 2026-10-24: Kalender-OAuth/Secret und Calendar-Functions in Production einrichten; alle vier Functions ACTIVE und Live-Auth-Sperren geprüft.
 - [ ] Google Kalender in den App-Einstellungen verbinden und echten nächsten Workout-Termin/Handy-Reminder abnehmen (docs/GOOGLE-CALENDAR.md).
 - [x] 2026-10-29: Workout-Benachrichtigung fokussiert das laufende App-Fenster ohne Reload; Sync-Kontoanzeige und Abmelden in den Setup-Tab verschoben.
+
+- [ ] PR #6 (claude-Branch `claude/6pack-improvements-vzkdzu`, Tip `0f8655c1`) am 2026-11-05 als überholt geschlossen: Intro/Wechsel/Töne und Selfie-Button sind über die Commits vom 28./29.10. auf `dev` gelandet (u. a. `042d548f`), die neueren Ansagen-Vorgaben vom 01.11. widersprechen der Branch-Umsetzung („go" beim Start). Drei darin steckende Ideen fehlen auf `dev` und sind als eigenständige Aufgaben offen:
+  - [ ] Musik-Modus (Sprachansagen aus, nur Piep/Tüt für Wechsel, 30 s, 10 s) als Runner-Option.
+  - [ ] Sprachansagen-Schalter im Settings-Tab (Branch: „Sprachansagen standardmäßig an (auch iOS), Schalter in Settings").
+  - [ ] Workout-Ende: „Selfie aufnehmen" öffnet direkt die Kamera (`<input capture>` im Tap); Foto via `initialFiles` an `SelfiesGallery` übergeben statt nur den Selfies-Screen zu öffnen.

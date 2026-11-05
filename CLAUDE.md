@@ -9,6 +9,7 @@ Die alte Beschreibung „dev-Push = Live-Deploy“ ist überholt: der aktive
 `.github/workflows/deploy.yml` veröffentlicht einen 24h-Preview-Channel.
 Production läuft über den freigegebenen `vitalos`-Release-Checkout. Vor einem
 Push Build/Tests ausführen und danach den tatsächlichen CI-Ausgang prüfen.
+Android-Entwicklung: `pnpm run build:android` baut Debug-APK, `pnpm run run:android` deployt auf Gerät/Emulator.
 
 ## Runner (`SixPackPromiseCard.jsx` → `RunnerScreen`) — Anforderungen aus Gym-Tests
 
