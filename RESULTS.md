@@ -1,3 +1,28 @@
+# 2026-11-05 (Abend) — Dependabot-Welle 2 auf dev: Tailwind 4 für 6Pack, js-yaml 5, Majors
+
+Acht neue Dependabot-PRs (#23–#30, alle korrekt auf dev): #23/#25/#26 (gms, actions-Gruppe, minor-patch-Gruppe) direkt squash-gemerged. Die Majors einzeln aufgearbeitet:
+
+- **Tailwind 3.4.19 → 4.3.x (Superseded #27):** dieselbe Migration wie fitness-dev vormittags — postcss.config.cjs auf @tailwindcss/postcss, styles.css auf @import "tailwindcss" + @config; tailwind.config.cjs (fit-Farben) unverändert. Regressions-Check nach Fitness-Abnahme: shadow-sm/backdrop-blur-sm/rounded-sm/Opacity-Utilities **0 Treffer** in 6pack-Quellen. Build + beide Test-Skripte grün. Rebase gegen #26 erzeugt kurz eine defekte package.json (Konfliktmarkerrest) — mit e0869059 + e56fe104 (Lockfile-Regeneration) repariert und per CI grün bestätigt.
+- **js-yaml 4.3.2 → 5.5.0 (Superseded #30):** v5 ohne Default-Export (ESM): build-data.mjs, catalogContent.mjs, scripts/own-clips.mjs auf `{ load as yamlLoad }` umgestellt; build:data, Tests, own-clips grün.
+- **@vitejs/plugin-react 4.7 → 5.2 (Superseded #28):** mit dem js-yaml-Commit zusammen auf dev.
+- **lucide-react 0.453 → 1.64 (#29):** Dependabot-Rebase, gemerged, CI grün.
+- **gradle-wrapper 8.14 → 9.8 (#24):** offen gelassen — lokaler Android-Build als Nachweis läuft an der langsamen Gradle-Distribution (1,5 MB/min) fest; Merge nur nach Build-Bestätigung (Kommentar im PR).
+
+---
+
+# 2026-11-05 — Dependabot-Aufräumung, Live-Release-Kette, Branch-Dissolution
+
+Drei Wellen an diesem Tag: Dependabot-PRs nach `dev` gebracht (statt `master`), alle offenen PRs/Branches aufgelöst, komplette Release-Kette `dev → master → vitalos` live gebracht.
+
+- **Dependabot:** #12 vite 5.4.21→6.4.5, #13 js-yaml 4.1.1→4.3.2, #14 postcss-selector-parser 6.1.4→6.1.5 (zuerst von `master` auf `dev` retargetet, dann squash-gemerged; lokal Build + beide Test-Skripte grün). Nach dem Release folgten #19 postcss, #20 node-forge 1.4.3 (Security-PRs, die Dependabot trotz `target-branch: dev` gegen den Default-Branch öffnet — wieder retargetet).
+- **Release 6Pack:** PR #18 (10:29) und #21 (10:59) gemerged, Live-Deploy `vos-6pack.web.app` grün auf `6d8c5d98`. Alerts auf `master` dadurch von 46 auf 5 (minimatch, @grpc via firebase 11.10, uuid in functions) reduziert — Rest braucht ein Firebase-Major-Upgrade.
+- **Branch-Dissolution 6pack-dev:** `agent/photo-auth`, `claude/wonderful-ramanujan-a5c64x` (beide in master), `claude/6pack-improvements-vzkdzu` (PR #6; überholt durch Runner-Commits 28./29.10., als überholt geschlossen, drei Ideen als TODO mit Tip `0f8655c` gesichert) sowie setup/Dependabot-Restbranches gelöscht. Übrig: `dev`, `master`, `vitalos`, `fitness`.
+- **Integration:** `fitness`-Branch per Fast-Forward auf `5eeb9112`; vitalos-Zweig auf `4362756` (master-Releases); Meta-Pointer `6pack-app` gebumpt, Lockfile ±24 nachgezogen, Shell-Deploy grün.
+- **Querschnitt heute:** fitness-dev-CI scheiterte seit 08:57 an `../Plan/lib/sessionDraft.js` — Ursache war der stale `plan-app`-Pointer im Meta-Repo. Fix: Plan-Release (`vos-release-pr plan`, PR #13, live), Plan-vitalos gepusht (`671200c`), Meta-Pointer + danach liefen alle Fitness-Checks grün; Release-PR fitness #44 gemerged (`2d4fa816`), Live Deploy (Fitness master) und Mini-Apps-Deploy grün. Lokales `vos-release`-Hosting-Deploy scheitert an fehlenden lokalen Firebase-Credentials (SA hat kein Recht auf `vos-plan`; User-Session kann Projekt nicht lesen) — Push per dokumentiertem `--no-verify`-Override, Verifikation durch CI (`deploy-shell` grün).
+- **Nicht geprüft:** Keine Geräte-/Browser-Abnahme der ausgelieferten Builds (Plan, Fitness, Shell, 6pack-Preview+Live). Kamera-/Runner-Verhalten auf echtem Gerät offen.
+
+---
+
 # 2026-11-05 — Dependabot-PRs nach dev gemergt (js-yaml, postcss-selector-parser, vite 6)
 
 Die drei offenen Dependabot-PRs (#12/#13/#14, von 2026-10-31) zielten noch auf `master`, obwohl `dependabot.yml` auf `master` inzwischen `target-branch: dev` setzt. Basen per `gh pr edit` auf `dev` umgestellt und dort nacheinander squash-gemergt.
