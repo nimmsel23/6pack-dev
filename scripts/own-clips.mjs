@@ -9,7 +9,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameS
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const CLIPS = join(ROOT, 'public/videos');
@@ -21,7 +21,7 @@ function dayExerciseIds(day) {
   const dayInWeek = ((day - 1) % 7) + 1;
   const file = join(ROOT, `catalog/6pack/week${week}_workouts.yml`);
   if (!existsSync(file)) throw new Error(`Kein Programm für Tag ${day} (${file} fehlt)`);
-  const items = yaml.load(readFileSync(file, 'utf8')).verified_days?.[dayInWeek]?.items;
+  const items = yamlLoad(readFileSync(file, 'utf8')).verified_days?.[dayInWeek]?.items;
   if (!items) throw new Error(`Tag ${day} ist nicht im Programm hinterlegt`);
   return [...new Set(items.filter(i => i.type === 'exercise').map(i => i.exercise_id))];
 }

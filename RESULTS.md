@@ -1,3 +1,15 @@
+# 2026-11-05 (Abend) — Dependabot-Welle 2 auf dev: Tailwind 4 für 6Pack, js-yaml 5, Majors
+
+Acht neue Dependabot-PRs (#23–#30, alle korrekt auf dev): #23/#25/#26 (gms, actions-Gruppe, minor-patch-Gruppe) direkt squash-gemerged. Die Majors einzeln aufgearbeitet:
+
+- **Tailwind 3.4.19 → 4.3.x (Superseded #27):** dieselbe Migration wie fitness-dev vormittags — postcss.config.cjs auf @tailwindcss/postcss, styles.css auf @import "tailwindcss" + @config; tailwind.config.cjs (fit-Farben) unverändert. Regressions-Check nach Fitness-Abnahme: shadow-sm/backdrop-blur-sm/rounded-sm/Opacity-Utilities **0 Treffer** in 6pack-Quellen. Build + beide Test-Skripte grün. Rebase gegen #26 erzeugt kurz eine defekte package.json (Konfliktmarkerrest) — mit e0869059 + e56fe104 (Lockfile-Regeneration) repariert und per CI grün bestätigt.
+- **js-yaml 4.3.2 → 5.5.0 (Superseded #30):** v5 ohne Default-Export (ESM): build-data.mjs, catalogContent.mjs, scripts/own-clips.mjs auf `{ load as yamlLoad }` umgestellt; build:data, Tests, own-clips grün.
+- **@vitejs/plugin-react 4.7 → 5.2 (Superseded #28):** mit dem js-yaml-Commit zusammen auf dev.
+- **lucide-react 0.453 → 1.64 (#29):** Dependabot-Rebase, gemerged, CI grün.
+- **gradle-wrapper 8.14 → 9.8 (#24):** offen gelassen — lokaler Android-Build als Nachweis läuft an der langsamen Gradle-Distribution (1,5 MB/min) fest; Merge nur nach Build-Bestätigung (Kommentar im PR).
+
+---
+
 # 2026-11-05 — Dependabot-Aufräumung, Live-Release-Kette, Branch-Dissolution
 
 Drei Wellen an diesem Tag: Dependabot-PRs nach `dev` gebracht (statt `master`), alle offenen PRs/Branches aufgelöst, komplette Release-Kette `dev → master → vitalos` live gebracht.

@@ -9,7 +9,7 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 import { loadMuscles, exerciseContent } from './catalogContent.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -48,7 +48,7 @@ function categoryFromTags(tags) {
 }
 
 function loadYaml(path) {
-  return yaml.load(readFileSync(path, 'utf-8'));
+  return yamlLoad(readFileSync(path, 'utf-8'));
 }
 
 function isProgramFile(filename) {
