@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 
 // Eigene Clips: public/videos/<exercise_id>.mp4|webm. Liegt eine Datei dort, ersetzt sie die
 // fremde Demo aus catalog/exercise-videos.yml (ein explizites video_url am Eintrag bleibt vorrangig).
@@ -29,14 +29,14 @@ export function loadMuscles(directory) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) Object.assign(records, loadMuscles(path));
     else if (entry.name.endsWith('.yml')) {
-      const record = yaml.load(readFileSync(path, 'utf8'));
+      const record = yamlLoad(readFileSync(path, 'utf8'));
       if (record?.id) records[record.id] = record;
     }
   }
   return records;
 }
 
-const videos = yaml.load(readFileSync(new URL('./catalog/exercise-videos.yml', import.meta.url), 'utf8')) || {};
+const videos = yamlLoad(readFileSync(new URL('./catalog/exercise-videos.yml', import.meta.url), 'utf8')) || {};
 
 export function exerciseContent(exercise, muscles, clipsDir) {
   const describe = id => {
