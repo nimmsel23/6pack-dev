@@ -1,3 +1,16 @@
+# 2026-11-05 — Dependabot-Aufräumung, Live-Release-Kette, Branch-Dissolution
+
+Drei Wellen an diesem Tag: Dependabot-PRs nach `dev` gebracht (statt `master`), alle offenen PRs/Branches aufgelöst, komplette Release-Kette `dev → master → vitalos` live gebracht.
+
+- **Dependabot:** #12 vite 5.4.21→6.4.5, #13 js-yaml 4.1.1→4.3.2, #14 postcss-selector-parser 6.1.4→6.1.5 (zuerst von `master` auf `dev` retargetet, dann squash-gemerged; lokal Build + beide Test-Skripte grün). Nach dem Release folgten #19 postcss, #20 node-forge 1.4.3 (Security-PRs, die Dependabot trotz `target-branch: dev` gegen den Default-Branch öffnet — wieder retargetet).
+- **Release 6Pack:** PR #18 (10:29) und #21 (10:59) gemerged, Live-Deploy `vos-6pack.web.app` grün auf `6d8c5d98`. Alerts auf `master` dadurch von 46 auf 5 (minimatch, @grpc via firebase 11.10, uuid in functions) reduziert — Rest braucht ein Firebase-Major-Upgrade.
+- **Branch-Dissolution 6pack-dev:** `agent/photo-auth`, `claude/wonderful-ramanujan-a5c64x` (beide in master), `claude/6pack-improvements-vzkdzu` (PR #6; überholt durch Runner-Commits 28./29.10., als überholt geschlossen, drei Ideen als TODO mit Tip `0f8655c` gesichert) sowie setup/Dependabot-Restbranches gelöscht. Übrig: `dev`, `master`, `vitalos`, `fitness`.
+- **Integration:** `fitness`-Branch per Fast-Forward auf `5eeb9112`; vitalos-Zweig auf `4362756` (master-Releases); Meta-Pointer `6pack-app` gebumpt, Lockfile ±24 nachgezogen, Shell-Deploy grün.
+- **Querschnitt heute:** fitness-dev-CI scheiterte seit 08:57 an `../Plan/lib/sessionDraft.js` — Ursache war der stale `plan-app`-Pointer im Meta-Repo. Fix: Plan-Release (`vos-release-pr plan`, PR #13, live), Plan-vitalos gepusht (`671200c`), Meta-Pointer + danach liefen alle Fitness-Checks grün; Release-PR fitness #44 gemerged (`2d4fa816`), Live Deploy (Fitness master) und Mini-Apps-Deploy grün. Lokales `vos-release`-Hosting-Deploy scheitert an fehlenden lokalen Firebase-Credentials (SA hat kein Recht auf `vos-plan`; User-Session kann Projekt nicht lesen) — Push per dokumentiertem `--no-verify`-Override, Verifikation durch CI (`deploy-shell` grün).
+- **Nicht geprüft:** Keine Geräte-/Browser-Abnahme der ausgelieferten Builds (Plan, Fitness, Shell, 6pack-Preview+Live). Kamera-/Runner-Verhalten auf echtem Gerät offen.
+
+---
+
 # 2026-11-05 — Dependabot-PRs nach dev gemergt (js-yaml, postcss-selector-parser, vite 6)
 
 Die drei offenen Dependabot-PRs (#12/#13/#14, von 2026-10-31) zielten noch auf `master`, obwohl `dependabot.yml` auf `master` inzwischen `target-branch: dev` setzt. Basen per `gh pr edit` auf `dev` umgestellt und dort nacheinander squash-gemergt.
