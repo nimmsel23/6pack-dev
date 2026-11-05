@@ -23,10 +23,10 @@
     "test:calendar": "node scripts/test-calendar-reminders.mjs"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.3",
+    "@capacitor/android": "^8.6.0",
     "@capacitor/app": "^8.1.2",
-    "@capacitor/core": "^8.5.3",
-    "@capacitor/ios": "^8.5.3",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/ios": "^8.6.0",
     "@capacitor/local-notifications": "^8.3.1",
     "firebase": "11.10.0",
     "js-yaml": "4.3.2",
@@ -35,10 +35,10 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.3",
+    "@capacitor/cli": "^8.6.0",
     "@vitejs/plugin-react": "4.7.0",
-    "autoprefixer": "10.5.0",
-    "postcss": "8.5.23",
+    "autoprefixer": "10.6.2",
+    "postcss": "8.5.32",
     "tailwindcss": "3.4.19",
     "vite": "6.4.5"
   }
