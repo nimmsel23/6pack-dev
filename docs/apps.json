@@ -1,0 +1,16 @@
+{
+  "repo": "6pack-dev",
+  "apps": [
+    {
+      "id": "sixpack",
+      "kind": "main",
+      "name": "6Pack",
+      "short": "6Pack",
+      "description": "6-Pack-Programm mit Workout-Runner",
+      "accent": "#e5192b",
+      "site": "vos-6pack",
+      "url": "https://vos-6pack.web.app",
+      "tab": null
+    }
+  ]
+}

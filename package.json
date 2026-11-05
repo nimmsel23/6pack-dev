@@ -17,6 +17,8 @@
     "native:sync": "pnpm run build:native && cap sync",
     "native:android": "cap open android",
     "native:ios": "cap open ios",
+    "build:android": "pnpm run native:sync && cd android && ./gradlew assembleDebug",
+    "run:android": "pnpm run native:sync && cap run android",
     "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs",
     "test:calendar": "node scripts/test-calendar-reminders.mjs"
   },
@@ -27,7 +29,7 @@
     "@capacitor/ios": "^8.5.3",
     "@capacitor/local-notifications": "^8.3.1",
     "firebase": "11.10.0",
-    "js-yaml": "4.1.1",
+    "js-yaml": "4.3.2",
     "lucide-react": "0.453.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
@@ -38,6 +40,6 @@
     "autoprefixer": "10.5.0",
     "postcss": "8.5.13",
     "tailwindcss": "3.4.19",
-    "vite": "5.4.21"
+    "vite": "6.4.5"
   }
 }
