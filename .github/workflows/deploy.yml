@@ -53,13 +53,13 @@ jobs:
       TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
       FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FITNESS_AOS || secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 12
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
