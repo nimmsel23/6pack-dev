@@ -1,3 +1,15 @@
+# 2026-11-05 — Dependabot-PRs nach dev gemergt (js-yaml, postcss-selector-parser, vite 6)
+
+Die drei offenen Dependabot-PRs (#12/#13/#14, von 2026-10-31) zielten noch auf `master`, obwohl `dependabot.yml` auf `master` inzwischen `target-branch: dev` setzt. Basen per `gh pr edit` auf `dev` umgestellt und dort nacheinander squash-gemergt.
+
+- **#13 js-yaml 4.1.1 → 4.3.2** (`7c2ea26`): direkte Dependency, Minor.
+- **#14 postcss-selector-parser 6.1.4 → 6.1.5** (`b2f3013`): transitive Dev-Dependency, Patch.
+- **#12 vite 5.4.21 → 6.4.5** (`55e8644`): Dev-Dependency, Major-Sprung.
+- **Verifikation:** Lokal `pnpm-cloud` install + Build: Vite 6.4.5 baut 1626 Module in 8,6 s, Shell-Stempel sauber; `test-exercise-details.mjs` und `test-selfie-cloud.mjs` grün. CI auf `dev` nach letztem Merge: Check und Preview-Deploy erfolgreich (`56e8…` nicht nötig — finaler Stand `55e8644`).
+- **Nicht geprüft:** Kein Geräte-/Browser-Test der Preview; Fitness-Integration (`fitness`-Branch/Gitlink) hat die Updates noch nicht übernommen.
+
+---
+
 # 2026-10-25 — Vollflächige Screens, kürzerer Splash, Fitness-Wrapper, Releases
 
 Auf User-Wunsch („die App soll die ganze Bildschirmfläche nutzen, ohne scrollen zu müssen“, „Splashscreen darf nicht so lange laden“, „Fitness-Wrapper anpassen“) umgebaut und zweimal veröffentlicht. Commits auf `dev`: `ac5cb26`, `bf5a0fa`, `4831162`, `4b5f729`. Neue Arbeitsregel: in 6pack-dev direkt committen (Feedback-Memory `always-commit`), Push separat.
