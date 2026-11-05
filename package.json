@@ -40,7 +40,7 @@
     "@vitejs/plugin-react": "4.7.0",
     "autoprefixer": "10.6.2",
     "postcss": "8.5.32",
-    "tailwindcss": "^4.3.3", (deps(css): Tailwind 3.4 → 4.3 migrieren (PostCSS-Plugin @tailwindcss/postcss, @import tailwindcss + @config))
+    "tailwindcss": "^4.3.3",
     "vite": "6.4.5"
   }
 }
