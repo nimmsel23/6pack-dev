@@ -16,6 +16,9 @@ jobs:
   android:
     if: inputs.platform == 'both' || inputs.platform == 'android'
     runs-on: ubuntu-latest
+    # contents: write nur für das Release-Asset android-latest (siehe letzter Schritt)
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v5
@@ -41,6 +44,18 @@ jobs:
           name: sixpack-android-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
+      # Stabiler Download ohne Login: Release "android-latest" trägt immer die zuletzt gebaute Debug-APK.
+      # Coach (6pack.html/portal.html) verlinkt darauf:
+      # https://github.com/nimmsel23/6pack-dev/releases/download/android-latest/6pack-app-debug.apk
+      - name: Release android-latest aktualisieren
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk 6pack-app-debug.apk
+          gh release view android-latest >/dev/null 2>&1 || gh release create android-latest \
+            --prerelease --target "$GITHUB_SHA" --title "6Pack Android (Debug, latest)" --notes "wird vom Workflow Native 6Pack builds überschrieben"
+          gh release upload android-latest 6pack-app-debug.apk --clobber
+          gh release edit android-latest --notes "Debug-APK, gebaut aus ${GITHUB_SHA::7} ($GITHUB_REF_NAME) am $(date -u +%F)"
 
   ios:
     if: inputs.platform == 'both' || inputs.platform == 'ios'
