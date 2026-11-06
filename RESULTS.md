@@ -1,3 +1,16 @@
+# Dependabot-Abschluss: 6Pack live, Integrations-Branches und Shell-Pointer nachgezogen (2026-11-06)
+
+Anschluss an den Eintrag vom 2026-11-05 (Abend). Die dort beschriebenen Dependabot-Änderungen liegen auf `dev`. Diese Runde bringt sie live und zieht die Integrations-Branches und den Meta-Pointer nach. Danach ist in 6pack-dev nur PR #24 (gradle-wrapper) offen.
+
+- **`master` / Release (PR #31):** `dev` per `vos-release-pr 6pack` nach `master` gemergt (Auto-Merge). Live-Deploy `vos-6pack.web.app` grün auf `aa6006dc`.
+- **`fitness`-Branch (6pack-dev):** per Fast-Forward von `5eeb9112` auf `bb69bf20` gesetzt.
+- **`vitalos`-Zweig (6pack-dev):** `master` per Merge-Commit eingemischt (kein Fast-Forward möglich wegen bestehender Merge-Commits) → `3ec9593`. Push mit `--no-verify`.
+- **Meta-Repo `~/vitalos` (`master`, Commit `69f11ae`):** Submodul-Pointer `6pack-app` → `3ec9593`, `pnpm-lock.yaml` regeneriert (`pnpm install --no-frozen-lockfile`; 2 Dateien, +40/−60).
+- **Shell-Deploy `deploy-shell.yml`:** Auf den Push `69f11ae` startete kein automatischer Lauf. Per `workflow_dispatch` nachgestoßen, Run auf `69f11aee` grün.
+
+**Nicht geprüft:** Keine Geräte- oder Browser-Abnahme der Live-Version `aa6006dc`.
+
+---
 # 2026-11-05 (Abend) — Dependabot-Welle 2 auf dev: Tailwind 4 für 6Pack, js-yaml 5, Majors
 
 Acht neue Dependabot-PRs (#23–#30, alle korrekt auf dev): #23/#25/#26 (gms, actions-Gruppe, minor-patch-Gruppe) direkt squash-gemerged. Die Majors einzeln aufgearbeitet:
