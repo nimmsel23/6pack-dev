@@ -1,3 +1,7 @@
+## 2026-11-07 — GitHub-Pages-Doku vorbereitet
+
+- `docs/README.md` als Jekyll-Landingpage ergänzt. Die Datei ist auf `/index.html` geroutet; GitHub-Pages-Quelle `dev /docs` muss noch in den Repository-Einstellungen geprüft bzw. aktiviert werden.
+
 ## 2026-11-07 — 6pack-Agentenlauf nach Promotion verifiziert
 
 - Pilot-Workflow steht auf `master`; Check `42397154887`, Auto-Promote und 6Pack-Deploy `42397207419` auf Commit `a36732e9` waren grün.
