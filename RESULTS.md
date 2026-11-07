@@ -1,3 +1,9 @@
+## 2026-11-07 — Gemini CI-Agent installiert
+
+- CI-Agent fuer Check-Fehler, Dependabot-PRs und Merge-Konflikte ergänzt; Tailwind-/Paket-Upgrades bleiben erhalten.
+- Quellreparaturen werden auf den betroffenen Branch geschrieben; Zielbranch-Reparaturen erhalten einen PR und werden erst nach gruenem Check gemergt.
+- Gemini-API und `SYNC_TOKEN` muessen als Actions-Secrets vorhanden sein. Nachweis: erster erfolgreicher automatischer Reparatur- und Deploy-Lauf steht aus.
+
 # Dependabot-Abschluss: 6Pack live, Integrations-Branches und Shell-Pointer nachgezogen (2026-11-06)
 
 Anschluss an den Eintrag vom 2026-11-05 (Abend). Die dort beschriebenen Dependabot-Änderungen liegen auf `dev`. Diese Runde bringt sie live und zieht die Integrations-Branches und den Meta-Pointer nach. Danach ist in 6pack-dev nur PR #24 (gradle-wrapper) offen.
