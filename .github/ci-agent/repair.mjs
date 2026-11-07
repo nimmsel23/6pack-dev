@@ -64,8 +64,8 @@ function fetchRefs(...refs) {
 }
 
 function prFor(branch, base, sha) {
-  const owner = repo.split("/")[0];
-  const candidates = ghJson(["pr", "list", "-R", repo, "--head", `${owner}:${branch}`, "--state", "open", "--json", "number,headRefName,headRefOid,baseRefName"]);
+  // Plain branch name: the "owner:branch" form of --head silently matches nothing in current gh versions.
+  const candidates = ghJson(["pr", "list", "-R", repo, "--head", branch, "--state", "open", "--json", "number,headRefName,headRefOid,baseRefName"]);
   return candidates.find((p) => p.headRefName === branch && p.headRefOid === sha && p.baseRefName === base);
 }
 
