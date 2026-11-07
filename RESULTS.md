@@ -385,3 +385,10 @@ Added weekly Gradle updates for `android/` and Swift Package Manager updates for
 ## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
 
 Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
+
+
+## 2026-11-07 — Gemini CI-Agent aktiviert
+
+- Agent-Workflow und lokale Trigger für `6pack-dev` auf `dev` eingerichtet; `GEMINI_API_KEY` als Actions-Secret gesetzt.
+- `Check`/Preview und Agent-Run [42405187486](https://github.com/nimmsel23/6pack-dev/actions/runs/42405187486) waren auf Commit `9d71efa5` grün. Dieser Lauf war ein No-op auf einem erfolgreichen Check; ein roter Code-Fehler wurde noch nicht absichtlich simuliert.
+- Pushes und PR-Merges verwenden die eng berechtigte `GITHUB_TOKEN`-Workflow-Berechtigung; kein separates `SYNC_TOKEN` erforderlich.
