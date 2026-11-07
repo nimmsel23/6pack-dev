@@ -31,3 +31,9 @@
 *   **Komplexe Höhenberechnung ungetestet:** Die `SixPackFrame`-Höhenberechnung (`calc(100dvh - ...`) ist komplex und anfällig für Umgebungsfaktoren (`top`, `--mobile-nav-height`, `1rem`-Offset), was ohne visuelle Prüfung zu Layout-Fehlern führen kann.
 *   **Inkonsistente Vollbild-UX:** Nur der Runner und die Hauptkarte der 6pack-App wurden für die Vollbild-Einbettung angepasst; andere Screens (Exercise-Detail, Selfies) bleiben unberücksichtigt, was die UX inkonsistent macht.
 *   **Ungeprüfte Z-Index-Annahme:** Die `z-[100]`-Erhöhung für den Runner ist eine Annahme, die ohne Kenntnis des Host-App-Z-Index-Stacks zu Überlappungen führen kann.
+
+
+## Gemini CI-Agent — verbleibende Betriebsprüfung
+
+- [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
+- [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
