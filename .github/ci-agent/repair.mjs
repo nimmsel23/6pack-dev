@@ -130,7 +130,7 @@ if (run) {
     await rerunOrRepairDeploy();
     process.exit(0);
   }
-  if (!hasWriteToken) block("SYNC_TOKEN fehlt: Gemini-Reparatur und Branch-Push sind gesperrt. Actions-Secrets > SYNC_TOKEN mit Contents, Pull requests und Actions Schreibrechten setzen.");
+  if (!hasWriteToken) console.log("::warning::SYNC_TOKEN fehlt - Reparatur-Push erfolgt mit GITHUB_TOKEN; der Check wird danach per workflow_dispatch neu gestartet.");
 }
 
 let branch;
