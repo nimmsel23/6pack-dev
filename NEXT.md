@@ -1,6 +1,7 @@
 # CI-Agent — offener Betriebspunkt
 
-- [ ] `GEMINI_API_KEY` und `SYNC_TOKEN` als Actions-Secrets fuer diesen Repo-Zweig einrichten/prüfen; einen absichtlich roten Check bis zum grünen Promote/Deploy beobachten.
+- [ ] Repo-Secrets `SYNC_TOKEN` (Contents/Actions/Pull requests write) und `GEMINI_API_KEY` prüfen/setzen; danach einen roten Check bis Reparatur, Check, Promote und Deploy durchbeobachten.
+- [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
 - **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
