@@ -52,6 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}
           SYNC_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}
+          HAS_SYNC_TOKEN: ${{ secrets.SYNC_TOKEN != '' }}
           CI_BRANCH: ${{ steps.repair.outputs.branch }}
           CI_BASE: ${{ steps.repair.outputs.base }}
           CI_TARGET: ${{ steps.repair.outputs.target_branch }}
@@ -72,6 +73,11 @@ jobs:
               --body "Automated Gemini CI repair. This PR merges only after the repository Check succeeds."
           else
             git -c "http.https://github.com/.extraheader=$header" push origin "HEAD:refs/heads/$CI_BRANCH"
+          fi
+          # Ohne SYNC_TOKEN loest ein GITHUB_TOKEN-Push keine Workflows aus -> Check auf dem reparierten Branch neu starten
+          if [ "$HAS_SYNC_TOKEN" != "true" ] && [ -n "$CI_BRANCH" ]; then
+            gh workflow run check.yml -R "$GITHUB_REPOSITORY" --ref "$CI_BRANCH" 2>/dev/null \
+              || echo "::notice::Check-Dispatch nicht moeglich (kein workflow_dispatch in check.yml?)"
           fi
       - name: CI-Agent Bericht (strukturierte Diagnose)
         if: always()
