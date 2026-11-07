@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.repository.default_branch }}
-          token: ${{ secrets.SYNC_TOKEN }}
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -67,13 +67,15 @@ jobs:
       - name: Fehler analysieren und Reparatur vorbereiten
         id: repair
         env:
-          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN || github.token }}
+          CI_AGENT_HAS_SYNC_TOKEN: ${{ secrets.SYNC_TOKEN != '' }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node .github/ci-agent/repair.mjs
       - name: Reparatur committen und Branch aktualisieren
         if: steps.repair.outputs.action == 'repair' || steps.repair.outputs.action == 'merge'
         env:
           GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
           CI_BRANCH: ${{ steps.repair.outputs.branch }}
           CI_BASE: ${{ steps.repair.outputs.base }}
           CI_TARGET: ${{ steps.repair.outputs.target_branch }}
@@ -86,11 +88,38 @@ jobs:
           else
             git commit -m "fix(ci): source repair [ci-agent]"
           fi
+          if [ -z "$SYNC_TOKEN" ]; then
+            echo "SYNC_TOKEN fehlt; keine Branch-Aktualisierung wird versucht." >&2
+            exit 1
+          fi
+          header="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$SYNC_TOKEN" | base64 -w0)"
           if [ -n "$CI_TARGET" ]; then
-            git push origin "HEAD:refs/heads/$CI_BRANCH"
+            git -c "http.https://github.com/.extraheader=$header" push origin "HEAD:refs/heads/$CI_BRANCH"
             gh pr create --repo "$GITHUB_REPOSITORY" --base "$CI_TARGET" --head "$CI_BRANCH" \
               --title "fix(ci): repair failed $CI_TARGET check" \
               --body "Automated Gemini CI repair. This PR merges only after the repository Check succeeds."
           else
-            git push origin "HEAD:refs/heads/$CI_BRANCH"
+            git -c "http.https://github.com/.extraheader=$header" push origin "HEAD:refs/heads/$CI_BRANCH"
           fi
+      - name: CI-Agent Bericht (strukturierte Diagnose)
+        if: always()
+        env:
+          REPORT_ACTION: ${{ steps.repair.outputs.action || 'agent_step_failed' }}
+          REPORT_REASON: ${{ steps.repair.outputs.reason || 'Agent kam vor einer Diagnose nicht durch; Fehlerdetails stehen im fehlgeschlagenen Schritt.' }}
+          SOURCE_NAME: ${{ github.event.workflow_run.name || github.event.pull_request.title || 'Pull-Request-Konflikt' }}
+          SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.event.pull_request.head.ref || 'unknown' }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || 'unknown' }}
+          SOURCE_URL: ${{ github.event.workflow_run.html_url || github.event.pull_request.html_url || github.server_url }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          {
+            echo "## Gemini CI Agent"
+            echo
+            echo "- Repo: $REPOSITORY"
+            echo "- Auslöser: $SOURCE_NAME"
+            echo "- Branch / Commit: \`$SOURCE_BRANCH\` / \`${SOURCE_SHA:0:8}\`"
+            echo "- Entscheidung: $REPORT_ACTION"
+            echo "- Diagnose: $REPORT_REASON"
+            echo "- Run: $SOURCE_URL"
+            echo "- Report-Run-ID: $GITHUB_RUN_ID"
+          } >> "$GITHUB_STEP_SUMMARY"

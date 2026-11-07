@@ -1,3 +1,10 @@
+## 2026-11-07 — Gemini-CI-Pilot: fehlende Schreibrechte diagnostisch abfangen
+
+- Ursache der Gemini-Agent-Ausfälle: `SYNC_TOKEN` ist nicht als Actions-Secret gesetzt; `actions/checkout` stoppte vor dem Skript. Damit wurde Gemini bisher nicht aufgerufen.
+- Workflow nutzt `GITHUB_TOKEN` für Lesezugriff und fasst bei fehlendem `SYNC_TOKEN` keine Branches an. Der Run-Summary enthält Repo, ausgelösten Workflow, Commit, Entscheidung und Diagnose.
+- Branch-Pushes verwenden bei gesetztem Token einen expliziten Git-Auth-Header, damit der reguläre Check/Promote/Deploy erneut startet.
+- Noch offen: `SYNC_TOKEN` und `GEMINI_API_KEY` für dieses Repo setzen und einen echten roten Check bis zum grünen Promote/Deploy beobachten.
+
 ## 2026-11-07 — CI-Agent-Deploy-Routing und No-op-Ausgänge korrigiert
 
 - Reale Modul-Deploy-/Preview-Workflownamen ergänzt; grüne Deploy-Läufe lösen keine Merges aus. Ohne sichere Quellreparatur endet der Agent ohne Commit.

@@ -7,6 +7,7 @@ const cwd = process.cwd();
 const event = JSON.parse(await readFile(process.env.GITHUB_EVENT_PATH, "utf8"));
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GH_TOKEN;
+const hasWriteToken = process.env.CI_AGENT_HAS_SYNC_TOKEN === "true";
 const apiKey = process.env.GEMINI_API_KEY;
 const run = event.workflow_run;
 const prEvent = event.pull_request;
@@ -21,16 +22,27 @@ function git(args, { allowFailure = false, encoding = "utf8" } = {}) {
 }
 
 function output(name, value) {
-  appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
+  const safe = String(value ?? "").replace(/[\r\n]+/g, " ").slice(0, 1000);
+  appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${safe}\n`);
 }
 
 function stop(message) {
   console.log(`::notice::${message}`);
   output("action", "noop");
+  output("reason", message);
+  process.exit(0);
+}
+
+function block(message) {
+  console.log(`::notice::${message}`);
+  output("action", "blocked");
+  output("reason", message);
   process.exit(0);
 }
 
 function error(message) {
+  output("action", "error");
+  output("reason", message);
   console.error(`::error::${message}`);
   process.exit(1);
 }
@@ -62,6 +74,7 @@ async function rerunOrRepairDeploy() {
   if (run.run_attempt === 1) {
     execFileSync("gh", ["run", "rerun", String(run.id), "--failed", "-R", repo], { cwd, stdio: "inherit", env: { ...process.env, GH_TOKEN: token } });
     output("action", "rerun");
+    output("reason", `Fehlgeschlagener Deploy-Lauf ${run.id} einmal erneut gestartet.`);
     return;
   }
 }
@@ -83,6 +96,7 @@ async function mergeGreenReleaseOrRepair() {
   const shouldMergeRepair = branch.startsWith("ci-agent/repair/") && ["master", "vitalos", "main"].includes(base);
   const shouldMergeProductRelease = branch === "master" && base === "vitalos";
   if (!shouldMergeRepair && !shouldMergeProductRelease) return false;
+  if (!hasWriteToken) block("SYNC_TOKEN fehlt: grüner Check ist bestätigt, aber dieser PR darf noch nicht gemergt werden.");
   const current = prFor(branch, base, run.head_sha);
   if (!current) return false;
   const method = "--merge";
@@ -99,6 +113,7 @@ if (run) {
     const merged = await mergeGreenReleaseOrRepair();
     if (!merged) stop("Grüner Lauf: der reguläre Release- oder Auto-Merge-Flow übernimmt.");
     output("action", "merged");
+    output("reason", "PR nach grünem Check gemergt; Zielbranch-Deploy läuft über die Repository-Pipeline.");
     process.exit(0);
   }
   if (run.conclusion !== "failure") stop(`Lauf endet mit ${run.conclusion}; keine Reparatur nötig.`);
@@ -112,6 +127,7 @@ if (run) {
     await rerunOrRepairDeploy();
     process.exit(0);
   }
+  if (!hasWriteToken) block("SYNC_TOKEN fehlt: Gemini-Reparatur und Branch-Push sind gesperrt. Actions-Secrets > SYNC_TOKEN mit Contents, Pull requests und Actions Schreibrechten setzen.");
 }
 
 let branch;
@@ -160,7 +176,7 @@ if (prEvent) {
 if (!/^[A-Za-z0-9._/-]+$/.test(branch) || branch.includes("..") || !/^(dev|master|vitalos|main)$/.test(base)) {
   error(`Unsichere oder nicht unterstützte Branch-Kombination: ${branch} -> ${base}`);
 }
-if (!apiKey) error("Secret GEMINI_API_KEY fehlt.");
+if (!apiKey) block("GEMINI_API_KEY fehlt: keine Gemini-Anfrage gesendet und keine Änderung vorbereitet.");
 
 let repairBranch = branch;
 if (createRepairPr) repairBranch = `ci-agent/repair/${run.id}-${run.run_attempt}`;
@@ -178,6 +194,7 @@ if (prEvent) {
   if (details.state !== "OPEN" || details.headRefOid !== expectedHead || details.mergeable !== "CONFLICTING") {
     stop(`PR #${pullNumber} hat keinen bestätigten Merge-Konflikt (${details.mergeable}).`);
   }
+  if (!hasWriteToken) block("SYNC_TOKEN fehlt: Merge-Konflikt erkannt, aber der Agent darf den PR-Branch noch nicht aktualisieren.");
   const mergeResult = git(["merge", "--no-commit", "--no-ff", `origin/${base}`], { allowFailure: true });
   conflictPaths = git(["diff", "--name-only", "--diff-filter=U"]).split("\n").filter(Boolean);
   if (mergeResult.status === 0 && conflictPaths.length === 0) {
@@ -286,6 +303,7 @@ if (prEvent && conflictPaths.length === 0 && mergeRequested) {
 } else {
   output("action", "repair");
 }
+output("reason", proposal.reason ?? "Reparatur vorbereitet; der Repository-Check entscheidet über Merge und Deploy.");
 output("branch", repairBranch);
 output("base", base);
 output("target_branch", createRepairPr ? base : "");
