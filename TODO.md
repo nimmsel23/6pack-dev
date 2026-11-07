@@ -74,3 +74,6 @@
   - [ ] Musik-Modus (Sprachansagen aus, nur Piep/Tüt für Wechsel, 30 s, 10 s) als Runner-Option.
   - [ ] Sprachansagen-Schalter im Settings-Tab (Branch: „Sprachansagen standardmäßig an (auch iOS), Schalter in Settings").
   - [ ] Workout-Ende: „Selfie aufnehmen" öffnet direkt die Kamera (`<input capture>` im Tap); Foto via `initialFiles` an `SelfiesGallery` übergeben statt nur den Selfies-Screen zu öffnen.
+
+## 2026-11-07 — Router (cli)
+- [ ] 6pack: Router-Testeintrag (bitte ignorieren)
