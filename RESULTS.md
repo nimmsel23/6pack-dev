@@ -1,3 +1,11 @@
+## 2026-11-07 — 6pack-Agentenlauf nach Promotion verifiziert
+
+- Pilot-Workflow steht auf `master`; Check `42397154887`, Auto-Promote und 6Pack-Deploy `42397207419` auf Commit `a36732e9` waren grün.
+- Gemini CI Agent `42397196704` lief automatisch nach dem grünen Check und entschied korrekt `noop`; Quell-Run und Commit wurden erkannt, es gab keinen unnötigen Commit.
+- Der Agentenlauf zeigte `CI_AGENT_HAS_SYNC_TOKEN=false` und `GEMINI_API_KEY` leer. Damit ist ein echter roter-Check-Reparaturlauf aktuell noch blockiert.
+- Dieser erste Lauf verwendete wegen der gleichzeitigen Promotion noch die vorherige Workflow-Version; der nächste Check prüft die neue Stage-Diagnose aus dem aktualisierten Workflow.
+- Gmail-Zustellung ist weiterhin nicht Teil der Cloud-Pipeline. Lokal ist Betta als Gmail-Ausgang und als vorgesehener Eingang dokumentiert; ein aktiver Eingangspoller wurde hier nicht nachgewiesen.
+
 ## 2026-11-07 — 6pack-CI-Agent auf den Pilotbetrieb fokussiert
 
 - Workflow-Trigger auf 6Pack Check und 6Pack Deploy beschränkt; veraltete Fremdrepo-Trigger entfernt.
