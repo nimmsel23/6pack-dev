@@ -8,3 +8,6 @@ export default defineConfig({
   plugins: [react(), vosChangelog({ appId: 'sixpack', appName: '6Pack', accent: '#f87171' })],
   server: { proxy: { '/sixpack': `http://127.0.0.1:${process.env.FITNESS_NODE_PORT || 9100}` } },
 });
+
+// deliberate syntax error for CI repair test
+const broken = ((( ;
