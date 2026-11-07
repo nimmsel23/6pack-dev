@@ -2,7 +2,7 @@
 
 - Workflow-Trigger auf 6Pack Check und 6Pack Deploy beschränkt; veraltete Fremdrepo-Trigger entfernt.
 - Der immer laufende Agentenbericht nennt jetzt die fehlgeschlagene Pipeline-Stufe (Checkout, Node-Setup, Diagnose oder Publish), Quell-Run-ID und Diagnose statt einer pauschalen Fehlermeldung.
-- Commit `41b2548` auf `dev`; der echte Agentenlauf und Gmail-Zustellung sind noch nicht bestätigt. Actions-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` fehlen in der verifizierten Laufzeit.
+- Commit `41b2548` auf `dev`; der echte Agentenlauf und Gmail-Zustellung sind noch nicht bestätigt. `SYNC_TOKEN` fehlte nachweislich in einem frueheren Actions-Lauf; `GEMINI_API_KEY` als Repo-Secret und Gmail-Zustellung sind noch nicht verifiziert.
 
 ## 2026-11-07 — Gemini-CI-Pilot: fehlende Schreibrechte diagnostisch abfangen
 
