@@ -1,3 +1,9 @@
+## 2026-11-07 — 6pack-CI-Agent auf den Pilotbetrieb fokussiert
+
+- Workflow-Trigger auf 6Pack Check und 6Pack Deploy beschränkt; veraltete Fremdrepo-Trigger entfernt.
+- Der immer laufende Agentenbericht nennt jetzt die fehlgeschlagene Pipeline-Stufe (Checkout, Node-Setup, Diagnose oder Publish), Quell-Run-ID und Diagnose statt einer pauschalen Fehlermeldung.
+- Commit `41b2548` auf `dev`; der echte Agentenlauf und Gmail-Zustellung sind noch nicht bestätigt. Actions-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` fehlen in der verifizierten Laufzeit.
+
 ## 2026-11-07 — Gemini-CI-Pilot: fehlende Schreibrechte diagnostisch abfangen
 
 - Ursache der Gemini-Agent-Ausfälle: `SYNC_TOKEN` ist nicht als Actions-Secret gesetzt; `actions/checkout` stoppte vor dem Skript. Damit wurde Gemini bisher nicht aufgerufen.
