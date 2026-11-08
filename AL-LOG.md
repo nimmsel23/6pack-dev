@@ -20,7 +20,10 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: Org-Task 993d0cc0 (+hit) per UUID abgeschlossen (Annotation mit Beleg): AGENTS.md-
   Release-Abschluss steht im Auto-Promote-Standardweg, verifiziert auf origin/dev (f4bc65d6,
   9586b9d1) und origin/master; vos-release-pr kommt nicht mehr vor.
+  Veröffentlichung: Lauf-Commit c9f0ec64 auf dev — Check (6Pack) run 42447887659 success,
+  Auto-Promote 42447918151 (master fast-forward auf c9f0ec64), Live-Deploy 42447927268 success.
 - Offen/Weiter: feat 72571775 "Musik-Modus" (turn_limit-Abbruch 2026-11-07) unveröffentlicht,
   Basis 27 hinter origin/dev; per lokalem Branch vos-al/musik-mode-72571775 gesichert, Rebase +
   Veröffentlichung ausstehend. Lokaler master divergent (e08fa339 unpushed, origin/master +37) — CEO-Entscheidung.
-- Blocker: keine. CI auf dev grün (Check (6Pack) run 42419325992 success); kein Build/Deploy in dieser Aufgabe.
+- Blocker: keine. Kein Build/Deploy in dieser Aufgabe. Untracked im Checkout nur gemeldet:
+  docs/Index.html, 6pack-app-debug.apk.
