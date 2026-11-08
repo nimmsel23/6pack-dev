@@ -4,6 +4,7 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
+- feat 72571775 (Runner Musik-Modus, aus Lauf 2026-11-07) unveröffentlicht auf Alt-Basis; vor Veröffentlichung auf origin/dev rebinden (lokaler Branch `vos-al/musik-mode-72571775`).
 - **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
 - **`scripts/own-clips.mjs` (js-yaml-5-Umbau):** nur per Usage-Aufruf geprüft, kein echter Lauf. `node scripts/own-clips.mjs status` ausführen und die Ausgabe bestätigen.
 - **Live-Abnahme `aa6006dc`:** Tailwind-4-Themes, lucide-react 1.64 (Icon-Rendering) und den js-yaml-Datenbuild auf dem Handy bzw. im Browser ansehen. Bisher nichts davon gesehen.

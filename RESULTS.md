@@ -402,3 +402,9 @@ Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein
 - Agent-Workflow und lokale Trigger für `6pack-dev` auf `dev` eingerichtet; `GEMINI_API_KEY` als Actions-Secret gesetzt.
 - `Check`/Preview und Agent-Run [42405187486](https://github.com/nimmsel23/6pack-dev/actions/runs/42405187486) waren auf Commit `9d71efa5` grün. Dieser Lauf war ein No-op auf einem erfolgreichen Check; ein roter Code-Fehler wurde noch nicht absichtlich simuliert.
 - Pushes und PR-Merges verwenden die eng berechtigte `GITHUB_TOKEN`-Workflow-Berechtigung; kein separates `SYNC_TOKEN` erforderlich.
+
+## 2026-11-08 — Abteilungsleiter-Lauf: Auto-Promote-Doku-Task verifiziert und geschlossen
+
+- Org-Task `993d0cc0` (+hit, Hintergrund: turn_limit-Abbruch 05:40 beim Erkunden des obsoleten `vos-release-pr`): AGENTS.md-Release-Abschluss steht im Auto-Promote-Standardweg; verifiziert auf `origin/dev` (f4bc65d6, 9586b9d1, Zeile "Release (automatisch): dev committen und pushen ist ausdrücklich erwünscht …") und auf `origin/master`. Task per UUID mit Beleg-Annotation abgeschlossen. Kein Build, kein Deploy.
+- `feat(runner)` 72571775 "Musik-Modus" (abgebrochener Lauf 2026-11-07) liegt unveröffentlicht auf veralteter Basis (9586b9d1, inzwischen 27 Commits hinter origin/dev); per lokalem Branch `vos-al/musik-mode-72571775` gegen Verlust gesichert. Rebase auf origin/dev und Veröffentlichung ausstehend.
+- Befund: lokaler `master` divergent — e08fa339 (Org-Taskwarrior-Konvention v1) unpushed auf dem Checkout, origin/master 37 Commits voraus; Merge nach `dev` oder Verwerfen ist eine CEO-/CTO-Entscheidung, nicht AL-Aufgabe. `AL-LOG.md` erstmals getrackt.
