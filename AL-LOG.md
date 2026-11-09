@@ -39,12 +39,10 @@ completed	success	Auto-Promote dev -> master (Check (6Pack))	Auto-Promote dev ->
 - Arbeitsbaum: 2 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Org-Task 544cf2f9 Stabilitätswache Mo-Dependabot: Majors/Minors gesquasht #39→b9b7c296,
-  #40→01f2fece, #41→f66f891c, #42→298b95c2, #43→d4fa929c; Tip-Check dev 42575208438 success.
-  #38 vite 6→8 korrekt offen (Check 42575422091 rot: transformWithEsbuild in test-exercise-details.mjs);
-  [ci:alpha] msgid 1a1bf7e1b1228ecf. Task 544cf2f9 done (Annotation + Promote-Nachzug).
-- Offen/Weiter: Org-Task 081ca422 (Musik-Modus 72571775 + divergenter lokaler master e08fa339)
-  unverändert. PR #38 vite bleibt offen bis Alpha-Fix ([ci:alpha] 1a1bf7e1b1228ecf).
-- Blocker: keine. Veröffentlichung Lauf-Commit 28546bb1: Check 42588657873 success,
-  Auto-Promote 42588696137 (master=28546bb1), Deploy 42588715878 success.
-  Untracked Checkout nur gemeldet: docs/Index.html, 6pack-app-debug.apk.
+- Erledigt: Org-Task 081ca422 Entscheidungsvorlagen: Musik `72571775` rebase-probe (SixPackApp clean,
+  nur RESULTS-Konflikt; 42 hinter origin/dev) → Empf. **parken** (Freeze b0ed4e47); `e08fa339` dangling
+  → Empf. **verwerfen**; master 0 ahead/2 behind origin. Inbox `6pack-dev-2026-11-09.md`; Task done.
+  (Vormittag 544cf2f9/Vite#38 bereits auf origin: #38 MERGED `89ee4323`/`9119602e`.)
+- Offen/Weiter: Musik-Publish nur nach Owner-Gate; TODO Sprachansagen-/Selfie-Features Freeze-gesperrt;
+  PR #24 gradle-wrapper; untracked `docs/Index.html`, `6pack-app-debug.apk` nur gemeldet.
+- Blocker: keine. Veröffentlichung dieses Lauf-Commits: Check/Auto-Promote/Deploy nach Push belegen.

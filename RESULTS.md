@@ -2,6 +2,12 @@
 
 `origin/vitalos` entfernt. Pre-Push: kein lokaler Firebase-Deploy mehr auf Branch vitalos; Reminder/Build auf `dev`.
 
+## 2026-11-09 — AL Entscheidungsvorlage Org-Task 081ca422
+
+- Musik-Modus `72571775` / Branch `vos-al/musik-mode-72571775`: 42 hinter origin/dev; Rebase-Probe: nur RESULTS-Konflikt, `SixPackApp.jsx` clean. **Empfehlung: parken** (Feature-Freeze `b0ed4e47` bis 2027-02-07; Publish nur mit Owner-Gate). Inbox: `~/.local/state/abteilungen/inbox/6pack-dev-2026-11-09.md`.
+- Lokaler `e08fa339` (Org-TW-Docs): dangling, kein Branch; Inhalt nicht nach `dev` (Repo-AGENTS hat aktuellen Release-Weg ohne Repo-Org-TW-Duplikat). Lokaler `master` 0 ahead / 2 behind origin — alte Divergenz erledigt. **Empfehlung: verwerfen/ignorieren.**
+- Org-Task `081ca422` annotiert + done.
+
 ## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
 
 CI/AGENTS: kein vitalos-Vorspulen; Merge-Agent nur master; Release-Weg = dev→master + Shell-Pin.
