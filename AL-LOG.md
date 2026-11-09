@@ -45,4 +45,6 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
   (Vormittag 544cf2f9/Vite#38 bereits auf origin: #38 MERGED `89ee4323`/`9119602e`.)
 - Offen/Weiter: Musik-Publish nur nach Owner-Gate; TODO Sprachansagen-/Selfie-Features Freeze-gesperrt;
   PR #24 gradle-wrapper; untracked `docs/Index.html`, `6pack-app-debug.apk` nur gemeldet.
-- Blocker: keine. Veröffentlichung dieses Lauf-Commits: Check/Auto-Promote/Deploy nach Push belegen.
+- Blocker: keine. Veröffentlichung Lauf-Commit fc87a0c9: Check 42657524130 success,
+  Auto-Promote 42657587493 (master=fc87a0c9), Deploy 42657609637 success.
+  Untracked Checkout nur gemeldet: docs/Index.html, 6pack-app-debug.apk.
