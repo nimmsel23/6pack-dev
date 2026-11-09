@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
-import { transformWithEsbuild } from 'vite';
+import * as esbuild from 'esbuild';
 import * as data from '../sixpackData.generated.js';
 import { MUSCLE_GEOMETRY } from '../muscleGeometry.js';
 import { videoDescriptor, loadVideoUrls } from '../exerciseMedia.js';
@@ -24,7 +24,8 @@ const reminder = await import('../reminder.js');
 const programSync = await import('../programSync.js');
 async function compile(file, extra = '', requireExtra = {}) {
   const path = new URL(file, import.meta.url);
-  const { code } = await transformWithEsbuild((await readFile(path, 'utf8')) + extra, path.pathname, { loader: 'jsx', format: 'cjs', jsxFactory: 'h', jsxFragment: 'Fragment' });
+  // Vite 8 dropped the bundled esbuild re-export; transform JSX via esbuild directly.
+  const { code } = await esbuild.transform((await readFile(path, 'utf8')) + extra, { loader: 'jsx', format: 'cjs', jsxFactory: 'h', jsxFragment: 'Fragment' });
   const module = { exports: {} };
   vm.runInNewContext(code, {
     module, exports: module.exports, h, Fragment: 'fragment', window, Notification: { permission: 'granted' },
