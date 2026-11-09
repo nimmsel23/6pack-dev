@@ -54,8 +54,8 @@ console.log('Reminders: offline Track scheduling, completion/rest suppression, D
 
 // Exercise the actual native bridge against a fake OS, including replacement
 // ordering and disabled reminders. No personal account, server or device data.
-const { transformWithEsbuild } = await import('vite');
-const { code } = await transformWithEsbuild(await readFile(new URL('../nativeReminders.js', import.meta.url), 'utf8'), 'nativeReminders.js', { format: 'cjs' });
+const esbuild = await import('esbuild');
+const { code } = await esbuild.transform(await readFile(new URL('../nativeReminders.js', import.meta.url), 'utf8'), { format: 'cjs' });
 const calls = [];
 let permission = 'granted';
 const plugin = {
