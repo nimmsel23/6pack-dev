@@ -1,3 +1,18 @@
+## 2026-11-09 — Vite 8 #38 durch (Alpha) + stale Hit closed
+
+- PR #38 gemergt (`vite` 8.3.5 auf dev+master). Fix: Testskripte ohne `transformWithEsbuild`, Dev-Dep `esbuild` (nicht fitness-`modules`-Muster).
+- Check/Promote/Deploy grün nach `8d7e200`. Org-Hit `a80cb883` closed (falsche Diagnose war kein Blocker).
+
+## 2026-11-09 — AL CI-Beleg nach 28546bb1
+
+- Check `42588657873` success, Auto-Promote `42588696137` (master=dev=`28546bb1`), Deploy `42588715878` success — Promote-Lag der Mo-Dependabot-Merges aufgelöst.
+
+## 2026-11-09 — AL Major-AutoMerge-Stabilitätswache (Org-Task 544cf2f9)
+
+- Mo-Dependabot-Beleg: PR-AutoMerge squashte #39 (react major), #40 (actions), #41 (lucide), #42 (firebase major), #43 (firebase-functions major) auf origin/dev; Tip `298b95c2`, Check 42575208438 success.
+- PR #38 (vite 6.4.5→8.3.5) Check 42575422091 rot (`transformWithEsbuild` in `scripts/test-exercise-details.mjs`); nicht gemergt. Diagnose + `[ci:alpha]` msgid `1a1bf7e1b1228ecf`.
+- Befund CTO: origin/dev 5 ahead of origin/master; Auto-Promote-Schedule nach 02:03Z ausgeblieben / Promote der Merges ausstehend. Task 544cf2f9 annotiert, Fenster bis due 2026-11-10.
+
 ## 2026-11-07 — CI-Agent-Fix: gh pr list Feld korrigiert
 
 - Journal-Run 42416606547 scheiterte vor Gemini: GitHub CLI meldete `Unknown JSON field: baseRepository`; `gh pr list` beendete den Analyse-Step mit Exit 1. Kein Gemini-API-Key-Fehler.

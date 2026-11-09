@@ -21,7 +21,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         with:
           version: 12
       - uses: actions/setup-node@v7
@@ -62,7 +62,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         with:
           version: 12
       - uses: actions/setup-node@v7
