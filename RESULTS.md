@@ -1,3 +1,8 @@
+## 2026-11-09 — Vite 8 #38 durch (Alpha) + stale Hit closed
+
+- PR #38 gemergt (`vite` 8.3.5 auf dev+master). Fix: Testskripte ohne `transformWithEsbuild`, Dev-Dep `esbuild` (nicht fitness-`modules`-Muster).
+- Check/Promote/Deploy grün nach `8d7e200`. Org-Hit `a80cb883` closed (falsche Diagnose war kein Blocker).
+
 ## 2026-11-09 — AL CI-Beleg nach 28546bb1
 
 - Check `42588657873` success, Auto-Promote `42588696137` (master=dev=`28546bb1`), Deploy `42588715878` success — Promote-Lag der Mo-Dependabot-Merges aufgelöst.

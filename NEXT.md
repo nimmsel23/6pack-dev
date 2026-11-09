@@ -5,7 +5,7 @@
 
 # NEXT — 6pack-dev
 - ~~Auto-Promote-Lag (2026-11-09)~~: mit Push-Check `42588657873` → Promote `42588696137` erledigt (master=`28546bb1`).
-- **PR #38 vite 8:** offen/rot (`transformWithEsbuild`); Alpha-Auftrag per `[ci:alpha]` msgid `1a1bf7e1b1228ecf` — nach Fix AutoMerge erwartet.
+- ~~PR #38 vite 8~~: gemergt; Alpha `transformWithEsbuild`→`esbuild` (`5d97253`/`8d7e200`); Check/Promote/Deploy grün. Hit `a80cb883` (falsche modules-Diagnose) closed.
 - feat 72571775 (Runner Musik-Modus, aus Lauf 2026-11-07) unveröffentlicht auf Alt-Basis; vor Veröffentlichung auf origin/dev rebinden (lokaler Branch `vos-al/musik-mode-72571775`).
 - **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
 - **`scripts/own-clips.mjs` (js-yaml-5-Umbau):** nur per Usage-Aufruf geprüft, kein echter Lauf. `node scripts/own-clips.mjs status` ausführen und die Ausgabe bestätigen.
