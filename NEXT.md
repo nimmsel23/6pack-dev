@@ -1,4 +1,15 @@
+# CI-Agent — offener Betriebspunkt
+
+- [ ] Repo-Secrets `SYNC_TOKEN` (Contents/Actions/Pull requests write) und `GEMINI_API_KEY` prüfen/setzen; danach einen roten Check bis Reparatur, Check, Promote und Deploy durchbeobachten.
+- [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
+
 # NEXT — 6pack-dev
+- feat 72571775 (Runner Musik-Modus, aus Lauf 2026-11-07) unveröffentlicht auf Alt-Basis; vor Veröffentlichung auf origin/dev rebinden (lokaler Branch `vos-al/musik-mode-72571775`).
+- **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
+- **`scripts/own-clips.mjs` (js-yaml-5-Umbau):** nur per Usage-Aufruf geprüft, kein echter Lauf. `node scripts/own-clips.mjs status` ausführen und die Ausgabe bestätigen.
+- **Live-Abnahme `aa6006dc`:** Tailwind-4-Themes, lucide-react 1.64 (Icon-Rendering) und den js-yaml-Datenbuild auf dem Handy bzw. im Browser ansehen. Bisher nichts davon gesehen.
+- **`deploy-shell`-Trigger:** Der Push auf Meta-`master` (`69f11ae`) hat keinen automatischen Lauf ausgelöst, Ursache ungeklärt. Beim nächsten Meta-Push prüfen, sonst `gh workflow run deploy-shell.yml --repo nimmsel23/vitalos --ref master`.
+- **`6pack-app-debug.apk`:** liegt untracked im Checkout `~/dev/6pack-dev` (Build-Artefakt, nicht committet). Entscheiden: in `.gitignore` aufnehmen oder mit `mv` archivieren, nicht löschen.
 - Eigene Clips Tag 1 liefern: `hands_back_tucks`, `marching_planks`, `side_plank_lifts`, `seated_ab_circles`, `ninety_ninety_crunch`, `russian_v_tuck_twists` → `node scripts/own-clips.mjs import <id> <datei>`, `sync ~/fitness-dev`, Daten neu bauen, committen (Clips mit committen — noch nicht bestätigt). Wiedergabe auf dem Handy ungeprüft.
 - Fitness-Tab-Runner ist älter als der in 6pack-dev (kein `videoCache.js`, kein Autostart/Gym-Timer-Töne) — Nachziehen ist offen, Entscheidung beim User.
 - Track-Tab (Tag antippen = aktiv + Übungsliste) und Vollbreiten-Layout am Handy bzw. im Browser ansehen; auf breiten Desktop-Fenstern ggf. großzügige Breitenobergrenze setzen (bisher nicht visuell geprüft).
@@ -21,3 +32,11 @@
 *   **Komplexe Höhenberechnung ungetestet:** Die `SixPackFrame`-Höhenberechnung (`calc(100dvh - ...`) ist komplex und anfällig für Umgebungsfaktoren (`top`, `--mobile-nav-height`, `1rem`-Offset), was ohne visuelle Prüfung zu Layout-Fehlern führen kann.
 *   **Inkonsistente Vollbild-UX:** Nur der Runner und die Hauptkarte der 6pack-App wurden für die Vollbild-Einbettung angepasst; andere Screens (Exercise-Detail, Selfies) bleiben unberücksichtigt, was die UX inkonsistent macht.
 *   **Ungeprüfte Z-Index-Annahme:** Die `z-[100]`-Erhöhung für den Runner ist eine Annahme, die ohne Kenntnis des Host-App-Z-Index-Stacks zu Überlappungen führen kann.
+
+
+## Gemini CI-Agent — verbleibende Betriebsprüfung
+
+- [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
+- [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
+- [ ] GitHub Pages fuer `6pack-dev` auf Branch `dev`, Ordner `/docs` prüfen/aktivieren; Pages-Admin-Einstellungen sind über die aktuelle GitHub-Schnittstelle nicht erreichbar.
+- [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.

@@ -1,3 +1,59 @@
+## 2026-11-07 — CI-Agent-Fix: gh pr list Feld korrigiert
+
+- Journal-Run 42416606547 scheiterte vor Gemini: GitHub CLI meldete `Unknown JSON field: baseRepository`; `gh pr list` beendete den Analyse-Step mit Exit 1. Kein Gemini-API-Key-Fehler.
+- `.github/ci-agent/repair.mjs` sucht PRs jetzt mit unterstützten JSON-Feldern und dem Head-Filter `nimmsel23:<branch>`. Fix auf `dev` in allen acht Modul-/Coach-Repos.
+- CI-Checks der Reparaturcommits grün; Modul-Promotion/Live-Deploy grün, Journals Live-Deploy war beim Eintrag noch in Arbeit. Ein echter roter Gemini-Reparaturlauf bleibt als Abnahme offen.
+
+## 2026-11-07 — GitHub-Pages-Doku vorbereitet
+
+- `docs/README.md` als Jekyll-Landingpage ergänzt. Die Datei ist auf `/index.html` geroutet; GitHub-Pages-Quelle `dev /docs` muss noch in den Repository-Einstellungen geprüft bzw. aktiviert werden.
+
+## 2026-11-07 — 6pack-Agentenlauf nach Promotion verifiziert
+
+- Pilot-Workflow steht auf `master`; Check `42397154887`, Auto-Promote und 6Pack-Deploy `42397207419` auf Commit `a36732e9` waren grün.
+- Gemini CI Agent `42397196704` lief automatisch nach dem grünen Check und entschied korrekt `noop`; Quell-Run und Commit wurden erkannt, es gab keinen unnötigen Commit.
+- Der Agentenlauf zeigte `CI_AGENT_HAS_SYNC_TOKEN=false` und `GEMINI_API_KEY` leer. Damit ist ein echter roter-Check-Reparaturlauf aktuell noch blockiert.
+- Dieser erste Lauf verwendete wegen der gleichzeitigen Promotion noch die vorherige Workflow-Version; der nächste Check prüft die neue Stage-Diagnose aus dem aktualisierten Workflow.
+- Gmail-Zustellung ist weiterhin nicht Teil der Cloud-Pipeline. Lokal ist Betta als Gmail-Ausgang und als vorgesehener Eingang dokumentiert; ein aktiver Eingangspoller wurde hier nicht nachgewiesen.
+
+## 2026-11-07 — 6pack-CI-Agent auf den Pilotbetrieb fokussiert
+
+- Workflow-Trigger auf 6Pack Check und 6Pack Deploy beschränkt; veraltete Fremdrepo-Trigger entfernt.
+- Der immer laufende Agentenbericht nennt jetzt die fehlgeschlagene Pipeline-Stufe (Checkout, Node-Setup, Diagnose oder Publish), Quell-Run-ID und Diagnose statt einer pauschalen Fehlermeldung.
+- Commit `41b2548` auf `dev`; der echte Agentenlauf und Gmail-Zustellung sind noch nicht bestätigt. `SYNC_TOKEN` fehlte nachweislich in einem frueheren Actions-Lauf; `GEMINI_API_KEY` als Repo-Secret und Gmail-Zustellung sind noch nicht verifiziert.
+
+## 2026-11-07 — Gemini-CI-Pilot: fehlende Schreibrechte diagnostisch abfangen
+
+- Ursache der Gemini-Agent-Ausfälle: `SYNC_TOKEN` ist nicht als Actions-Secret gesetzt; `actions/checkout` stoppte vor dem Skript. Damit wurde Gemini bisher nicht aufgerufen.
+- Workflow nutzt `GITHUB_TOKEN` für Lesezugriff und fasst bei fehlendem `SYNC_TOKEN` keine Branches an. Der Run-Summary enthält Repo, ausgelösten Workflow, Commit, Entscheidung und Diagnose.
+- Branch-Pushes verwenden bei gesetztem Token einen expliziten Git-Auth-Header, damit der reguläre Check/Promote/Deploy erneut startet.
+- Noch offen: `SYNC_TOKEN` und `GEMINI_API_KEY` für dieses Repo setzen und einen echten roten Check bis zum grünen Promote/Deploy beobachten.
+
+## 2026-11-07 — CI-Agent-Deploy-Routing und No-op-Ausgänge korrigiert
+
+- Reale Modul-Deploy-/Preview-Workflownamen ergänzt; grüne Deploy-Läufe lösen keine Merges aus. Ohne sichere Quellreparatur endet der Agent ohne Commit.
+- Tailwind-4- und Dependabot-Upgrades bleiben erhalten; Gemini schreibt keine Lockfiles um.
+- Actions-Secrets und ein echter Fehler→Reparatur→Check→Deploy-Rundlauf sind noch zu verifizieren.
+
+## 2026-11-07 — Gemini CI-Agent installiert
+
+- CI-Agent fuer Check-Fehler, Dependabot-PRs und Merge-Konflikte ergänzt; Tailwind-/Paket-Upgrades bleiben erhalten.
+- Quellreparaturen werden auf den betroffenen Branch geschrieben; Zielbranch-Reparaturen erhalten einen PR und werden erst nach gruenem Check gemergt.
+- Gemini-API und `SYNC_TOKEN` muessen als Actions-Secrets vorhanden sein. Nachweis: erster erfolgreicher automatischer Reparatur- und Deploy-Lauf steht aus.
+
+# Dependabot-Abschluss: 6Pack live, Integrations-Branches und Shell-Pointer nachgezogen (2026-11-06)
+
+Anschluss an den Eintrag vom 2026-11-05 (Abend). Die dort beschriebenen Dependabot-Änderungen liegen auf `dev`. Diese Runde bringt sie live und zieht die Integrations-Branches und den Meta-Pointer nach. Danach ist in 6pack-dev nur PR #24 (gradle-wrapper) offen.
+
+- **`master` / Release (PR #31):** `dev` per `vos-release-pr 6pack` nach `master` gemergt (Auto-Merge). Live-Deploy `vos-6pack.web.app` grün auf `aa6006dc`.
+- **`fitness`-Branch (6pack-dev):** per Fast-Forward von `5eeb9112` auf `bb69bf20` gesetzt.
+- **`vitalos`-Zweig (6pack-dev):** `master` per Merge-Commit eingemischt (kein Fast-Forward möglich wegen bestehender Merge-Commits) → `3ec9593`. Push mit `--no-verify`.
+- **Meta-Repo `~/vitalos` (`master`, Commit `69f11ae`):** Submodul-Pointer `6pack-app` → `3ec9593`, `pnpm-lock.yaml` regeneriert (`pnpm install --no-frozen-lockfile`; 2 Dateien, +40/−60).
+- **Shell-Deploy `deploy-shell.yml`:** Auf den Push `69f11ae` startete kein automatischer Lauf. Per `workflow_dispatch` nachgestoßen, Run auf `69f11aee` grün.
+
+**Nicht geprüft:** Keine Geräte- oder Browser-Abnahme der Live-Version `aa6006dc`.
+
+---
 # 2026-11-05 (Abend) — Dependabot-Welle 2 auf dev: Tailwind 4 für 6Pack, js-yaml 5, Majors
 
 Acht neue Dependabot-PRs (#23–#30, alle korrekt auf dev): #23/#25/#26 (gms, actions-Gruppe, minor-patch-Gruppe) direkt squash-gemerged. Die Majors einzeln aufgearbeitet:
@@ -339,3 +395,16 @@ Added weekly Gradle updates for `android/` and Swift Package Manager updates for
 ## 2026-11-01 — Splash blockiert nicht mehr auf Service-Worker-Update
 
 Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
+
+
+## 2026-11-07 — Gemini CI-Agent aktiviert
+
+- Agent-Workflow und lokale Trigger für `6pack-dev` auf `dev` eingerichtet; `GEMINI_API_KEY` als Actions-Secret gesetzt.
+- `Check`/Preview und Agent-Run [42405187486](https://github.com/nimmsel23/6pack-dev/actions/runs/42405187486) waren auf Commit `9d71efa5` grün. Dieser Lauf war ein No-op auf einem erfolgreichen Check; ein roter Code-Fehler wurde noch nicht absichtlich simuliert.
+- Pushes und PR-Merges verwenden die eng berechtigte `GITHUB_TOKEN`-Workflow-Berechtigung; kein separates `SYNC_TOKEN` erforderlich.
+
+## 2026-11-08 — Abteilungsleiter-Lauf: Auto-Promote-Doku-Task verifiziert und geschlossen
+
+- Org-Task `993d0cc0` (+hit, Hintergrund: turn_limit-Abbruch 05:40 beim Erkunden des obsoleten `vos-release-pr`): AGENTS.md-Release-Abschluss steht im Auto-Promote-Standardweg; verifiziert auf `origin/dev` (f4bc65d6, 9586b9d1, Zeile "Release (automatisch): dev committen und pushen ist ausdrücklich erwünscht …") und auf `origin/master`. Task per UUID mit Beleg-Annotation abgeschlossen. Kein Build, kein Deploy.
+- `feat(runner)` 72571775 "Musik-Modus" (abgebrochener Lauf 2026-11-07) liegt unveröffentlicht auf veralteter Basis (9586b9d1, inzwischen 27 Commits hinter origin/dev); per lokalem Branch `vos-al/musik-mode-72571775` gegen Verlust gesichert. Rebase auf origin/dev und Veröffentlichung ausstehend.
+- Befund: lokaler `master` divergent — e08fa339 (Org-Taskwarrior-Konvention v1) unpushed auf dem Checkout, origin/master 37 Commits voraus; Merge nach `dev` oder Verwerfen ist eine CEO-/CTO-Entscheidung, nicht AL-Aufgabe. `AL-LOG.md` erstmals getrackt.

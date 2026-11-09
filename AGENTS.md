@@ -137,8 +137,7 @@ Stand 2026-10-29. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md` (GitHub: nimmsel2
 | `master` | **Standalone-Prod** (Hosting-Target `sixpack` = vos-6pack.web.app (Workflow `deploy.yml`, Push auf `master`)); deployt nur per CI (`Live Deploy (6Pack master)`) | nein, muss nicht existieren |
 | `vitalos` | Stand für die Shell (`~/vitalos/6pack-app`); darf hinter `master` liegen | nur als `-app`-Checkout im Meta-Repo |
 
-- Release: `vos-release-pr 6pack` öffnet den PR `dev → master`. `Check (6Pack)` läuft, bei Grün mergt der Auto-Merge
-  (Merge-Commit) und startet den Live-Deploy per Dispatch. Nie von Hand auf `master` pushen, außer Hotfix.
+- Release (automatisch): `dev` committen und pushen ist ausdrücklich erwünscht, nichts bleibt liegen. Nach grünem `Check (6Pack)` promotet `.github/workflows/automerge.yml` `dev` per Fast-Forward nach `master` und startet den Live-Deploy per Dispatch (Vorlage und Logik: `~/vitalos-prod/docs/product-dev/ci-auto-promote/`). Kein PR nötig, kein Force-Push. Direkte Pushes auf `master` vermeiden (sie erzeugen Divergenz, der Workflow läuft dann rot): auch Hotfixes über `dev`; ist es doch passiert, `master` per normalem Push nach `dev` mergen.
 - Shell: `vos-release 6pack` merged `origin/master` nach `vitalos` und bumpt den Pointer im Meta-Repo (deployt die Shell).
   Vorher `vos-overview`.
 - `master` wird nie lokal ausgecheckt; `git fetch` genügt. Das Meta-Repo `vitalos` deployt nur noch die Shell.
