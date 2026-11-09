@@ -30,7 +30,7 @@
     "@capacitor/local-notifications": "^8.3.1",
     "firebase": "11.10.0",
     "js-yaml": "5.5.0",
-    "lucide-react": "1.64.0",
+    "lucide-react": "1.66.0",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
