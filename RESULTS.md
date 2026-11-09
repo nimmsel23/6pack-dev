@@ -1,3 +1,7 @@
+## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
+
+CI/AGENTS: kein vitalos-Vorspulen; Merge-Agent nur master; Release-Weg = dev→master + Shell-Pin.
+
 ## 2026-11-09 — Vite 8 #38 durch (Alpha) + stale Hit closed
 
 - PR #38 gemergt (`vite` 8.3.5 auf dev+master). Fix: Testskripte ohne `transformWithEsbuild`, Dev-Dep `esbuild` (nicht fitness-`modules`-Muster).
