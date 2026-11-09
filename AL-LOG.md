@@ -42,7 +42,7 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: Org-Task 544cf2f9 Stabilitätswache Mo-Dependabot: Majors/Minors gesquasht #39→b9b7c296,
   #40→01f2fece, #41→f66f891c, #42→298b95c2, #43→d4fa929c; Tip-Check dev 42575208438 success.
   #38 vite 6→8 korrekt offen (Check 42575422091 rot: transformWithEsbuild in test-exercise-details.mjs);
-  [ci:alpha] msgid 1a1bf7e1b1228ecf. Task annotiert, due 2026-11-10 offen (2d-Fenster).
+  [ci:alpha] msgid 1a1bf7e1b1228ecf. Task 544cf2f9 done (Annotation + Promote-Nachzug).
 - Offen/Weiter: Org-Task 081ca422 (Musik-Modus 72571775 + divergenter lokaler master e08fa339)
   unverändert. PR #38 vite bleibt offen bis Alpha-Fix ([ci:alpha] 1a1bf7e1b1228ecf).
 - Blocker: keine. Veröffentlichung Lauf-Commit 28546bb1: Check 42588657873 success,
