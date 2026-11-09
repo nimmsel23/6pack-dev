@@ -1,3 +1,7 @@
+## 2026-11-09 — Remote-vitalos gelöscht; Pre-Push ohne vitalos-Deploy
+
+`origin/vitalos` entfernt. Pre-Push: kein lokaler Firebase-Deploy mehr auf Branch vitalos; Reminder/Build auf `dev`.
+
 ## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
 
 CI/AGENTS: kein vitalos-Vorspulen; Merge-Agent nur master; Release-Weg = dev→master + Shell-Pin.

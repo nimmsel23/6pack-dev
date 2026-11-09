@@ -1,20 +1,10 @@
 #!/bin/bash
-# pre-push hook: build + deploy to Firebase when relevant frontend files are
-# part of the push to vitalos (diese Kopie läuft bewusst auf dem Branch
-# "vitalos" statt "master" — ~/vitalos/6pack-app ist eine Submodule-Kopie
-# von 6pack-dev, die hier dauerhaft auf vitalos ausgecheckt ist).
-#
-# Runs once per push (not per ref), reads pushed refs from stdin.
+# pre-push: auf `dev` ggf. Fitness-Publisher; Standalone-Live = CI auf master.
+# Kein lokaler Firebase-Deploy mehr (früher Branch vitalos).
 
 cd "$(git rev-parse --show-toplevel)"
-
 pushed_refs="$(cat)"
 
-SKIP='\.(md|bak)$|^dist/'
-# 6pack hat seinen Code im Repo-Root (kein src/): *.jsx/*.js/*.mjs/*.css im Root, catalog/ und mini-app.json zählen ebenfalls
-TRIGGER='^(src/|public/|catalog/|index.html$|vite.config|package.json$|firebase.json$|mini-app.json$|scripts/mini-app-shell/|[^/]+\.(jsx|js|mjs|css)$)'
-
-should_deploy=false
 should_publish_fitness=false
 fitness_source_sha=""
 
@@ -31,20 +21,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
       should_publish_fitness=true
       fitness_source_sha="$local_sha"
     fi
-    continue
-  fi
-  [ "$branch" != "vitalos" ] && continue
-
-  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
-    range="$local_sha"
-    changed=$(git diff-tree --no-commit-id --name-only -r "$range")
-  else
-    changed=$(git diff --name-only "$remote_sha" "$local_sha")
-  fi
-
-  relevant=$(echo "$changed" | grep -Ev "$SKIP" || true)
-  if echo "$relevant" | grep -Eq "$TRIGGER"; then
-    should_deploy=true
+    if [ -n "$changed" ]; then
+      echo "💡 Release: dev → master (Auto-Promote / vos-release-pr 6pack); Shell-Pin mit 6pack-release / vos-ship. Doku: ~/vitalos/docs/DEPLOYMENT.md" >&2
+    fi
   fi
 done <<< "$pushed_refs"
 
@@ -52,31 +31,11 @@ if [ "$should_publish_fitness" = true ]; then
   fitness_repo="${FITNESS_DEV_REPO:-$HOME/dev/fitness-dev}"
   publisher="$fitness_repo/scripts/publish-mini-app-to-fitness.mjs"
   if [ ! -f "$publisher" ]; then
-    echo "⚠️ Fitness publisher not found at $publisher; 6Pack source sync skipped until fitness-dev is updated." >&2
+    echo "⚠️ Fitness publisher not found at $publisher; 6Pack source sync skipped." >&2
   else
     echo "🔄 6Pack dev → Fitness dev: synchronizing the pushed source commit…"
     node "$publisher" sixpack "$fitness_source_sha" || exit $?
   fi
 fi
 
-if [ "$should_deploy" != true ]; then
-  exit 0
-fi
-
-if command -v gum >/dev/null 2>&1; then
-  gum log --level info "6pack-app: relevante Änderungen im Push zu vitalos — baue + deploye zu Firebase…"
-else
-  echo "🔍 6pack-app: relevante Änderungen im Push zu vitalos — baue + deploye zu Firebase…"
-fi
-
-pnpm run firebase
-status=$?
-
-if [ $status -ne 0 ]; then
-  echo "❌ pnpm run deploy fehlgeschlagen — Push wird abgebrochen (kein halb-deployter Stand)." >&2
-  echo "   Mit 'git push --no-verify' kannst du den Hook überspringen, falls das Absicht ist." >&2
-  exit 1
-fi
-
-echo "✅ Deploy abgeschlossen."
 exit 0
