@@ -11,7 +11,7 @@
 - ~~PR #38 vite 8~~: gemergt; Alpha `transformWithEsbuild`→`esbuild` (`5d97253`/`8d7e200`); Check/Promote/Deploy grün. Hit `a80cb883` (falsche modules-Diagnose) closed.
 - ~~feat 72571775 Musik-Modus~~: AL-Empfehlung 2026-11-09 **parken** (Freeze); Branch `vos-al/musik-mode-72571775` belassen — Publish nur nach Owner-Gate. Beleg: inbox `6pack-dev-2026-11-09.md`, Task `081ca422` done.
 - ~~lokaler master / e08fa339~~: Empfehlung **verwerfen**; dangling; master 0 ahead / 2 behind origin/master.
-- **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
+- ~~PR #24 gradle-wrapper 8.14.3 → 9.8.2~~: MERGED `2026-11-06` (`f9527880` / `4dc53069`); `android/gradle/wrapper` = Gradle 9.8.2 auf `dev`/`master` (AL 2026-11-10 Nachmittag).
 - ~~`scripts/own-clips.mjs status`~~: läuft (2026-11-10) — Tag 1: 0/6 eigene Clips; Import der 6 Dateien nach `public/videos/` weiter offen.
 - **Live-Abnahme `aa6006dc`:** Tailwind-4-Themes, lucide-react 1.64 (Icon-Rendering) und den js-yaml-Datenbuild auf dem Handy bzw. im Browser ansehen. Bisher nichts davon gesehen.
 - **`deploy-shell`-Trigger:** Der Push auf Meta-`master` (`69f11ae`) hat keinen automatischen Lauf ausgelöst, Ursache ungeklärt. Beim nächsten Meta-Push prüfen, sonst `gh workflow run deploy-shell.yml --repo nimmsel23/vitalos --ref master`.
