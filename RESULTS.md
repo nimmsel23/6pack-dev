@@ -1,4 +1,4 @@
-- 2026-11-10: fix(git) — Fake-Submodule `.worktrees/agents-thin` (seit `d741397d`) entfernt + `.worktrees/` in `.gitignore`; Ursache Pages/Gemini-Checkout-Fail `42739426858` / `42739410709`.
+- 2026-11-10: fix(git) `5ac3c580` — Fake-Submodule `.worktrees/agents-thin` entfernt; Check `42757550696`, Promote `42757590097`, Pages `42757607664`, Deploy `42757607824` success (vorher fail `42739426858`/`42739410709`).
 - 2026-11-10: Live-Abnahme Blackscreen — `vos-6pack.web.app` liefert `index-CunHDZLw.js` mit gültigem Preload (`[],import.meta.url`).
 - 2026-11-10: docs — Coach-Landingpage `website/src/6pack.html` nach `docs/Index.html` übernommen (Referenz).
 - 2026-11-10: fix(build) Vite-8/Rolldown-Preload-Marker — `vos-6pack.web.app` Blackscreen behoben (`fixRolldownPreloadMarker` in `vite.config.js`).
