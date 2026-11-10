@@ -1,3 +1,4 @@
+- 2026-11-10: Live-Abnahme Blackscreen — `vos-6pack.web.app` liefert `index-CunHDZLw.js` mit gültigem Preload (`[],import.meta.url`).
 - 2026-11-10: docs — Coach-Landingpage `website/src/6pack.html` nach `docs/Index.html` übernommen (Referenz).
 - 2026-11-10: fix(build) Vite-8/Rolldown-Preload-Marker — `vos-6pack.web.app` Blackscreen behoben (`fixRolldownPreloadMarker` in `vite.config.js`).
 

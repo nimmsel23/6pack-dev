@@ -4,13 +4,13 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
-- ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix `fixRolldownPreloadMarker` + Docs; nach Deploy Live-Abnahme (Hard-Reload / SW: Splash weg, Konsole ohne SyntaxError).
+- ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix + Docs + Live `index-CunHDZLw.js` ohne `[]<hash>` (2026-11-10). Hard-Reload falls alter SW klebt.
 - ~~Auto-Promote-Lag (2026-11-09)~~: mit Push-Check `42588657873` → Promote `42588696137` erledigt (master=`28546bb1`).
 - ~~PR #38 vite 8~~: gemergt; Alpha `transformWithEsbuild`→`esbuild` (`5d97253`/`8d7e200`); Check/Promote/Deploy grün. Hit `a80cb883` (falsche modules-Diagnose) closed.
 - ~~feat 72571775 Musik-Modus~~: AL-Empfehlung 2026-11-09 **parken** (Freeze); Branch `vos-al/musik-mode-72571775` belassen — Publish nur nach Owner-Gate. Beleg: inbox `6pack-dev-2026-11-09.md`, Task `081ca422` done.
 - ~~lokaler master / e08fa339~~: Empfehlung **verwerfen**; dangling; master 0 ahead / 2 behind origin/master.
 - **PR #24 gradle-wrapper 8.14.3 → 9.8.2:** weiterhin offen. Nachweis per `pnpm run build:android` auf dem PR-Zweig (`git fetch origin refs/pull/24/head`), sobald der Gradle-Download schneller ist. Erst danach squash-mergen und per `vos-release-pr 6pack` ausrollen.
-- **`scripts/own-clips.mjs` (js-yaml-5-Umbau):** nur per Usage-Aufruf geprüft, kein echter Lauf. `node scripts/own-clips.mjs status` ausführen und die Ausgabe bestätigen.
+- ~~`scripts/own-clips.mjs status`~~: läuft (2026-11-10) — Tag 1: 0/6 eigene Clips; Import der 6 Dateien nach `public/videos/` weiter offen.
 - **Live-Abnahme `aa6006dc`:** Tailwind-4-Themes, lucide-react 1.64 (Icon-Rendering) und den js-yaml-Datenbuild auf dem Handy bzw. im Browser ansehen. Bisher nichts davon gesehen.
 - **`deploy-shell`-Trigger:** Der Push auf Meta-`master` (`69f11ae`) hat keinen automatischen Lauf ausgelöst, Ursache ungeklärt. Beim nächsten Meta-Push prüfen, sonst `gh workflow run deploy-shell.yml --repo nimmsel23/vitalos --ref master`.
 - **`6pack-app-debug.apk`:** liegt untracked im Checkout `~/dev/6pack-dev` (Build-Artefakt, nicht committet). Entscheiden: in `.gitignore` aufnehmen oder mit `mv` archivieren, nicht löschen.
