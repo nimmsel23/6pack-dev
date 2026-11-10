@@ -74,6 +74,6 @@ completed	failure	pages build and deployment	pages-build-deployment	master	dynam
 - Arbeitsbaum: 1 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: NEXT-Stale PR #24 geschlossen — bereits MERGED `f9527880`/`4dc53069` (2026-11-06), Wrapper auf Tree Gradle 9.8.2; Tip `32c581c0` Check `42763736809` success, master=`32c581c0`, Pages `42763805461` + Deploy `42763805914` success. Vormittag `5ac3c580` Pages/Gitlink bleibt gültig.
+- Erledigt: NEXT-Stale PR #24 geschlossen — MERGED `f9527880`/`4dc53069` (2026-11-06), Wrapper Gradle 9.8.2. Lauf-Commit `0a66dc96` (+ NEXT/RESULTS `770f50a4`/`ed654d6b`): Check `42857320876`, Auto-Promote `42857407068` (master=`0a66dc96`), Pages `42857473985`, Deploy `42857474632` success. Vormittag `5ac3c580` bleibt gültig.
 - Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Pages-Admin `/docs` (GitHub-UI); Secrets/Gemini-Feldtests in NEXT; APK nicht mehr im Checkout.
 - Blocker: keine.
