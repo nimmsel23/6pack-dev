@@ -74,6 +74,6 @@ completed	failure	pages build and deployment	pages-build-deployment	master	dynam
 - Arbeitsbaum: 1 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Pages/Gemini-Checkout-Fail — Gitlink `.worktrees/agents-thin` (seit `d741397d`, Runs `42739426858`/`42739410709`) per `git rm --cached` entfernt, `.worktrees/` in `.gitignore`; RESULTS/NEXT nachgezogen. Lauf-Commit folgt auf `dev` (CI-Belege nach Push).
+- Erledigt: Pages/Gemini-Checkout-Fail — Gitlink `.worktrees/agents-thin` (seit `d741397d`, Runs `42739426858`/`42739410709`) per `git rm --cached` entfernt, `.worktrees/` in `.gitignore`. Lauf-Commit `5ac3c580` auf `dev`/`master`: Check `42757550696`, Auto-Promote `42757590097`, Pages `42757607664` success, Deploy `42757607824` success.
 - Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; PR #24 gradle-wrapper; Pages-Admin `/docs` weiter prüfen; Untracked nur gemeldet: `6pack-app-debug.apk` (lokaler Worktree `.worktrees/agents-thin` bleibt).
-- Blocker: keine. Kein Build in dieser Aufgabe.
+- Blocker: keine. Gemini `42757589787` race vor Promote (Checkout noch mit Gitlink) — nach `5ac3c580` behoben, kein Restblocker.
