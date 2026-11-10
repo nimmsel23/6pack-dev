@@ -9,6 +9,7 @@ Independent strength and calisthenics training app, with workout plans, session 
 
 ## Documentation
 
+- [6Pack Landingpage (Coach-Site-Kopie)](Index.html)
 - [Google Calendar integration](GOOGLE-CALENDAR.md)
 - [Repository README](../README.md)
 - [Source repository](https://github.com/nimmsel23/6pack-dev)
