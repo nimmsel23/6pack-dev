@@ -1,3 +1,4 @@
+- 2026-11-10: chore(pnpm) — `rolldown`-Override `1.3.0` → `1.2.16` (Preload-Blackscreen; Linie wie fitness/VitalOS-Meta). Marker-Fix bleibt Defense-in-depth.
 - 2026-11-10: fix(shell) — bei `onSubNav` (VitalOS-Embed) kein `data-theme=sixpack` mehr auf `documentElement`; Theme bleibt am Shell-Wrapper, Sidebar/Nav behalten Shell-Farben. Section-Layout im Embed ohne `overflow-hidden`.
 - 2026-11-10: fix(git) `5ac3c580` — Fake-Submodule `.worktrees/agents-thin` entfernt; Check `42757550696`, Promote `42757590097`, Pages `42757607664`, Deploy `42757607824` success (vorher fail `42739426858`/`42739410709`).
 - 2026-11-10: Live-Abnahme Blackscreen — `vos-6pack.web.app` liefert `index-CunHDZLw.js` mit gültigem Preload (`[],import.meta.url`).
