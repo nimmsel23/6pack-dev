@@ -4,7 +4,7 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
-- ~~Pages/Gemini Checkout fail (`.worktrees/agents-thin` Gitlink)~~: entfernt + `.gitignore` (2026-11-10 AL). Nach Promote Pages-Run auf master prüfen.
+- ~~Pages/Gemini Checkout fail (`.worktrees/agents-thin` Gitlink)~~: `5ac3c580`; Pages `42757607664` + Deploy `42757607824` success (2026-11-10 AL).
 - ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix + Docs + Live `index-CunHDZLw.js` ohne `[]<hash>` (2026-11-10). Hard-Reload falls alter SW klebt.
 - ~~Auto-Promote-Lag (2026-11-09)~~: mit Push-Check `42588657873` → Promote `42588696137` erledigt (master=`28546bb1`).
 - ~~PR #38 vite 8~~: gemergt; Alpha `transformWithEsbuild`→`esbuild` (`5d97253`/`8d7e200`); Check/Promote/Deploy grün. Hit `a80cb883` (falsche modules-Diagnose) closed.
