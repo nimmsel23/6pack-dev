@@ -5,7 +5,9 @@ allowBuilds:
   protobufjs: true
 
 overrides:
-  rolldown: 1.3.0
+  # 1.3.0 → __VITE_PRELOAD__{hash}-Blackscreen; gleiche Linie wie fitness-dev / VitalOS-Meta.
+  # fixRolldownPreloadMarker in vite.config.js bleibt Defense-in-depth.
+  rolldown: 1.2.16
   '@grpc/grpc-js@<1.13.6': '^1.14.6'
 minimumReleaseAgeExclude:
   - vite@8.3.7
