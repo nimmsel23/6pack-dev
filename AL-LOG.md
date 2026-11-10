@@ -74,6 +74,6 @@ completed	failure	pages build and deployment	pages-build-deployment	master	dynam
 - Arbeitsbaum: 1 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Pages/Gemini-Checkout-Fail — Gitlink `.worktrees/agents-thin` (seit `d741397d`, Runs `42739426858`/`42739410709`) per `git rm --cached` entfernt, `.worktrees/` in `.gitignore`. Lauf-Commit `5ac3c580` auf `dev`/`master`: Check `42757550696`, Auto-Promote `42757590097`, Pages `42757607664` success, Deploy `42757607824` success.
-- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; PR #24 gradle-wrapper; Pages-Admin `/docs` weiter prüfen; Untracked nur gemeldet: `6pack-app-debug.apk` (lokaler Worktree `.worktrees/agents-thin` bleibt).
-- Blocker: keine. Gemini `42757589787` race vor Promote (Checkout noch mit Gitlink) — nach `5ac3c580` behoben, kein Restblocker.
+- Erledigt: NEXT-Stale PR #24 geschlossen — bereits MERGED `f9527880`/`4dc53069` (2026-11-06), Wrapper auf Tree Gradle 9.8.2; Tip `32c581c0` Check `42763736809` success, master=`32c581c0`, Pages `42763805461` + Deploy `42763805914` success. Vormittag `5ac3c580` Pages/Gitlink bleibt gültig.
+- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Pages-Admin `/docs` (GitHub-UI); Secrets/Gemini-Feldtests in NEXT; APK nicht mehr im Checkout.
+- Blocker: keine.
