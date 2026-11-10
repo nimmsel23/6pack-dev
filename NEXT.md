@@ -4,6 +4,7 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
+- ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix `fixRolldownPreloadMarker` + Docs; nach Deploy Live-Abnahme (Hard-Reload / SW: Splash weg, Konsole ohne SyntaxError).
 - ~~Auto-Promote-Lag (2026-11-09)~~: mit Push-Check `42588657873` → Promote `42588696137` erledigt (master=`28546bb1`).
 - ~~PR #38 vite 8~~: gemergt; Alpha `transformWithEsbuild`→`esbuild` (`5d97253`/`8d7e200`); Check/Promote/Deploy grün. Hit `a80cb883` (falsche modules-Diagnose) closed.
 - ~~feat 72571775 Musik-Modus~~: AL-Empfehlung 2026-11-09 **parken** (Freeze); Branch `vos-al/musik-mode-72571775` belassen — Publish nur nach Owner-Gate. Beleg: inbox `6pack-dev-2026-11-09.md`, Task `081ca422` done.
