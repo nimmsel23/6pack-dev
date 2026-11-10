@@ -1,3 +1,12 @@
+- 2026-11-10: fix(build) Vite-8/Rolldown-Preload-Marker — `vos-6pack.web.app` Blackscreen behoben (`fixRolldownPreloadMarker` in `vite.config.js`).
+
+## 2026-11-10 — Blackscreen vos-6pack.web.app (Vite 8 / Rolldown)
+
+- Symptom: Splash blieb stehen; Konsole `Uncaught SyntaxError: identifier starts immediately after numeric literal`.
+- Ursache: Rolldown hängt an `__VITE_PRELOAD__` einen Content-Hash (`__VITE_PRELOAD__50b3…`). Vite ersetzt nur die 16-Zeichen-Marke → `[]50b3…` (ungültiges JS) in den Capacitor-Lazy-Imports (`LocalNotifications` / `App`).
+- Fix: Plugin `fixRolldownPreloadMarker` in `vite.config.js` normalisiert den Marker vor der Import-Analyse. Bundle danach `…, [], import.meta.url`.
+- Docs: `AGENTS.md` (Build), `README.md` (Hosting-Hinweis), `docs/NATIVE-REMINDERS.md` (Web-Build-Fallstrick).
+
 - 2026-11-10: chore(deps) major stack align — React 19 / Vite 8.3.6 / plugin-react 6.2.1 / Firebase 13 (age-safe pins, pnpm-workspace overrides).
 
 ## 2026-11-09 — deps: minor/patch Upgrades
