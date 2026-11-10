@@ -93,6 +93,11 @@ Home-Bildschirm“. `index.html` und das Manifest werden mit `no-cache`
 ausgeliefert, gehashte Dateien unter `/assets/` dauerhaft gecacht — ein neuer
 Deploy kommt also beim nächsten Öffnen an.
 
+**Vite 8 / Rolldown:** Ohne das Plugin `fixRolldownPreloadMarker` in
+`vite.config.js` erzeugt der Production-Build ungültiges JS
+(`[]` + Content-Hash hinter dem Preload-Marker) und die Live-Site bleibt auf dem
+Splash (Blackscreen). Details: `AGENTS.md` und `docs/NATIVE-REMINDERS.md`.
+
 Sprachausgabe und Tonsignale benötigen Browser-Unterstützung. Audio wird nach
 dem ersten Start-Tap aktiviert; bei gesperrtem Bildschirm hängt die Wiedergabe
 vom Browser und Betriebssystem ab.

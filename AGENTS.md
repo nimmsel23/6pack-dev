@@ -104,6 +104,11 @@ seine Daten mit `scripts/build-sixpack-data.mjs` aus der eigenen KB.
 Vite-`base` bleibt `./`; API-Aufrufe bleiben relativ. Interaktive/lang laufende
 Dev-Prozesse über `aos-kitty-launch` starten.
 
+Vite 8 (Rolldown): `vite.config.js` enthält `fixRolldownPreloadMarker`. Rolldown
+hängt sonst an `__VITE_PRELOAD__` einen Hash; Vite ersetzt nur die Marke und
+lässt `[]<hash>` im Bundle (SyntaxError → Blackscreen auf `vos-6pack.web.app`).
+Plugin nicht entfernen, solange Capacitor-Lazy-`import('./web')` im Web-Build landet.
+
 ## Git, Integration und Veröffentlichung
 
 - Aufgaben in `TODO.md`, Ergebnisse mit Datum in `RESULTS.md` festhalten.

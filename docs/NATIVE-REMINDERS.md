@@ -79,6 +79,12 @@ und bestätigt keinen lokalen Timer als Push-Erfolg. FCM-Vordergrund-Nachrichten
 werden zusätzlich sichtbar angezeigt. Die Web-Version benötigt für Zustellung
 Internet; sie bietet keine lokal geplanten Betriebssystem-Alarme.
 
+Capacitor-Plugins (`@capacitor/local-notifications`, `@capacitor/app`) werden
+trotzdem in den Web-Bundle gezogen (`registerPlugin` → lazy `import('./web')`).
+Unter Vite 8/Rolldown muss `fixRolldownPreloadMarker` in `vite.config.js`
+mitlaufen; sonst bricht der Bundle-Parse ab (Blackscreen auf
+`vos-6pack.web.app`, 2026-11-10).
+
 ## Prüfung in dieser Umgebung (2026-10-24)
 
 - Reminder-/Track-Tests einschließlich DST und nativer Bridge sowie bestehende
