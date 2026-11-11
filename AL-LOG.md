@@ -103,8 +103,9 @@ completed	success	Merge-Agent	Merge-Agent	master	schedule	42927246204	9s	2026-11
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Freeze-Wartung Docs/CI — Pages API `master`+/docs` `built`, Live `nimmsel23.github.io/6pack-dev/` 200;
-  `*.apk` → `.gitignore`; NEXT Pages-/APK-Punkte geschlossen (+ RESULTS). CI-Belege nach Push.
-- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Secrets/Gemini-Feldtests + Gmail-Kanal in NEXT;
-  Shell-Pin-Abnahme Theme (`vos-release 6pack`) und Live-Abnahme `aa6006dc` offen.
+- Erledigt: Freeze-Wartung — Pages API `master`+/docs` `built` + Live 200; `*.apk` → `.gitignore`;
+  NEXT/RESULTS `38cac921`/`94a5f5f6`/`8237d651`; Lauf `3be1c681`: Check `42960979956`, Promote `42961023017`
+  (master=`3be1c681`), Pages `42961036736`, Deploy `42961036911` success.
+- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Secrets/Gemini-Feldtests + Gmail-Kanal;
+  Shell-Pin-Theme (`vos-release 6pack`); Live-Abnahme `aa6006dc`; Dependabot-Alert #1 moderate (remote Hinweis).
 - Blocker: keine.
