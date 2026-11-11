@@ -103,7 +103,7 @@ completed	success	Merge-Agent	Merge-Agent	master	schedule	42927246204	9s	2026-11
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Security Freeze — Dependabot Alert #1 `uuid`→11.1.1 (`functions/pnpm-workspace.yaml` overrides + Lockfile); CI `calendar-functions.yml` ohne `--ignore-workspace`. Vormittag Pages/`*.apk` `3be1c681`/`40aff0b1` bleibt. Lauf-Commit `6ad5268e`; Check/Promote/Deploy nach Push.
+- Erledigt: Security Freeze — Dependabot Alert #1 `uuid`→11.1.1 fixed (`functions/pnpm-workspace.yaml` overrides + Lockfile; CI ohne `--ignore-workspace`). Lauf `f2cd05aa`: Check `43061554293`, Promote `43061636814` (master=`f2cd05aa`), Pages `43061670843`, Deploy `43061671396` success. Alert API state=fixed.
 - Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; automerge Retarget wartet journal-SSOT `0e25e4c4` (keine Dep-PRs base=master); Secrets/Gemini/Gmail; Shell-Pin-Theme; Live-Abnahme `aa6006dc`. Dirty Checkout nur gemeldet: `docs/apps.*`, `scripts/portal.mjs`.
 - Blocker: keine.
 AUTOMATION: `pnpm --dir functions install --ignore-workspace` — Overrides aus `functions/pnpm-workspace.yaml` greifen nicht → CI ohne Flag — spart Alert-Nacharbeit.
