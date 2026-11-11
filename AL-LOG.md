@@ -39,12 +39,41 @@ completed	success	Auto-Promote dev -> master (Check (6Pack))	Auto-Promote dev ->
 - Arbeitsbaum: 2 uncommittete Pfade
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Org-Task 544cf2f9 Stabilitätswache Mo-Dependabot: Majors/Minors gesquasht #39→b9b7c296,
-  #40→01f2fece, #41→f66f891c, #42→298b95c2, #43→d4fa929c; Tip-Check dev 42575208438 success.
-  #38 vite 6→8 korrekt offen (Check 42575422091 rot: transformWithEsbuild in test-exercise-details.mjs);
-  [ci:alpha] msgid 1a1bf7e1b1228ecf. Task 544cf2f9 done (Annotation + Promote-Nachzug).
-- Offen/Weiter: Org-Task 081ca422 (Musik-Modus 72571775 + divergenter lokaler master e08fa339)
-  unverändert. PR #38 vite bleibt offen bis Alpha-Fix ([ci:alpha] 1a1bf7e1b1228ecf).
-- Blocker: keine. Veröffentlichung Lauf-Commit 28546bb1: Check 42588657873 success,
-  Auto-Promote 42588696137 (master=28546bb1), Deploy 42588715878 success.
+- Erledigt: Org-Task 081ca422 Entscheidungsvorlagen: Musik `72571775` rebase-probe (SixPackApp clean,
+  nur RESULTS-Konflikt; 42 hinter origin/dev) → Empf. **parken** (Freeze b0ed4e47); `e08fa339` dangling
+  → Empf. **verwerfen**; master 0 ahead/2 behind origin. Inbox `6pack-dev-2026-11-09.md`; Task done.
+  (Vormittag 544cf2f9/Vite#38 bereits auf origin: #38 MERGED `89ee4323`/`9119602e`.)
+- Offen/Weiter: Musik-Publish nur nach Owner-Gate; TODO Sprachansagen-/Selfie-Features Freeze-gesperrt;
+  PR #24 gradle-wrapper; untracked `docs/Index.html`, `6pack-app-debug.apk` nur gemeldet.
+- Blocker: keine. Veröffentlichung Lauf-Commit fc87a0c9: Check 42657524130 success,
+  Auto-Promote 42657587493 (master=fc87a0c9), Deploy 42657609637 success.
   Untracked Checkout nur gemeldet: docs/Index.html, 6pack-app-debug.apk.
+
+## 2026-11-10 (Dienstag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-10):_
+- Commits seit 2026-11-08: c706f73e docs: confirm live blackscreen fix and own-clips status
+0be696c2 docs: archive Coach 6pack landing page as docs/Index.html
+edd74364 fix(build): Rolldown preload marker blackscreen on vos-6pack
+932579f7 docs: auto-update NEXT.md
+d132e76c docs: auto-update RESULTS.md
+d741397d chore(deps): major upgrades to React 19 / Vite 8 / Firebase 13
+e454581b fix(ci): pnpm action-setup 11.3.0 (match packageManager)
+dfaefbeb chore(deps): lockfile + age-safe pins
+80256956 chore(deps): minor/patch upgrades (age-safe pins)
+95497d92 build(deps-dev): bump esbuild from 0.27.7 to 0.28.1 (#44)
+b0588a37 docs(al): CI-Beleg für fc87a0c9 nachtragen — Check, Auto-Promote, Deploy
+fc87a0c9 docs(al): Entscheidungsvorlage 081ca422 — Musik parken, e08fa339 verwerfen
+7c40b421 chore: Pre-Push ohne vitalos; Remote-Branch vitalos obsolet
+e5c48aa6 chore: CI/AGENTS — Shell-Pin auf origin/master (kein vitalos-Vorspulen)
+9119602e docs: Vite-8 #38 als erledigt nachziehen
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	Auto-Promote dev -> master (Check (6Pack))	Auto-Promote dev -> master (Check (6Pack))	master	schedule	42750706805	8s	2026-11-10T03:38:00Z
+completed	success	Merge-Agent	Merge-Agent	master	schedule	42748920453	7s	2026-11-10T03:21:37Z
+completed	failure	pages build and deployment	pages-build-deployment	master	dynamic	42739426858	31s	2026-11-10T01:57:53Z
+- Arbeitsbaum: 1 uncommittete Pfade
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: NEXT-Stale PR #24 geschlossen — MERGED `f9527880`/`4dc53069` (2026-11-06), Wrapper Gradle 9.8.2. Lauf-Commit `0a66dc96` (+ NEXT/RESULTS `770f50a4`/`ed654d6b`): Check `42857320876`, Auto-Promote `42857407068` (master=`0a66dc96`), Pages `42857473985`, Deploy `42857474632` success. Vormittag `5ac3c580` bleibt gültig.
+- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Pages-Admin `/docs` (GitHub-UI); Secrets/Gemini-Feldtests in NEXT; APK nicht mehr im Checkout.
+- Blocker: keine.

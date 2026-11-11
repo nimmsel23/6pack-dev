@@ -1,3 +1,44 @@
+- 2026-11-10 (AL Nachmittag): NEXT bereinigt — PR #24 gradle-wrapper war seit `f9527880` (2026-11-06) MERGED; Wrapper auf Tree = 9.8.2. Tip `32c581c0` Check `42763736809` success.
+- 2026-11-10: chore(pnpm) — `rolldown`-Override `1.3.0` → `1.2.16` (Preload-Blackscreen; Linie wie fitness/VitalOS-Meta). Marker-Fix bleibt Defense-in-depth.
+- 2026-11-10: fix(shell) — bei `onSubNav` (VitalOS-Embed) kein `data-theme=sixpack` mehr auf `documentElement`; Theme bleibt am Shell-Wrapper, Sidebar/Nav behalten Shell-Farben. Section-Layout im Embed ohne `overflow-hidden`.
+- 2026-11-10: fix(git) `5ac3c580` — Fake-Submodule `.worktrees/agents-thin` entfernt; Check `42757550696`, Promote `42757590097`, Pages `42757607664`, Deploy `42757607824` success (vorher fail `42739426858`/`42739410709`).
+- 2026-11-10: Live-Abnahme Blackscreen — `vos-6pack.web.app` liefert `index-CunHDZLw.js` mit gültigem Preload (`[],import.meta.url`).
+- 2026-11-10: docs — Coach-Landingpage `website/src/6pack.html` nach `docs/Index.html` übernommen (Referenz).
+- 2026-11-10: fix(build) Vite-8/Rolldown-Preload-Marker — `vos-6pack.web.app` Blackscreen behoben (`fixRolldownPreloadMarker` in `vite.config.js`).
+
+## 2026-11-10 — Pages/Gemini: Fake-Submodule `.worktrees/agents-thin`
+
+- Symptom: `pages-build-deployment` `42739426858` und Gemini CI Agent `42739410709` failen bei `submodule update` mit `No url found for submodule path '.worktrees/agents-thin' in .gitmodules`.
+- Ursache: `d741397d` hat lokalen Worktree als Gitlink `160000` committed (kein `.gitmodules`).
+- Fix: `git rm --cached .worktrees/agents-thin`, `.worktrees/` in `.gitignore`. Lokaler Worktree bleibt.
+
+## 2026-11-10 — Blackscreen vos-6pack.web.app (Vite 8 / Rolldown)
+
+- Symptom: Splash blieb stehen; Konsole `Uncaught SyntaxError: identifier starts immediately after numeric literal`.
+- Ursache: Rolldown hängt an `__VITE_PRELOAD__` einen Content-Hash (`__VITE_PRELOAD__50b3…`). Vite ersetzt nur die 16-Zeichen-Marke → `[]50b3…` (ungültiges JS) in den Capacitor-Lazy-Imports (`LocalNotifications` / `App`).
+- Fix: Plugin `fixRolldownPreloadMarker` in `vite.config.js` normalisiert den Marker vor der Import-Analyse. Bundle danach `…, [], import.meta.url`.
+- Docs: `AGENTS.md` (Build), `README.md` (Hosting-Hinweis), `docs/NATIVE-REMINDERS.md` (Web-Build-Fallstrick).
+
+- 2026-11-10: chore(deps) major stack align — React 19 / Vite 8.3.6 / plugin-react 6.2.1 / Firebase 13 (age-safe pins, pnpm-workspace overrides).
+
+## 2026-11-09 — deps: minor/patch Upgrades
+
+- ncu minor + age-safe vite/rolldown pins.
+
+## 2026-11-09 — Remote-vitalos gelöscht; Pre-Push ohne vitalos-Deploy
+
+`origin/vitalos` entfernt. Pre-Push: kein lokaler Firebase-Deploy mehr auf Branch vitalos; Reminder/Build auf `dev`.
+
+## 2026-11-09 — AL Entscheidungsvorlage Org-Task 081ca422
+
+- Musik-Modus `72571775` / Branch `vos-al/musik-mode-72571775`: 42 hinter origin/dev; Rebase-Probe: nur RESULTS-Konflikt, `SixPackApp.jsx` clean. **Empfehlung: parken** (Feature-Freeze `b0ed4e47` bis 2027-02-07; Publish nur mit Owner-Gate). Inbox: `~/.local/state/abteilungen/inbox/6pack-dev-2026-11-09.md`.
+- Lokaler `e08fa339` (Org-TW-Docs): dangling, kein Branch; Inhalt nicht nach `dev` (Repo-AGENTS hat aktuellen Release-Weg ohne Repo-Org-TW-Duplikat). Lokaler `master` 0 ahead / 2 behind origin — alte Divergenz erledigt. **Empfehlung: verwerfen/ignorieren.**
+- Org-Task `081ca422` annotiert + done.
+
+## 2026-11-09 — Shell-Pin auf origin/master (CI/AGENTS)
+
+CI/AGENTS: kein vitalos-Vorspulen; Merge-Agent nur master; Release-Weg = dev→master + Shell-Pin.
+
 ## 2026-11-09 — Vite 8 #38 durch (Alpha) + stale Hit closed
 
 - PR #38 gemergt (`vite` 8.3.5 auf dev+master). Fix: Testskripte ohne `transformWithEsbuild`, Dev-Dep `esbuild` (nicht fitness-`modules`-Muster).

@@ -28,20 +28,25 @@
     "@capacitor/core": "^8.6.0",
     "@capacitor/ios": "^8.6.0",
     "@capacitor/local-notifications": "^8.3.1",
-    "firebase": "13.1.0",
-    "js-yaml": "5.5.0",
-    "lucide-react": "1.66.0",
-    "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "firebase": "^13.2.0",
+    "js-yaml": "^5.5.0",
+    "lucide-react": "^1.70.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
-    "@tailwindcss/postcss": "^4.3.3",
-    "@vitejs/plugin-react": "5.2.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@vitejs/plugin-react": "6.2.1",
     "autoprefixer": "10.6.2",
-    "esbuild": "^0.27.0",
+    "esbuild": "^0.28.2",
     "postcss": "8.5.32",
-    "tailwindcss": "^4.3.3",
-    "vite": "8.3.5"
-  }
+    "tailwindcss": "^4.3.5",
+    "vite": "8.3.6"
+  },
+  "packageManager": "pnpm@11.3.0",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "optionalDependencies": {}
 }

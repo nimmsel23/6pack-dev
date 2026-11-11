@@ -1795,11 +1795,11 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     if (activeWorkout && screen !== 'runner') cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls())).catch(() => {});
   }, [activeWorkout, screen === 'runner']);
 
-  // Solange dieser SubTab offen ist, kippt die ganze App ins 6-Pack-Promise
-  // Rot/Schwarz (data-theme-Attribut auf documentElement, gleiches Pattern
-  // wie SettingsContext.jsx für normales Theme-Switching). Vorherigen Wert
-  // beim Verlassen wiederherstellen statt hart zurückzusetzen.
+  // Standalone/PWA: ganze App auf Rot/Schwarz (documentElement).
+  // VitalOS-Shell übergibt onSubNav und wrappt selbst mit [data-theme=sixpack] —
+  // documentElement umzuschalten färbt Sidebar/Nav mit und stiehlt das Shell-Theme.
   useEffect(() => {
+    if (onSubNav) return undefined;
     const root = document.documentElement;
     const previous = root.getAttribute('data-theme');
     root.setAttribute('data-theme', 'sixpack');
@@ -1807,10 +1807,10 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
       if (previous) root.setAttribute('data-theme', previous);
       else root.removeAttribute('data-theme');
     };
-  }, []);
+  }, [onSubNav]);
 
   return (
-    <section className={onSubNav ? 'w-full h-full overflow-hidden' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
+    <section className={onSubNav ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} eatInApp={!onSubNav} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}

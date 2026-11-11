@@ -1,7 +1,7 @@
-# Pull Request (nach dev oder vitalos): eigener 24h-PR-Channel mit Kommentar (PR-Weg wie fitness-dev;
-# Check (6Pack) und Auto-Merge für den Release-PR dev -> vitalos liegen in check.yml/automerge.yml).
+# Pull Request (nach dev oder master): eigener 24h-PR-Channel mit Kommentar (PR-Weg wie fitness-dev;
+# Check (6Pack) und Auto-Merge für den Release-Weg dev -> master liegen in check.yml/automerge.yml).
 # Branch dev: 24h-Preview-Channel "dev" mit Telegram-Link.
-# Branch vitalos: Standalone-Site vos-6pack.web.app mit Telegram-Nachricht.
+# Branch master: Standalone-Site vos-6pack.web.app mit Telegram-Nachricht.
 # vitalos.web.app (Meta-Repo-Shell) wird separat durch dessen Workflow deployt.
 # Hosting-Ziel "sixpack" im Projekt fitness-aos, siehe .firebaserc.
 # Ohne Firebase-Secret wird nur gebaut und der Deploy übersprungen.
@@ -12,7 +12,7 @@
 
 #
 # Die dev-Branch-Änderungen bleiben Preview; der Production-Submodule-Branch
-# vitalos deployt die Standalone-Site, ohne die Meta-Repo-Shell zu ändern.
+# master-Deploy deployt die Standalone-Site, ohne die Meta-Repo-Shell zu ändern.
 
 name: 6Pack deploy (preview + standalone)
 
@@ -37,7 +37,7 @@ on:
       - '**.txt'
       - '**.bak*'
 
-# Pro Ref, sonst bricht ein PR-Lauf einen laufenden Live-Deploy (vitalos) ab.
+# Pro Ref, sonst bricht ein PR-Lauf einen laufenden Live-Deploy (master) ab.
 concurrency:
   group: deploy-vos-6pack-${{ github.ref }}
   cancel-in-progress: true
@@ -57,7 +57,7 @@ jobs:
 
       - uses: pnpm/action-setup@v6
         with:
-          version: 12
+          version: 11.3.0
 
       - uses: actions/setup-node@v7
         with:
