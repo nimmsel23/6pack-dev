@@ -1,5 +1,7 @@
 # 6Pack — Arbeitsanleitung für Agents
 
+**Simplicity (Owner 2026-11-11):** So simpel wie möglich. Ausnahme nur `vitalos/prod`. CI-Spine: Check → automerge-pr → automerge → Deploy (CI.md §1).
+
 ## Zuständigkeit und Checkouts
 
 Dieses Repo ist die Source of Truth für die gemeinsame 6Pack-Oberfläche.
