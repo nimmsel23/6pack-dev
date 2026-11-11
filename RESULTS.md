@@ -1,3 +1,4 @@
+- 2026-11-11 (AL Nachmittag): Security Freeze — Dependabot Alert #1 (`uuid` < 11.1.1 in `functions/pnpm-lock.yaml`) via `overrides.uuid: 11.1.1` in `functions/pnpm-workspace.yaml`; CI `calendar-functions.yml` ohne `--ignore-workspace` (sonst Overrides tot). Reminder-Tests 5/5 pass.
 - 2026-11-11 (AL): Docs/Wartung unter Freeze — GitHub Pages verifiziert (`master`+/docs`, built; Live 200); `*.apk` in `.gitignore`; NEXT Pages-/APK-Punkte geschlossen.
 - 2026-11-10 (AL Nachmittag): NEXT bereinigt — PR #24 gradle-wrapper war seit `f9527880` (2026-11-06) MERGED; Wrapper auf Tree = 9.8.2. Tip `32c581c0` Check `42763736809` success.
 - 2026-11-10: chore(pnpm) — `rolldown`-Override `1.3.0` → `1.2.16` (Preload-Blackscreen; Linie wie fitness/VitalOS-Meta). Marker-Fix bleibt Defense-in-depth.

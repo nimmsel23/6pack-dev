@@ -3,3 +3,8 @@ packages:
   - "."
 allowBuilds:
   protobufjs: true
+
+overrides:
+  # Dependabot alert #1 (medium): uuid < 11.1.1 (firebase-admin@12 + transitive).
+  # Resolve ohne --ignore-workspace (CI calendar-functions.yml angepasst), sonst greifen Overrides nicht.
+  uuid: 11.1.1
