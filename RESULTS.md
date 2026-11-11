@@ -1,3 +1,10 @@
+## 2026-11-11 — Woche 3 (Issue #45)
+
+- `catalog/6pack/week3_workouts.yml`: Tage 1/2/4/5/6 (App 15/16/18/19/20), Ruhetage 3/7. Gleiche Struktur wie Woche 2 (7 Übungen, 2× 45 s Pause); Übungszeit +11 bis +25 % je Tag.
+- Nur Übungen mit verifizierter Demo. Woche-2-Slots ohne/mit Näherungs-Demo ersetzt: Rolling Jackknifes → Hands Free Tucks, Accordian → Side Crunches (L/R), Canoe Crunch → Tuck Planks, Any Ball BTB → Side Plank Lifts (L/R), Iso Reverse → Flutter Kicks, Sprinter Tuck → Marching Planks.
+- Quelle `progression_from_week2` (keine Screenshots); bei Original-Screenshots ersetzen.
+- Test: `scripts/test-exercise-details.mjs` prüft Woche 3 (Summe, 2 Pausen, Demo je Übung, Ruhetage).
+
 ## 2026-11-11 — CI Simplicity: remove Gemini/Merge-Agent
 
 - Removed: gemini-ci-repair.yml merge-agent.yml
