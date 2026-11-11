@@ -15,7 +15,7 @@
 - ~~`scripts/own-clips.mjs status`~~: läuft (2026-11-10) — Tag 1: 0/6 eigene Clips; Import der 6 Dateien nach `public/videos/` weiter offen.
 - **Live-Abnahme `aa6006dc`:** Tailwind-4-Themes, lucide-react 1.64 (Icon-Rendering) und den js-yaml-Datenbuild auf dem Handy bzw. im Browser ansehen. Bisher nichts davon gesehen.
 - **`deploy-shell`-Trigger:** Der Push auf Meta-`master` (`69f11ae`) hat keinen automatischen Lauf ausgelöst, Ursache ungeklärt. Beim nächsten Meta-Push prüfen, sonst `gh workflow run deploy-shell.yml --repo nimmsel23/vitalos --ref master`.
-- **`6pack-app-debug.apk`:** liegt untracked im Checkout `~/dev/6pack-dev` (Build-Artefakt, nicht committet). Entscheiden: in `.gitignore` aufnehmen oder mit `mv` archivieren, nicht löschen.
+- ~~`6pack-app-debug.apk`~~: nicht mehr im Checkout; `*.apk` in `.gitignore` (AL 2026-11-11).
 - Eigene Clips Tag 1 liefern: `hands_back_tucks`, `marching_planks`, `side_plank_lifts`, `seated_ab_circles`, `ninety_ninety_crunch`, `russian_v_tuck_twists` → `node scripts/own-clips.mjs import <id> <datei>`, `sync ~/fitness-dev`, Daten neu bauen, committen (Clips mit committen — noch nicht bestätigt). Wiedergabe auf dem Handy ungeprüft.
 - Fitness-Tab-Runner ist älter als der in 6pack-dev (kein `videoCache.js`, kein Autostart/Gym-Timer-Töne) — Nachziehen ist offen, Entscheidung beim User.
 - Track-Tab (Tag antippen = aktiv + Übungsliste) und Vollbreiten-Layout am Handy bzw. im Browser ansehen; auf breiten Desktop-Fenstern ggf. großzügige Breitenobergrenze setzen (bisher nicht visuell geprüft).
@@ -44,5 +44,5 @@
 
 - [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
 - [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
-- [ ] GitHub Pages fuer `6pack-dev` auf Branch `dev`, Ordner `/docs` prüfen/aktivieren; Pages-Admin-Einstellungen sind über die aktuelle GitHub-Schnittstelle nicht erreichbar. Checkout-Blocker `.worktrees/agents-thin` behoben — Pages `42757607664` success.
+- ~~GitHub Pages~~: aktiv `source.branch=master` + `path=/docs`, `status=built`; Live `https://nimmsel23.github.io/6pack-dev/` + `Index.html` HTTP 200 (AL 2026-11-11, API `repos/.../pages`).
 - [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.
