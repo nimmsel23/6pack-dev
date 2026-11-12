@@ -1,3 +1,11 @@
+## 2026-11-12 — VitalOS-Embed
+
+- `embed.jsx`: `SixPackEmbed` für die Shell. Eingebettet kein `documentElement`, kein `theme-color`, kein `html.style`, kein `location.hash`. Skill-Route `skills/<skillId>` über `onRouteChange`. Eat ruft `onNavigate('fuel')`. `runId` bleibt am Workout.
+- `push.js`: Registrierung auf der Firebase-App des Hosts. Standalone (`standaloneSync.js`) nutzt dasselbe Modul und initialisiert Firebase weiter selbst.
+- Bestehendes `onSubNav` an `SixPackPromiseCard` bleibt (Hash + externer Eat-Link).
+- Runner-Overlay `fixed inset-0 z-[100]` (Portal auf `document.body`) unverändert; liegt über der Shell-Navigation.
+- Test: `node --test scripts/test-embed.mjs`.
+
 ## 2026-11-12 — CI: Gemini + Merge-Agent wiederhergestellt
 
 - Restored: gemini-ci-repair.yml merge-agent.yml (Owner: volle Automatisierung)
