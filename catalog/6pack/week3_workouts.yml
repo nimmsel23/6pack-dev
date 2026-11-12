@@ -1,0 +1,156 @@
+program_id: sixpack_promise_week3
+name: 6 Pack Promise Week 3
+source: progression_from_week2
+verified_days:
+  1:
+    total_seconds: 330
+    items:
+    - type: exercise
+      exercise_id: seated_ab_circles
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: seated_ab_circles
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: hands_free_tucks
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: drunken_mountain_climbers
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: starfish_crunch
+      duration_seconds: 30
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: prayer_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: standing_ab_twists
+      duration_seconds: 30
+  2:
+    total_seconds: 510
+    items:
+    - type: exercise
+      exercise_id: flutter_kicks
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: v_ups
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: cross_knee_planks
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: scissors
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: ninety_ninety_crunch
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: upper_circle_crunches
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: upper_circle_crunches
+      duration_seconds: 60
+  4:
+    total_seconds: 390
+    items:
+    - type: exercise
+      exercise_id: heels_to_the_heavens
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: mountain_climbers
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: drunken_mountain_climbers
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: side_crunches
+      duration_seconds: 30
+      notes: linke Seite
+    - type: exercise
+      exercise_id: side_crunches
+      duration_seconds: 30
+      notes: rechte Seite
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: frog_crunches
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: russian_v_tuck_twists
+      duration_seconds: 30
+  5:
+    total_seconds: 390
+    items:
+    - type: exercise
+      exercise_id: hands_back_tucks
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: tuck_planks
+      duration_seconds: 30
+      notes: Seiten abwechselnd
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: legs_straight_windshield_wipers
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: crunch_and_twists
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: prayer_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 30
+      notes: linke Seite
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 30
+      notes: rechte Seite
+  6:
+    total_seconds: 420
+    items:
+    - type: exercise
+      exercise_id: flutter_kicks
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: twenty_one_crunch
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 60
+    - type: exercise
+      exercise_id: side_plank_lifts
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: starfish_crunch
+      duration_seconds: 30
+    - type: exercise
+      exercise_id: ninety_ninety_crunch
+      duration_seconds: 60
+    - type: rest
+      duration_seconds: 45
+    - type: exercise
+      exercise_id: marching_planks
+      duration_seconds: 30
+rest_days:
+- 3
+- 7
+notes:
+- Week 3 (app days 15, 16, 18, 19, 20) is a progression of Week 2 (2026-11-11), not screenshot-verified. Same day structure (5 workout days, 2 rest blocks of 45 s per day); exercise time +11 to +25 % per day vs. Week 2.
+- Only exercises with a verified public demo in catalog/exercise-videos.yml are used. Week-2 slots without a verified demo were replaced by same-region exercises: rolling_jackknifes -> hands_free_tucks, accordian_crunches -> side_crunches (left/right), canoe_crunch -> tuck_planks, any_ball_btb_pass -> side_plank_lifts (left/right), iso_reverse_crunches -> flutter_kicks, sprinter_tuck_planks -> marching_planks.
+- Replace with the original program days once Week-3 screenshots are available.

@@ -37,7 +37,8 @@ jobs:
               env.write(f'GOOGLE_APPLICATION_CREDENTIALS={path}\n')
           PY
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - run: pnpm --dir functions install --ignore-workspace --frozen-lockfile --ignore-scripts
+      # Kein --ignore-workspace: sonst greifen functions/pnpm-workspace.yaml overrides nicht (uuid Alert #1).
+      - run: pnpm --dir functions install --frozen-lockfile --ignore-scripts
       - run: pnpm run test:calendar
       - run: node scripts/test-calendar-framework.mjs
       - name: Deploy only calendar functions

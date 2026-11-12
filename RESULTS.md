@@ -1,3 +1,21 @@
+## 2026-11-12 — CI: Gemini + Merge-Agent wiederhergestellt
+
+- Restored: gemini-ci-repair.yml merge-agent.yml (Owner: volle Automatisierung)
+- Simplicity ≠ bestehende Auto-Schienen killen.
+
+## 2026-11-11 — Woche 3 (Issue #45)
+
+- `catalog/6pack/week3_workouts.yml`: Tage 1/2/4/5/6 (App 15/16/18/19/20), Ruhetage 3/7. Gleiche Struktur wie Woche 2 (7 Übungen, 2× 45 s Pause); Übungszeit +11 bis +25 % je Tag.
+- Nur Übungen mit verifizierter Demo. Woche-2-Slots ohne/mit Näherungs-Demo ersetzt: Rolling Jackknifes → Hands Free Tucks, Accordian → Side Crunches (L/R), Canoe Crunch → Tuck Planks, Any Ball BTB → Side Plank Lifts (L/R), Iso Reverse → Flutter Kicks, Sprinter Tuck → Marching Planks.
+- Quelle `progression_from_week2` (keine Screenshots); bei Original-Screenshots ersetzen.
+- Test: `scripts/test-exercise-details.mjs` prüft Woche 3 (Summe, 2 Pausen, Demo je Übung, Ruhetage).
+
+## 2026-11-11 — CI Simplicity: remove Gemini/Merge-Agent
+
+- Removed: gemini-ci-repair.yml merge-agent.yml
+- Spine: Check → automerge-pr → automerge → Deploy. Exception only vitalos/prod.
+
+- 2026-11-11 (AL Nachmittag): Security Freeze — Dependabot Alert #1 (`uuid` < 11.1.1 in `functions/pnpm-lock.yaml`) via `overrides.uuid: 11.1.1` in `functions/pnpm-workspace.yaml`; CI `calendar-functions.yml` ohne `--ignore-workspace` (sonst Overrides tot). Reminder-Tests 5/5 pass.
 - 2026-11-11 (AL): Docs/Wartung unter Freeze — GitHub Pages verifiziert (`master`+/docs`, built; Live 200); `*.apk` in `.gitignore`; NEXT Pages-/APK-Punkte geschlossen.
 - 2026-11-10 (AL Nachmittag): NEXT bereinigt — PR #24 gradle-wrapper war seit `f9527880` (2026-11-06) MERGED; Wrapper auf Tree = 9.8.2. Tip `32c581c0` Check `42763736809` success.
 - 2026-11-10: chore(pnpm) — `rolldown`-Override `1.3.0` → `1.2.16` (Preload-Blackscreen; Linie wie fitness/VitalOS-Meta). Marker-Fix bleibt Defense-in-depth.

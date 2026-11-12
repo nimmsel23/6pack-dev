@@ -174,3 +174,16 @@ delete globalThis.Notification;
   assert(!isCacheableVideo('//evil.example/x.mp4') && !isCacheableVideo('http://a.example/x.mp4') && !isCacheableVideo('data:video/mp4;base64,AA'));
   console.log('Own clips: public/videos overrides catalog demo, hash busts cache, video cache accepts same-origin clips.');
 }
+
+// Woche 3 (Tage 15–21): gleiche Tagesstruktur wie Woche 2, nur Übungen mit verifizierter Demo.
+for (const day of [15, 16, 18, 19, 20]) {
+  const workout = data.SIXPACK_VERIFIED_WORKOUTS[day];
+  assert(workout, `Woche 3 Tag ${day}: fehlt`);
+  assert.equal(workout.totalSeconds, workout.items.reduce((sum, item) => sum + item.seconds, 0), `Tag ${day}: total_seconds`);
+  assert.equal(workout.items.filter((item) => item.type === 'rest').length, 2, `Tag ${day}: zwei Pausenblöcke`);
+  for (const item of workout.items.filter((entry) => entry.type === 'exercise')) {
+    assert(data.SIXPACK_EXERCISE_DETAILS[item.exerciseId], `Tag ${day}: ${item.exerciseId} unbekannt`);
+    assert(item.videoUrl, `Tag ${day}: ${item.exerciseId} ohne verifizierte Demo`);
+  }
+}
+for (const day of [17, 21]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Woche 3 Tag ${day} ist Ruhetag`);

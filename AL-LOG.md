@@ -103,9 +103,7 @@ completed	success	Merge-Agent	Merge-Agent	master	schedule	42927246204	9s	2026-11
 - Arbeitsbaum: sauber
 
 _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
-- Erledigt: Freeze-Wartung — Pages API `master`+/docs` `built` + Live 200; `*.apk` → `.gitignore`;
-  NEXT/RESULTS `38cac921`/`94a5f5f6`/`8237d651`; Lauf `3be1c681`: Check `42960979956`, Promote `42961023017`
-  (master=`3be1c681`), Pages `42961036736`, Deploy `42961036911` success.
-- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Secrets/Gemini-Feldtests + Gmail-Kanal;
-  Shell-Pin-Theme (`vos-release 6pack`); Live-Abnahme `aa6006dc`; Dependabot-Alert #1 moderate (remote Hinweis).
+- Erledigt: Security Freeze — Dependabot Alert #1 `uuid`→11.1.1 fixed (`functions/pnpm-workspace.yaml` overrides + Lockfile; CI ohne `--ignore-workspace`). Lauf `f2cd05aa`: Check `43061554293`, Promote `43061636814` (master=`f2cd05aa`), Pages `43061670843`, Deploy `43061671396` success. Alert API state=fixed.
+- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; automerge Retarget wartet journal-SSOT `0e25e4c4` (keine Dep-PRs base=master); Secrets/Gemini/Gmail; Shell-Pin-Theme; Live-Abnahme `aa6006dc`. Dirty Checkout nur gemeldet: `docs/apps.*`, `scripts/portal.mjs`.
 - Blocker: keine.
+AUTOMATION: `pnpm --dir functions install --ignore-workspace` — Overrides aus `functions/pnpm-workspace.yaml` greifen nicht → CI ohne Flag — spart Alert-Nacharbeit.
