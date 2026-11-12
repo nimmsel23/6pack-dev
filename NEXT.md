@@ -4,6 +4,7 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
+- ~~automerge-pr Dependabot base=master→dev Retarget~~: Port journal-SSOT `375e122` (Org `c1f9b6ce`/`0e25e4c4`); Dry-Check keine Dep-PRs base=master (AL 2026-11-12).
 - ~~Shell-Theme-Diebstahl~~: `onSubNav` skippt documentElement-Theme; nach Promote Shell-Pin (`vos-release 6pack` / Meta-Bump) prüfen — Sidebar darf nicht mehr rot werden (2026-11-10).
 - ~~Pages/Gemini Checkout fail (`.worktrees/agents-thin` Gitlink)~~: `5ac3c580`; Pages `42757607664` + Deploy `42757607824` success (2026-11-10 AL).
 - ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix + Docs + Live `index-CunHDZLw.js` ohne `[]<hash>` (2026-11-10). Hard-Reload falls alter SW klebt.

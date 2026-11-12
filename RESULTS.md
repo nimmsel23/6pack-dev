@@ -1,3 +1,9 @@
+## 2026-11-12 — AL: automerge-pr Dependabot Retarget (Org c1f9b6ce)
+
+- Port journal-SSOT `375e122` / Org `0e25e4c4`: vor Squash Dependabot-PRs mit `base=master` auf `base=dev` retargeten (nur `dependabot/*`-Heads).
+- Dry-Check: keine offenen Dep-PRs `base=master` (Workflow-Diff reicht als Beleg).
+- Feature-Freeze: CI-Wartung, kein Produktfeature.
+
 ## 2026-11-12 — VitalOS-Embed
 
 - `embed.jsx`: `SixPackEmbed` für die Shell. Eingebettet kein `documentElement`, kein `theme-color`, kein `html.style`, kein `location.hash`. Skill-Route `skills/<skillId>` über `onRouteChange`. Eat ruft `onNavigate('fuel')`. `runId` bleibt am Workout.
