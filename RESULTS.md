@@ -1,3 +1,8 @@
+## 2026-11-12 — CI: Gemini + Merge-Agent wiederhergestellt
+
+- Restored: gemini-ci-repair.yml merge-agent.yml (Owner: volle Automatisierung)
+- Simplicity ≠ bestehende Auto-Schienen killen.
+
 ## 2026-11-11 — Woche 3 (Issue #45)
 
 - `catalog/6pack/week3_workouts.yml`: Tage 1/2/4/5/6 (App 15/16/18/19/20), Ruhetage 3/7. Gleiche Struktur wie Woche 2 (7 Übungen, 2× 45 s Pause); Übungszeit +11 bis +25 % je Tag.
