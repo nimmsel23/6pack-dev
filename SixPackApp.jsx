@@ -1,5 +1,6 @@
 import CalendarReminderSettings from './CalendarReminderSettings.jsx';
 import BackHeader from './BackHeader.jsx';
+import { IS_STORE_BUILD, storeText } from './storeBuild.js';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
@@ -228,24 +229,29 @@ function syncProgramToDate(program, today = localDate()) {
   return p;
 }
 
-function HomeScreen({ program, onOpenToday, onNav, eatInApp }) {
+function HomeScreen({ program, onOpenToday, onNav, eatInApp, embedded = false, hasSettings = true }) {
   const today = localDate();
   // Heute schon trainiert → für den Rest des Tages Rest anzeigen.
   const trainedToday = program.lastCompletedOn === today;
   const restDayToday = !trainedToday && isRestDay(program.currentDay);
   const lastDone = program.currentDay - 1;
+  // Store-Build: kein "Eat" (verlinkt auf die externe Fuel-Site, Fuel hat dort einen eigenen Tab) und keine
+  // Fortschrittsfotos (Gesundheitsdaten; im Play-Datensicherheitsformular nicht deklariert).
   const menuButtons = [
     { id: 'eat', label: 'Eat', Icon: UtensilsCrossed, href: eatInApp ? undefined : getFuelUrl() },
-    { id: 'track', label: 'Track', Icon: ListChecks },
-    { id: 'learn', label: 'Learn', Icon: BookOpen },
-    { id: 'shuffle', label: 'Shuffle', Icon: Shuffle },
-    { id: 'favorites', label: 'Favorites', Icon: Star },
+    { id: 'track', label: storeText('Track', 'Verlauf'), Icon: ListChecks },
+    { id: 'learn', label: storeText('Learn', 'Lernen'), Icon: BookOpen },
+    { id: 'shuffle', label: storeText('Shuffle', 'Zufall'), Icon: Shuffle },
+    { id: 'favorites', label: storeText('Favorites', 'Favoriten'), Icon: Star },
     { id: 'selfies', label: 'Selfies', Icon: Camera },
-  ];
+  ].filter(({ id }) => !(IS_STORE_BUILD && (id === 'eat' || id === 'selfies')));
+  const menuColumns = menuButtons.length % 3 === 0 ? 3 : 2;
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-1 basis-0 min-h-0 flex flex-col">
+      {/* Eingebettet (Shell) hat der Container keine feste Höhe: ohne Mindesthöhen kollabieren die Flex-Kinder
+          (flex-1 basis-0) auf 0 und die Menü-Beschriftungen liegen übereinander. */}
+      <div className={`flex-1 basis-0 min-h-0 flex flex-col${embedded ? ' min-h-[19rem]' : ''}`}>
       <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ background: '#111' }}>
         <div className="text-xs font-black tracking-[0.3em]" style={{ color: '#e2001a' }}>6PP</div>
         <div className="flex items-center gap-3">
@@ -254,9 +260,11 @@ function HomeScreen({ program, onOpenToday, onNav, eatInApp }) {
               ? `Woche ${weekOf(lastDone)} · Tag ${dayInWeek(lastDone)} ✓`
               : `Woche ${weekOf(program.currentDay)} · Tag ${dayInWeek(program.currentDay)}`}
           </div>
-          <button onClick={() => onNav('settings')} aria-label="Einstellungen" className="p-1">
-            <Settings size={16} color="#e2001a" />
-          </button>
+          {hasSettings && (
+            <button onClick={() => onNav('settings')} aria-label="Einstellungen" className="p-1">
+              <Settings size={16} color="#e2001a" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -267,23 +275,23 @@ function HomeScreen({ program, onOpenToday, onNav, eatInApp }) {
       >
         <div className="flex-1 min-h-28 flex items-center justify-center" style={{ background: 'radial-gradient(circle at 30% 30%, #2a2a2a, #0a0a0a)' }}>
           {trainedToday || restDayToday
-            ? <span className="text-5xl font-black tracking-[0.25em]" style={{ color: '#333' }}>REST</span>
+            ? <span className="text-5xl font-black tracking-[0.25em]" style={{ color: '#333' }}>{storeText('REST', 'RUHETAG')}</span>
             : <Dumbbell size={72} color="#333" />}
         </div>
         <div className="px-4 py-2.5 text-center text-sm font-black uppercase tracking-[0.12em]" style={{ background: '#e2001a', color: '#fff' }}>
-          {trainedToday ? 'Rest' : restDayToday ? 'Rest Day' : "Today's Workout"}
+          {trainedToday ? storeText('Rest', 'Ruhetag') : restDayToday ? storeText('Rest Day', 'Ruhetag') : storeText("Today's Workout", 'Heutiges Workout')}
         </div>
         {(trainedToday || restDayToday) && (
           <div className="px-4 py-2 text-center text-[11px] font-bold" style={{ background: '#111', color: 'var(--dim)' }}>
             {trainedToday
-              ? `Tag ${dayInWeek(lastDone)} erledigt ✓ · Morgen: ${isRestDay(program.currentDay) ? 'Rest Day' : `Tag ${dayInWeek(program.currentDay)}`}`
+              ? `Tag ${dayInWeek(lastDone)} erledigt ✓ · Morgen: ${isRestDay(program.currentDay) ? storeText('Rest Day', 'Ruhetag') : `Tag ${dayInWeek(program.currentDay)}`}`
               : `Erholung · Morgen: Tag ${dayInWeek(program.currentDay + 1)}`}
           </div>
         )}
       </button>
       </div>
 
-      <div className="grid grid-cols-3 grid-rows-2 gap-px mt-px flex-1 basis-0 min-h-0" style={{ background: 'var(--line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className={`grid ${menuColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'} grid-rows-2 gap-px mt-px flex-1 basis-0 min-h-0${embedded ? ' min-h-[14rem]' : ''}`} style={{ background: 'var(--line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {menuButtons.map(({ id, label, Icon, href }) => {
           const Element = href ? 'a' : 'button';
           return (
@@ -340,7 +348,7 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
 
   return (
     <div className="h-full overflow-y-auto">
-      <BackHeader label="Learn" onBack={onBack} />
+      <BackHeader label={storeText('Learn', 'Lernen')} onBack={onBack} />
       <div className="px-4 py-2 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
         Core-Übungen aus dem 6-Pack-Programm{onOpenSkill ? ' + Calisthenics-Skill-Progressionen.' : '.'}
       </div>
@@ -348,7 +356,7 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Exercise oder Skill suchen..."
+          placeholder={storeText('Exercise oder Skill suchen...', 'Übung oder Skill suchen …')}
           className="w-full rounded-xl px-3 py-2 text-sm"
           style={{ background: '#141414', color: '#fff', border: '1px solid #2a2a2a' }}
         />
@@ -504,7 +512,7 @@ function WorkoutExerciseRow({ item, onOpen }) {
     <div>
       {item.category && <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#e2001a' }}>{item.category}</div>}
       <div className="text-sm font-bold" style={{ color: '#fff' }}>{item.name}{item.notes ? ` (${item.notes})` : ''}</div>
-      <div className="text-xs font-bold" style={{ color: '#e2001a' }}>{item.seconds} Seconds</div>
+      <div className="text-xs font-bold" style={{ color: '#e2001a' }}>{item.seconds} {storeText('Seconds', 'Sekunden')}</div>
     </div>
     {item.type === 'exercise' && <ChevronRight size={20} aria-hidden="true" style={{ color: '#e2001a' }} />}
   </>;
@@ -518,11 +526,11 @@ function WorkoutExerciseRow({ item, onOpen }) {
 function FavoritesScreen({ favorites, onBack, onStart, onRemove, onOpenExercise }) {
   return (
     <div className="h-full overflow-y-auto">
-      <BackHeader label="Favorites" onBack={onBack} />
+      <BackHeader label={storeText('Favorites', 'Favoriten')} onBack={onBack} />
       <div>
         {favorites.length === 0 && (
           <div className="p-6 text-center text-sm" style={{ color: 'var(--dim)' }}>
-            Noch keine Lieblingsworkouts. Markiere ein Workout bei Today’s Workout, Track oder Shuffle mit dem Stern.
+            Noch keine Lieblingsworkouts. Markiere ein Workout bei {storeText('Today’s Workout, Track oder Shuffle', 'Heutiges Workout, Verlauf oder Zufall')} mit dem Stern.
           </div>
         )}
         {favorites.map(({ id, label, workout }) => (
@@ -536,7 +544,7 @@ function FavoritesScreen({ favorites, onBack, onStart, onRemove, onOpenExercise 
               </ol>
             </details>
             <div className="flex gap-3 mt-3">
-              <button onClick={() => onStart(workout)} className="flex-1 py-3 text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>Start Workout</button>
+              <button onClick={() => onStart(workout)} className="flex-1 py-3 text-sm font-black" style={{ background: '#e2001a', color: '#fff' }}>{storeText('Start Workout', 'Workout starten')}</button>
               <button onClick={() => onRemove(id)} aria-label={`${label} aus Favoriten entfernen`} className="px-3">
                 <Star size={18} color="#e2001a" fill="#e2001a" />
               </button>
@@ -569,7 +577,7 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
 
   return (
     <div className="h-full overflow-y-auto">
-      <BackHeader label="Shuffle" onBack={onBack} />
+      <BackHeader label={storeText('Shuffle', 'Zufall')} onBack={onBack} />
       <FavoriteWorkoutButton active={favorites.some(favorite => favorite.id === workoutFavoriteId(workout))} onClick={() => onToggleFavorite(workout)} />
       <div className="px-4 py-2 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
         Ein Übung je Kategorie: Lower Abs → Bottom-up Rotation → Top-down Rotation → Upper Abs.
@@ -580,13 +588,13 @@ function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExe
         className="w-full py-4 text-center text-sm font-black uppercase tracking-[0.16em] sticky bottom-0"
         style={{ background: '#e2001a', color: '#fff', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
       >
-        Start Workout
+        {storeText('Start Workout', 'Workout starten')}
       </button>
     </div>
   );
 }
 
-function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders, setupContent }) {
+function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState, localReminders, setupContent, reminderAvailable = true }) {
   const [permission, setPermission] = useState(localReminders ? 'default' : reminderSupported() ? Notification.permission : 'unsupported');
   const blocked = permission === 'denied' || permission === 'unsupported';
 
@@ -612,11 +620,12 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
 
   return (
     <div className="h-full overflow-y-auto">
-      <BackHeader label="Settings" onBack={onBack} />
+      <BackHeader label={storeText('Settings', 'Einstellungen')} onBack={onBack} />
       {setupContent && <>
         <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Konto & Workout-Sync</div>
         {setupContent}
       </>}
+      {reminderAvailable && <>
       <div className="px-4 pt-4 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>Erinnerung</div>
       <div className="px-4 py-3.5 flex items-center justify-between" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
         <span className="text-sm font-bold" style={{ color: '#fff' }}>Tägliche Benachrichtigung</span>
@@ -655,7 +664,9 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
           ? 'Benachrichtigungen sind für diese App blockiert oder nicht verfügbar. Bitte in den Browser-/System-Einstellungen erlauben.'
           : 'Erinnert dich zur gewählten Uhrzeit, wenn du heute noch nicht trainiert hast (nicht an Ruhetagen). Push kommt auch bei geschlossener App an. Dieses Gerät muss angemeldet, registriert und mit dem Internet verbunden sein. Auf dem iPhone die App zum Home-Bildschirm hinzufügen und dort öffnen.'}
       </div>
-      <CalendarReminderSettings uid={uid} />
+      </>}
+      {/* Store-Build: Google-Kalender-Anbindung ist im Produkt-Backend nicht eingerichtet (Sackgasse) und nicht deklariert. */}
+      {!IS_STORE_BUILD && <CalendarReminderSettings uid={uid} />}
     </div>
   );
 }
@@ -670,7 +681,7 @@ function TrackScreen({ program, onBack, onOpenDay }) {
         <button onClick={onBack} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold">
           <ChevronLeft size={18} /> Home
         </button>
-        <div className="flex-1 text-center text-sm font-black text-fit-ink">Track</div>
+        <div className="flex-1 text-center text-sm font-black text-fit-ink">{storeText('Track', 'Verlauf')}</div>
         <div style={{ width: 60 }} />
       </div>
 
@@ -698,9 +709,9 @@ function TrackScreen({ program, onBack, onOpenDay }) {
                 disabled={rest}
                 className="flex-1 px-4 py-3.5 flex items-center justify-between disabled:cursor-default"
               >
-                <span className="text-sm font-bold" style={{ color: '#fff' }}>Day {dayInWeek(day)}</span>
+                <span className="text-sm font-bold" style={{ color: '#fff' }}>{storeText('Day', 'Tag')} {dayInWeek(day)}</span>
                 {rest ? (
-                  <span className="text-xs font-black uppercase tracking-[0.1em]" style={{ color: '#fff', opacity: 0.7 }}>Rest</span>
+                  <span className="text-xs font-black uppercase tracking-[0.1em]" style={{ color: '#fff', opacity: 0.7 }}>{storeText('Rest', 'Ruhetag')}</span>
                 ) : null}
               </button>
             </div>
@@ -738,7 +749,7 @@ function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite
         className="w-full py-4 text-center text-sm font-black uppercase tracking-[0.16em] sticky bottom-0"
         style={{ background: '#e2001a', color: '#fff', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
       >
-        Start Workout
+        {storeText('Start Workout', 'Workout starten')}
       </button>
     </div>
   );
@@ -1490,7 +1501,7 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false }
 
       <div className="text-center">
         <div className="text-[11px] font-black uppercase tracking-[0.2em]" style={{ color: '#e2001a' }}>
-          {isRest ? 'Rest' : `Übung ${workout.items.slice(0, state.itemIndex + 1).filter(i => i.type === 'exercise').length}`}
+          {isRest ? storeText('Rest', 'Pause') : `Übung ${workout.items.slice(0, state.itemIndex + 1).filter(i => i.type === 'exercise').length}`}
         </div>
         <div className="text-2xl font-black text-fit-ink mt-2">{current.name}</div>
         <div className="text-5xl font-black tabular-nums text-fit-ink mt-4">{formatSeconds(state.remaining)}</div>
@@ -1602,6 +1613,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   const [screen, setScreen] = useState(() => (embedded ? initialEmbeddedScreen(route) : 'home'));
   const [viewDay, setViewDay] = useState(() => (embedded ? screenFromRoute(route).day : null));
   const routeMirror = useRef(embedded ? normalizeRoute(route) : '');
+  // Store-Build ohne Push-/Offline-Erinnerung des Hosts: kein Schalter, der nur eine Fehlermeldung liefert.
+  const reminderAvailable = !IS_STORE_BUILD || Boolean(enablePush || localReminders);
+  const hasSettings = reminderAvailable || Boolean(setupContent);
   const [adhocWorkout, setAdhocWorkout] = useState(null);
   const [viewExerciseId, setViewExerciseId] = useState(null);
   const [viewExerciseItem, setViewExerciseItem] = useState(null);
@@ -1866,7 +1880,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   // jedes geöffnete Tages-/Shuffle-/Favoriten-Workout sofort. Nacheinander im Hintergrund (cacheVideos).
   const precacheDay = program.currentDay;
   useEffect(() => {
-    if (!precacheDay || isRestDay(precacheDay)) return undefined;
+    // Store-Build: keine Hintergrundabrufe bei Dritt-Hosts ohne Nutzeraktion (Videos laden erst beim Öffnen/Start).
+    if (IS_STORE_BUILD || !precacheDay || isRestDay(precacheDay)) return undefined;
     const timer = window.setTimeout(() => {
       const workout = getWorkout(precacheDay);
       cacheVideos(workoutVideoSources(workout, loadVideoUrls())).catch(() => {});
@@ -1895,8 +1910,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
 
   return (
     <section className={inShell ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
-        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} />}
-        {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} />}
+        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} embedded={inShell} hasSettings={hasSettings} />}
+        {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} reminderAvailable={reminderAvailable} />}
+
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
         {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={embedded || onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (
@@ -1904,7 +1920,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
             exercise={SIXPACK_EXERCISE_DETAILS[viewExerciseId] || (viewExerciseItem?.name ? { name: viewExerciseItem.name, focusLabel: 'Core' } : null)}
             coaching={SIXPACK_EXERCISE_COACHING[viewExerciseId]}
             item={viewExerciseItem}
-            backLabel={exerciseReturnScreen === 'learn' ? 'Learn' : 'Workout'}
+            backLabel={exerciseReturnScreen === 'learn' ? storeText('Learn', 'Lernen') : 'Workout'}
             onBack={closeExercise}
           />
         )}
@@ -1916,7 +1932,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         )}
         {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
         {screen === 'eat' && <EatScreen onBack={goHome} />}
-        {screen === 'selfies' && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
+        {screen === 'selfies' && !IS_STORE_BUILD && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
         {(screen === 'shuffle' || (screen === 'exercise' && exerciseReturnScreen === 'shuffle')) && <div hidden={screen !== 'shuffle'} className="h-full"><ShuffleScreen onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'shuffle', trigger)} /></div>}
         {(screen === 'day' || (screen === 'exercise' && exerciseReturnScreen === 'day')) && activeWorkout && (
           <div hidden={screen !== 'day'} className="h-full">{
@@ -1925,14 +1941,15 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
               <button onClick={goHome} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6">
                 <ChevronLeft size={18} /> Home
               </button>
-              <div className="text-lg font-black text-fit-ink">Rest Day</div>
+              <div className="text-lg font-black text-fit-ink">{storeText('Rest Day', 'Ruhetag')}</div>
             </div>
           ) : (
             <DayScreen day={viewDay} workout={activeWorkout} onBack={goHome} onStart={startWorkout} onOpenExercise={(item, trigger) => openExercise(item, 'day', trigger)} isFavorite={favorites.some(favorite => favorite.id === workoutFavoriteId(activeWorkout))} onToggleFavorite={toggleFavorite} />
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={() => showScreen('selfies')} />
+          <RunnerScreen autoStart workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={IS_STORE_BUILD ? undefined : () => showScreen('selfies')} />
+
         )}
     </section>
   );
