@@ -1,7 +1,9 @@
 # 6Pack Dev
 
-Eigenständig baubare 6Pack-App. Der Fitness-Tab nutzt eine veröffentlichte Kopie
-von Oberfläche, Theme und Daten-Adapter unter `fitness-dev/6pack/`.
+Eigenständig baubare 6Pack-App (`main.jsx`, Hosting `vos-6pack.web.app`).
+VitalOS bettet dieselbe Oberfläche ein: das Meta-Repo `nimmsel23/vitalos`
+führt dieses Repo als Submodule `6pack-app` und mountet `embed.jsx`
+(`SixPackEmbed`). Es gibt keine zweite Kopie unter `fitness-dev/6pack/`.
 
 ## Entwicklung in Cloud Dev
 
@@ -28,9 +30,11 @@ npm run dev
 npm run build
 ```
 
-**Eat** öffnet Fuel direkt im selben Tab: auf Firebase-Hosts (`*.web.app`,
-`*.firebaseapp.com`) unter `https://fuel-vos.web.app/`, im lokalen Betrieb
-unter dem aktuellen Hostnamen auf Port `7000` (z. B. `http://127.0.0.1:7000/`).
+**Eat** bleibt in der Standalone-App im gleichen Dokument (iframe unter
+`public/eat/`). In der Shell ruft Eat `onNavigate('fuel')` auf. Der bisherige
+Host, der nur `onSubNav` übergibt, verlinkt weiter über `getFuelUrl()`:
+Firebase-Hosts (`*.web.app`, `*.firebaseapp.com`) auf
+`https://fuel-vos.web.app/`, sonst derselbe Hostname auf Port `7000`.
 
 **Favorites** speichert ganze Tages- und Shuffle-Workouts über den Stern in
 der jeweiligen Workout-Ansicht. Übungen, Reihenfolge, Zeiten und Pausen bleiben
@@ -43,18 +47,71 @@ nicht committed. `video_url` im Übungs-YAML versorgt den Runner mit einem
 direkt abspielbaren Clip. Eine im Runner eingetragene Video-URL gilt nur für
 den jeweiligen Browser und überschreibt den Katalogwert dort.
 
-## Fitness-Kopie
+## VitalOS-Embed
 
-Nach geprüften Änderungen die drei Laufzeitdateien in den gewünschten
-Fitness-Checkout kopieren:
+`embed.jsx` exportiert `SixPackEmbed` (auch als Default). Die Shell hängt die
+Route an ihren Hash: `#sixpack/<route>`.
 
-```sh
-npm run publish:fitness -- /home/alpha/fitness-dev/6pack
+| Prop | Bedeutung |
+| --- | --- |
+| `uid` | Firebase-uid des angemeldeten Kontos |
+| `embedded` | Default `true`. Kein Schreiben auf `document.documentElement` (Attribute, Klassen), `meta[name=theme-color]`, `html.style`, `location.hash` oder `history` |
+| `route` | Screen-Pfad: `''` (Home), `skills`, `skills/<skillId>`, oder ein bestehender Screen (`track`, `learn`, `settings`, `favorites`, `shuffle`, `selfies`, `day/<n>`, …) |
+| `onRouteChange(route)` | Navigation innerhalb von 6Pack. Ein Skill aus Learn meldet `skills/<skillId>` statt `history.replaceState` |
+| `onNavigate(target)` | Wechsel in eine andere Shell-App. Eat ruft `onNavigate('fuel')` |
+| `onWorkoutComplete(workout)` | Abgeschlossenes Workout, unverändert inklusive stabilem `runId` |
+| `loadRemoteProgram`, `saveRemoteProgram` | Programm unter `users/{uid}/meta/sixpack` |
+| `firebaseApp` | Bestehende Firebase-App der Shell. Ohne eigenes `enablePush` registriert das Embed darüber |
+| `enablePush` | Optionale Registrierung `(uid) => Promise`. Hat Vorrang vor `firebaseApp` |
+| `localReminders` | Native Erinnerungen (Capacitor), sonst Web-Push |
+| `setupContent` | Konto-Bereich in den Einstellungen |
+| `onSubNav`, `coachingNotes` | Bestehende Props. `onSubNav('skills')` wird aus Skill-Routen aufgerufen; der Hash bleibt in der Einbettung unangetastet |
+
+`push.js` registriert 6Pack-Push auf der übergebenen App und legt selbst kein
+Firebase an:
+
+```js
+import { enableSixpackPush } from './push.js';
+
+enableSixpackPush(uid, {
+  firebaseApp,          // oder messaging
+  db,                   // optional, sonst getFirestore(firebaseApp)
+  auth,                 // optional, sonst getAuth(firebaseApp)
+  serviceWorkerUrl,     // Default ./sixpack-messaging-sw.js
+  serviceWorkerScope,   // Default ./sixpack-push/
+});
 ```
 
-Der Fitness-Checkout behält seinen eigenen KB-Generator. Änderungen an
-Übungen oder Workouts müssen zusätzlich in seine KB übernommen und dort
-gebaut werden. Der Publish-Befehl committed und deployt nichts.
+Die Standalone-App (`standaloneSync.js`) ruft dieselbe Funktion mit ihrer
+bereits initialisierten App auf. Vordergrund-Nachrichten:
+`listenForSixpackPush({ firebaseApp, auth, uid })`.
+
+Beispiel in der Shell:
+
+```jsx
+import SixPackEmbed from '../../6pack-app/embed.jsx';
+
+<SixPackEmbed
+  uid={uid}
+  route={route}
+  onRouteChange={setRoute}
+  onNavigate={navigate}
+  onWorkoutComplete={onWorkoutComplete}
+  loadRemoteProgram={loadProgram}
+  saveRemoteProgram={saveProgram}
+  firebaseApp={app}
+  enablePush={(id) => enableSixpackPush(id, { firebaseApp: app, db, serviceWorkerUrl, serviceWorkerScope })}
+/>
+```
+
+`SixPackPromiseCard` bleibt der bisherige Einstieg. Ein Host, der nur
+`onSubNav` übergibt und `embedded` nicht setzt, schreibt den Skill weiter in
+den Hash und verlinkt Eat über `getFuelUrl()`. `publish-fitness.mjs` kopiert
+nur drei alte Dateien und ist kein Einbettungsweg.
+
+Der Runner liegt als Portal auf `document.body` mit `fixed inset-0 z-[100]`
+(Abbruch-Dialog `z-[120]`) und überdeckt damit die Shell-Navigation. Das ist
+bewusst so belassen.
 
 ## Firebase Hosting
 

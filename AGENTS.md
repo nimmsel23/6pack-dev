@@ -24,7 +24,9 @@ Fremde Änderungen und persönliche Daten erhalten.
 
 | Datei/Bereich | Aufgabe |
 | --- | --- |
-| `main.jsx` | Standalone-Einstieg und Login-/Workout-Sync-Anzeige |
+| `main.jsx` | Standalone-Einstieg und Login-/Workout-Sync-Anzeige (`vos-6pack.web.app`) |
+| `embed.jsx` | VitalOS-Shell-Einstieg `SixPackEmbed` (Route, Eat → `onNavigate('fuel')`, kein document/hash) |
+| `push.js` | 6Pack-Push auf einer bestehenden Firebase-App; Standalone nutzt dasselbe Modul |
 | `SixPackPromiseCard.jsx` | Stabiler Export-Einstieg für Fitness; kein zweiter App-Code |
 | `SixPackApp.jsx` | Screens, Programm, Workout-Runner, Audio und Navigation |
 | `ExerciseDetailScreen.jsx`, `ExerciseMuscles.jsx` | Gemeinsame Übungsdetails vor dem Workout und aus Learn |
@@ -41,7 +43,8 @@ Fremde Änderungen und persönliche Daten erhalten.
 | `sixpack.css`, `styles.css` | Gemeinsames Theme bzw. Standalone-Styles |
 | `mini-app.json` | Splash-/Service-Worker-Konfiguration |
 
-Fitness importiert dieses Submodule direkt. Keine zweite UI-Kopie anlegen.
+VitalOS bindet das Submodule `6pack-app` über `embed.jsx` ein. Fitness
+importiert die Oberfläche direkt. Keine zweite UI-Kopie anlegen.
 `publish-fitness.mjs` kopiert nur drei alte Einstieg-/Style-Dateien und ist
 **kein vollständiger Integrationsweg** für die heutige App.
 

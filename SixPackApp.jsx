@@ -79,10 +79,9 @@ function shuffleIndices(count) {
 
 // Gleiches Hash-Query-Pattern wie SkillsCard.jsx (getSkillIdFromHash/
 // setSkillIdInHash) — bewusst dupliziert statt importiert, damit Timer und
-// Skills unabhängig bleiben. App.jsx überschreibt den Hash beim Subtab-
-// Wechsel zwar wieder ohne den skill-Query-Param (buildHashRoute kennt ihn
-// nicht), aber SkillsCard hat den Wert dann schon aus der useState-
-// Initializer-Funktion gelesen, bevor dieser Overwrite greift.
+// Skills unabhängig bleiben. Nur der bisherige Host mit onSubNav (ohne
+// embedded) schreibt den Hash. Die Shell-Einbettung meldet stattdessen
+// onRouteChange('skills/<skillId>') und lässt location.hash in Ruhe.
 function setSkillIdInHash(skillId) {
   if (typeof window === 'undefined') return;
   const [pathPart = '', queryPart = ''] = window.location.hash.replace(/^#\/?/, '').split('?');
@@ -91,6 +90,35 @@ function setSkillIdInHash(skillId) {
   else params.delete('skill');
   const query = params.toString();
   window.history.replaceState(null, '', `#${pathPart}${query ? `?${query}` : ''}`);
+}
+
+function normalizeRoute(value) {
+  return String(value ?? '').replace(/^\/+|\/+$/g, '');
+}
+
+// Route der Shell: '' | 'skills' | 'skills/<skillId>' | bestehende Screens.
+// 'skills/…' bleibt in der Learn-Liste; die Shell zeigt den Skill selbst.
+const PUBLISHED_SCREENS = new Set(['settings', 'track', 'learn', 'favorites', 'selfies', 'shuffle']);
+const ROUTE_SCREENS = new Set([...PUBLISHED_SCREENS, 'eat', 'day', 'exercise', 'note', 'runner']);
+
+export function screenFromRoute(route) {
+  const path = normalizeRoute(route);
+  if (!path) return { screen: 'home', day: null, skillId: null, routeKind: 'home' };
+  const [head, ...rest] = path.split('/');
+  if (head === 'skills') {
+    return { screen: 'learn', day: null, skillId: rest.join('/') || null, routeKind: 'skills' };
+  }
+  if (head === 'day') {
+    const day = Number(rest[0]);
+    return { screen: 'day', day: Number.isInteger(day) && day > 0 ? day : null, skillId: null, routeKind: 'day' };
+  }
+  if (ROUTE_SCREENS.has(head)) return { screen: head, day: null, skillId: null, routeKind: head };
+  return { screen: 'home', day: null, skillId: null, routeKind: 'home' };
+}
+
+function initialEmbeddedScreen(route) {
+  const parsed = screenFromRoute(route);
+  return parsed.routeKind === 'skills' ? 'learn' : parsed.screen;
 }
 
 function dayInWeek(day) {
@@ -1528,7 +1556,7 @@ function coreHiitActivity(items) {
   };
 }
 
-export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders, setupContent }) {
+export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders, setupContent, embedded = false, route = '', onRouteChange, onNavigate }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
@@ -1571,8 +1599,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     return () => window.clearTimeout(timer);
   }, [program, uid, saveRemoteProgram]);
 
-  const [screen, setScreen] = useState('home');
-  const [viewDay, setViewDay] = useState(null);
+  const [screen, setScreen] = useState(() => (embedded ? initialEmbeddedScreen(route) : 'home'));
+  const [viewDay, setViewDay] = useState(() => (embedded ? screenFromRoute(route).day : null));
+  const routeMirror = useRef(embedded ? normalizeRoute(route) : '');
   const [adhocWorkout, setAdhocWorkout] = useState(null);
   const [viewExerciseId, setViewExerciseId] = useState(null);
   const [viewExerciseItem, setViewExerciseItem] = useState(null);
@@ -1612,11 +1641,59 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     return workout;
   }
 
+  function routeForScreen(next) {
+    if (next === 'home') return '';
+    if (next === 'day' && viewDay) return `day/${viewDay}`;
+    if (PUBLISHED_SCREENS.has(next)) return next;
+    return null;
+  }
+
+  function publishRoute(next) {
+    if (!embedded) return;
+    const value = normalizeRoute(next);
+    if (value === routeMirror.current) return;
+    routeMirror.current = value;
+    onRouteChange?.(value);
+  }
+
+  function showScreen(next, explicitRoute) {
+    setScreen(next);
+    if (!embedded) return;
+    const nextRoute = explicitRoute !== undefined ? explicitRoute : routeForScreen(next);
+    if (nextRoute === null) return;
+    publishRoute(nextRoute);
+  }
+
+  function handleNav(id) {
+    if (embedded && id === 'eat') {
+      onNavigate?.('fuel');
+      return;
+    }
+    showScreen(id);
+  }
+
+  useEffect(() => {
+    if (!embedded) return undefined;
+    const incoming = normalizeRoute(route);
+    if (incoming === routeMirror.current) return undefined;
+    routeMirror.current = incoming;
+    const parsed = screenFromRoute(incoming);
+    if (parsed.routeKind === 'day' && parsed.day) {
+      getWorkout(parsed.day);
+      setViewDay(parsed.day);
+      setAdhocWorkout(null);
+      setScreen('day');
+      return undefined;
+    }
+    setScreen(parsed.routeKind === 'skills' ? 'learn' : parsed.screen);
+    return undefined;
+  }, [embedded, route]);
+
   function openDay(day) {
     getWorkout(day);
     setViewDay(day);
     setAdhocWorkout(null);
-    setScreen('day');
+    showScreen('day', `day/${day}`);
   }
 
   // Track-View: Antippen macht den Tag zum aktuellen und zeigt dessen Übungsliste.
@@ -1626,7 +1703,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }
 
   function goHome() {
-    setScreen('home');
+    showScreen('home');
   }
 
   const reminder = getReminder(program);
@@ -1702,13 +1779,18 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
 
   function startWorkout() {
     primeAudio();
-    setScreen('runner');
+    showScreen('runner');
   }
 
-  // Springt vom Timer-Learn-Screen in den Skills-Subtab und öffnet dort
-  // direkt das SkillDetailScreen des angeklickten Skills (gleiche IDs wie
-  // SkillsCard.jsx's SKILLS-Array, siehe sixpackData.js-Kommentar).
+  // Eingebettet: Route skills/<skillId> an die Shell, ohne location.hash.
+  // Bisheriger Host (onSubNav, nicht embedded): Skill-Query in den Hash und
+  // Subtab "skills", damit SkillsCard die ID noch vor dem Hash-Overwrite liest.
   function openSkill(skillId) {
+    if (embedded) {
+      publishRoute(skillId ? `skills/${skillId}` : 'skills');
+      if (!onRouteChange) onSubNav?.('skills');
+      return;
+    }
     setSkillIdInHash(skillId);
     onSubNav?.('skills');
   }
@@ -1720,17 +1802,17 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setViewExerciseId(exercise?.id || null);
     setViewExerciseItem(item);
     setExerciseReturnScreen(returnScreen);
-    setScreen('exercise');
+    showScreen('exercise');
   }
 
   function closeExercise() {
-    setScreen(exerciseReturnScreen);
+    showScreen(exerciseReturnScreen);
     window.requestAnimationFrame?.(() => exerciseTrigger.current?.focus?.({ preventScroll: true }));
   }
 
   function openNote(noteId) {
     setViewNoteId(noteId);
-    setScreen('note');
+    showScreen('note');
   }
 
   function startAdhoc(workout, returnScreen = 'shuffle') {
@@ -1738,7 +1820,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     setAdhocWorkout(workout);
     setViewDay(null);
     primeAudio();
-    setScreen('runner');
+    showScreen('runner');
   }
 
   function finishWorkout({ startedAt, runId } = {}) {
@@ -1796,10 +1878,12 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, [activeWorkout, screen === 'runner']);
 
   // Standalone/PWA: ganze App auf Rot/Schwarz (documentElement).
-  // VitalOS-Shell übergibt onSubNav und wrappt selbst mit [data-theme=sixpack] —
-  // documentElement umzuschalten färbt Sidebar/Nav mit und stiehlt das Shell-Theme.
+  // Eingebettet (embedded) und der bisherige Shell-Host (onSubNav) lassen
+  // documentElement, theme-color und html.style unangetastet — die Shell
+  // wrappt selbst mit [data-theme=sixpack].
+  const inShell = embedded || Boolean(onSubNav);
   useEffect(() => {
-    if (onSubNav) return undefined;
+    if (inShell) return undefined;
     const root = document.documentElement;
     const previous = root.getAttribute('data-theme');
     root.setAttribute('data-theme', 'sixpack');
@@ -1807,14 +1891,14 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
       if (previous) root.setAttribute('data-theme', previous);
       else root.removeAttribute('data-theme');
     };
-  }, [onSubNav]);
+  }, [inShell]);
 
   return (
-    <section className={onSubNav ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
-        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={setScreen} eatInApp={!onSubNav} />}
+    <section className={inShell ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
+        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} />}
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
-        {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
+        {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={embedded || onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
         {screen === 'exercise' && (
           <ExerciseDetailScreen
             exercise={SIXPACK_EXERCISE_DETAILS[viewExerciseId] || (viewExerciseItem?.name ? { name: viewExerciseItem.name, focusLabel: 'Core' } : null)}
@@ -1827,7 +1911,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         {screen === 'note' && (
           <NoteDetailScreen
             note={coachingNotes.find((n) => n.id === viewNoteId)}
-            onBack={() => setScreen('learn')}
+            onBack={() => showScreen('learn')}
           />
         )}
         {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
@@ -1848,7 +1932,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart workout={activeWorkout} onBack={() => setScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={() => setScreen('selfies')} />
+          <RunnerScreen autoStart workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={() => showScreen('selfies')} />
         )}
     </section>
   );
