@@ -107,3 +107,32 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; automerge Retarget wartet journal-SSOT `0e25e4c4` (keine Dep-PRs base=master); Secrets/Gemini/Gmail; Shell-Pin-Theme; Live-Abnahme `aa6006dc`. Dirty Checkout nur gemeldet: `docs/apps.*`, `scripts/portal.mjs`.
 - Blocker: keine.
 AUTOMATION: `pnpm --dir functions install --ignore-workspace` — Overrides aus `functions/pnpm-workspace.yaml` greifen nicht → CI ohne Flag — spart Alert-Nacharbeit.
+
+## 2026-11-12 (Donnerstag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-12):_
+- Commits seit 2026-11-08: 62bf5c7f fix(store): 6Pack-Startseite im Shell-Layout, deutsche Beschriftung, Store-Bereinigung
+20ced77b ci: restore Gemini repair + Merge-Agent (full automation)
+9fc6effe feat(program): Woche 3 des 6 Pack Promise (#45)
+6cf802a5 docs(agents): simplicity pointer — CI.md §1 spine
+51d88080 ci: drop Gemini repair and Merge-Agent (simplicity)
+441a6ff7 docs(al): CI-Beleg für f2cd05aa — Check, Promote, Pages, Deploy
+f2cd05aa fix(security): pin functions uuid 11.1.1 — Dependabot Alert #1
+40aff0b1 docs(al): CI-Beleg für 3be1c681 — Check, Promote, Pages, Deploy
+3be1c681 docs(al): Pages verifiziert, *.apk ignoriert — Freeze-Wartung
+8237d651 docs: auto-update RESULTS.md
+94a5f5f6 docs: auto-update NEXT.md
+38cac921 docs: auto-update NEXT.md
+6cf0b30a docs(al): CI-Beleg für 0a66dc96 — Check, Promote, Pages, Deploy
+0a66dc96 docs(al): Nachmittagslauf — PR #24 stale NEXT geschlossen
+ed654d6b docs: auto-update RESULTS.md
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	feat(embed): add a shell entry that leaves the document alone (#46)	Auto-Promote dev -> master (Check (6Pack))	master	push	43224087276	9s	2026-11-12T13:06:15Z
+completed	success	feat(embed): add a shell entry that leaves the document alone (#46)	6Pack deploy (preview + standalone)	master	push	43224087161	54s	2026-11-12T13:06:15Z
+completed	success	pages build and deployment	pages-build-deployment	master	dynamic	43224086400	42s	2026-11-12T13:06:14Z
+- Arbeitsbaum: 3 uncommittete Pfade
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: CTO-Nachtauftrag Port journal-SSOT Retarget — `automerge-pr.yml` + RESULTS/NEXT (`90bb68db`, Org `c1f9b6ce`/`0e25e4c4`); Dry-Check keine Dep-PRs base=master. Check `43261478453`, Auto-Promote `43261565699` (master=`90bb68db`), Pages `43261593441`, Live-Deploy `43261594004` success.
+- Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Secrets/Gemini/Gmail; Shell-Pin-Theme; Live-Abnahme `aa6006dc`. Dirty Checkout nur gemeldet: `docs/apps.*`, `scripts/portal.mjs`; lokaler Tip `62bf5c7f` (store) nicht auf origin.
+- Blocker: keine.
