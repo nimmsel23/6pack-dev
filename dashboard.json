@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-13T04:42:06+00:00",
+  "generated_at": "2026-11-13T12:36:53+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-13T04:41:45Z",
+   "pushed_at": "2026-11-13T07:12:49Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,10 +19,10 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-13T05:41:42+01:00",
+   "dev_ahead": 0,
+   "oldest_unpromoted": null,
    "dev_head": "ad36d2b 2026-11-13T05:41:42+01:00",
-   "master_head": "27d517b 2026-11-13T01:11:14+01:00"
+   "master_head": "ad36d2b 2026-11-13T05:41:42+01:00"
   },
   "commits": [
    {
@@ -149,7 +149,7 @@
   "activity": [
    {
     "day": "2026-10-24",
-    "n": 23
+    "n": 7
    },
    {
     "day": "2026-10-25",
@@ -234,24 +234,14 @@
   ],
   "workflows": [
    {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-13T04:41:47Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367174481",
-    "sha": "ad36d2b"
-   },
-   {
     "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T02:56:43Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43355595653",
-    "sha": "27d517b"
+    "created_at": "2026-11-13T10:39:08Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43410712434",
+    "sha": "ad36d2b"
    },
    {
     "name": "PR-AutoMerge (Dependabot -> dev)",
@@ -259,9 +249,9 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T01:57:37Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43348677717",
-    "sha": "27d517b"
+    "created_at": "2026-11-13T09:44:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43403839670",
+    "sha": "ad36d2b"
    },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
@@ -269,9 +259,9 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T01:11:37Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43343016980",
-    "sha": "27d517b"
+    "created_at": "2026-11-13T08:07:51Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43390805794",
+    "sha": "ad36d2b"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -279,9 +269,9 @@
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T00:11:55Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335117612",
-    "sha": "27d517b"
+    "created_at": "2026-11-13T04:42:18Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367231325",
+    "sha": "ad36d2b"
    },
    {
     "name": "Gemini CI Agent",
@@ -289,9 +279,19 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T00:11:46Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335098906",
-    "sha": "72e888d"
+    "created_at": "2026-11-13T04:42:10Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367216128",
+    "sha": "27d517b"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T04:41:47Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367174481",
+    "sha": "ad36d2b"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -354,28 +354,16 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Master hat 27d517b übernommen, Dev ist mit ad36d2b voraus",
-   "lage": "Der `master`-Branch hat den `chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert` Commit (`27d517b`) erfolgreich übernommen und deployed. Der `dev`-Branch ist mit `docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)` (`ad36d2b`) einen Commit voraus, dessen `Check (6Pack)`-Workflow derzeit läuft.",
+   "headline": "Master und Dev sind auf ad36d2b synchronisiert",
+   "lage": "Der `master`-Branch und der `dev`-Branch sind beide auf Commit `ad36d2b` (`docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)`). Der `Check (6Pack)`-Workflow für `dev` und der `Auto-Promote dev -> master`-Workflow sind erfolgreich durchgelaufen, was zur Synchronisation der Branches führte. Ein Deployment für `ad36d2b` auf `master` wurde ebenfalls erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
      "level": "info",
-     "text": "Der `Check (6Pack)`-Workflow für den `dev`-Branch (Commit `ad36d2b`) ist noch `in_progress`."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind weiterhin als offener Betriebspunkt in `NEXT.md` gelistet."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Live-Abnahme der Änderungen von `aa6006dc` auf Handy/Browser steht noch aus."
-    },
-    {
-     "level": "mittel",
-     "text": "Der Import der 6 eigenen Clips für Tag 1 nach `public/videos/` ist weiterhin offen."
+     "text": "Die Workflows `Merge-Agent` und `PR-AutoMerge (Dependabot -> dev)` sind erfolgreich auf `master` für `ad36d2b` gelaufen."
     },
     {
      "level": "info",
-     "text": "Der `deploy-shell`-Trigger wurde durch den Push auf Meta-`master` (`69f11ae`) nicht automatisch ausgelöst; die Ursache ist ungeklärt."
+     "text": "Der `Gemini CI Agent` lief erfolgreich für Commit `27d517b` auf `master`."
     }
    ],
    "naechste_schritte": [
@@ -383,13 +371,10 @@
     "Nehmen Sie die Live-Änderungen von 'aa6006dc' auf Handy/Browser ab.",
     "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'."
    ],
-   "veraendert": "Der `dev`-Branch-Commit `27d517b` wurde erfolgreich auf `master` promoted und deployed, und `dev` ist nun mit `ad36d2b` einen Commit voraus.",
-   "fragen": [
-    "Soll Woche 4 des 6 Pack Promise-Programms ergänzt werden?",
-    "Soll Video-Abdeckung für Übungen ohne URL durch eigene MP4s ergänzt werden?"
-   ],
+   "veraendert": "Gegenüber der letzten Einschätzung ist der `dev`-Branch nicht mehr vor `master`; beide Branches sind nun auf dem gleichen Commit `ad36d2b` synchronisiert.",
+   "fragen": [],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-13T04:42:09+00:00"
+  "ai_at": "2026-11-13T12:36:55+00:00"
  }
 }
