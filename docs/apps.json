@@ -10,7 +10,10 @@
       "accent": "#e5192b",
       "site": "vos-6pack",
       "url": "https://vos-6pack.web.app",
-      "tab": null
+      "tab": null,
+      "bundledAuthDomain": null
     }
-  ]
+  ],
+  "pages": "https://nimmsel23.github.io/6pack-dev/",
+  "bundledAuthDomain": null
 }
