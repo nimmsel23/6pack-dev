@@ -47,4 +47,5 @@
 - [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
 - [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
 - ~~GitHub Pages~~: aktiv `source.branch=master` + `path=/docs`, `status=built`; Live `https://nimmsel23.github.io/6pack-dev/` + `Index.html` HTTP 200 (AL 2026-11-11, API `repos/.../pages`).
+- ~~Pages-Quelle nach Living Dashboard (`72e888de`)~~: API jetzt `build_type=workflow` (Actions, `dashboard.yml` → `nimmsel23/dashboards@engine`), `status=built`; Dashboard-Lauf `43335039422` build+deploy success (AL 2026-11-13). Der `source=master /docs`-Eintrag oben gilt nicht mehr. HTTP-Live-Check der Seite steht noch aus.
 - [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.

@@ -136,3 +136,33 @@ _Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen sta
 - Erledigt: CTO-Nachtauftrag Port journal-SSOT Retarget — `automerge-pr.yml` + RESULTS/NEXT (`90bb68db`, Org `c1f9b6ce`/`0e25e4c4`); Dry-Check keine Dep-PRs base=master. Check `43261478453`, Auto-Promote `43261565699` (master=`90bb68db`), Pages `43261593441`, Live-Deploy `43261594004` success.
 - Offen/Weiter: Feature-Freeze `b0ed4e47` — Musik `72571775` geparkt; Secrets/Gemini/Gmail; Shell-Pin-Theme; Live-Abnahme `aa6006dc`. Dirty Checkout nur gemeldet: `docs/apps.*`, `scripts/portal.mjs`; lokaler Tip `62bf5c7f` (store) nicht auf origin.
 - Blocker: keine.
+
+## 2026-11-13 (Freitag) — Abteilungsleiter-Lauf
+
+_Automatik (vos-al-log Vorlage 2026-11-13):_
+- Commits seit 2026-11-08: 27d517b2 chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert
+72e888de feat(ci): Living Dashboard als GitHub Page
+c703a5dc fix(store): 6Pack-Startseite im Shell-Layout, deutsche Beschriftung, Store-Bereinigung
+0b4a56e2 docs(al): CI-Beleg für 90bb68db — Retarget Port, Check, Promote, Deploy
+90bb68db fix(ci): Dependabot base=master→dev Retarget vor Squash (Org c1f9b6ce)
+dbddbd2f feat(embed): add a shell entry that leaves the document alone (#46)
+20ced77b ci: restore Gemini repair + Merge-Agent (full automation)
+9fc6effe feat(program): Woche 3 des 6 Pack Promise (#45)
+6cf802a5 docs(agents): simplicity pointer — CI.md §1 spine
+51d88080 ci: drop Gemini repair and Merge-Agent (simplicity)
+441a6ff7 docs(al): CI-Beleg für f2cd05aa — Check, Promote, Pages, Deploy
+f2cd05aa fix(security): pin functions uuid 11.1.1 — Dependabot Alert #1
+40aff0b1 docs(al): CI-Beleg für 3be1c681 — Check, Promote, Pages, Deploy
+3be1c681 docs(al): Pages verifiziert, *.apk ignoriert — Freeze-Wartung
+8237d651 docs: auto-update RESULTS.md
+- Offene PRs: (keine offenen PRs / gh nicht verfuegbar)
+- CI (letzte Läufe): completed	success	Merge-Agent	Merge-Agent	master	schedule	43355595653	6s	2026-11-13T02:56:43Z
+completed	success	PR-AutoMerge (Dependabot -> dev)	PR-AutoMerge (Dependabot -> dev)	master	schedule	43348677717	7s	2026-11-13T01:57:37Z
+completed	success	Auto-Promote dev -> master (Check (6Pack))	Auto-Promote dev -> master (Check (6Pack))	master	schedule	43343016980	10s	2026-11-13T01:11:37Z
+- Arbeitsbaum: sauber
+
+_Vom AL ausfüllen (knapp & belegbar, je 1–3 Zeilen, Commit-/PR-Referenzen statt Erzählung):_
+- Erledigt: Pages-Quelle nach Living Dashboard (`72e888de`) verifiziert — API `build_type=workflow`, `status=built`; Dashboard `43335039422` build+deploy success; NEXT/RESULTS nachgezogen. Inventur: `27d517b2` Check `43335039085` success, master=dev, 0 PRs, 0 Dependabot-Alerts.
+- Offen/Weiter: HTTP-Live-Check der Pages (curl ohne Freigabe nicht gelaufen); Freeze `b0ed4e47` (Musik `72571775` geparkt); Secrets/Gemini/Gmail; Live-Abnahme `aa6006dc`. Ungetrackte, gitignorierte `.github/workflows/*.bak*` nur gemeldet.
+  AUTOMATION: Pages-Live-Check von Hand — Dashboard-Engine prüft nach dem Deploy HTTP 200 der eigenen Seite — ca. 2 min/Lauf.
+- Blocker: keine.
