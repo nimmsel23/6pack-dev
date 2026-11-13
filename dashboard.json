@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-13T00:11:33+00:00",
+  "generated_at": "2026-11-13T04:42:06+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-13T00:11:16Z",
+   "pushed_at": "2026-11-13T04:41:45Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -20,11 +20,17 @@
    "has_dev": true,
    "dev_behind": 0,
    "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-13T01:11:14+01:00",
-   "dev_head": "27d517b 2026-11-13T01:11:14+01:00",
-   "master_head": "72e888d 2026-11-13T01:08:02+01:00"
+   "oldest_unpromoted": "2026-11-13T05:41:42+01:00",
+   "dev_head": "ad36d2b 2026-11-13T05:41:42+01:00",
+   "master_head": "27d517b 2026-11-13T01:11:14+01:00"
   },
   "commits": [
+   {
+    "sha": "ad36d2b",
+    "date": "2026-11-13T05:41:42+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)"
+   },
    {
     "sha": "27d517b",
     "date": "2026-11-13T01:11:14+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-10T17:42:39+01:00",
     "author": "Alpha",
     "subject": "docs(al): Nachmittagslauf — PR #24 stale NEXT geschlossen"
-   },
-   {
-    "sha": "ed654d6",
-    "date": "2026-11-10T17:42:05+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update RESULTS.md"
    }
   ],
   "activity": [
@@ -229,7 +229,7 @@
    },
    {
     "day": "2026-11-13",
-    "n": 2
+    "n": 3
    }
   ],
   "workflows": [
@@ -239,18 +239,38 @@
     "event": "push",
     "status": "in_progress",
     "conclusion": null,
-    "created_at": "2026-11-13T00:11:18Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335039085",
+    "created_at": "2026-11-13T04:41:47Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367174481",
+    "sha": "ad36d2b"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T02:56:43Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43355595653",
     "sha": "27d517b"
    },
    {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-13T00:11:18Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335038984",
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T01:57:37Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43348677717",
+    "sha": "27d517b"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-13T01:11:37Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43343016980",
     "sha": "27d517b"
    },
    {
@@ -259,29 +279,9 @@
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T00:08:43Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334679451",
-    "sha": "72e888d"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-13T00:08:33Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334655642",
-    "sha": "c703a5d"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T00:08:33Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334655408",
-    "sha": "c703a5d"
+    "created_at": "2026-11-13T00:11:55Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335117612",
+    "sha": "27d517b"
    },
    {
     "name": "Gemini CI Agent",
@@ -289,19 +289,19 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-13T00:08:33Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334655289",
-    "sha": "c703a5d"
+    "created_at": "2026-11-13T00:11:46Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335098906",
+    "sha": "72e888d"
    },
    {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-12T22:43:21Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43322499448",
-    "sha": "c703a5d"
+    "created_at": "2026-11-13T00:11:18Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335038984",
+    "sha": "27d517b"
    },
    {
     "name": "Gemini CI Agent",
@@ -354,34 +354,42 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Living Dashboard auf Master deployed, Dev-Arbeit mit Portal-Sync läuft",
-   "lage": "Der `master`-Branch hat den `feat(ci): Living Dashboard als GitHub Page` Commit (`72e888d`) übernommen und erfolgreich deployed. Der `dev`-Branch ist mit `chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert` (`27d517b`) einen Commit voraus, dessen CI-Workflows derzeit in Bearbeitung sind. Zahlreiche offene Punkte aus `NEXT.md` und `TODO.md` wurden abgearbeitet.",
+   "headline": "Master hat 27d517b übernommen, Dev ist mit ad36d2b voraus",
+   "lage": "Der `master`-Branch hat den `chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert` Commit (`27d517b`) erfolgreich übernommen und deployed. Der `dev`-Branch ist mit `docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)` (`ad36d2b`) einen Commit voraus, dessen `Check (6Pack)`-Workflow derzeit läuft.",
    "auffaelligkeiten": [
     {
-     "level": "hoch",
-     "text": "Das Living Dashboard (`72e888d`) wurde erfolgreich auf den `master`-Branch promoted und via Workflow '6Pack deploy (preview + standalone)' deployed."
+     "level": "info",
+     "text": "Der `Check (6Pack)`-Workflow für den `dev`-Branch (Commit `ad36d2b`) ist noch `in_progress`."
     },
     {
      "level": "mittel",
-     "text": "Viele offene Punkte aus `NEXT.md` und `TODO.md` wurden abgeschlossen, darunter die Behebung des Dependabot Alerts #1 (`f2cd05a`) und das Retargeting von Dependabot PRs (`90bb68d`)."
+     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind weiterhin als offener Betriebspunkt in `NEXT.md` gelistet."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Live-Abnahme der Änderungen von `aa6006dc` auf Handy/Browser steht noch aus."
+    },
+    {
+     "level": "mittel",
+     "text": "Der Import der 6 eigenen Clips für Tag 1 nach `public/videos/` ist weiterhin offen."
     },
     {
      "level": "info",
-     "text": "Die CI-Workflows 'Check (6Pack)' und '6Pack deploy (preview + standalone)' für den aktuellen `dev`-Head (`27d517b`) sind in Bearbeitung."
+     "text": "Der `deploy-shell`-Trigger wurde durch den Push auf Meta-`master` (`69f11ae`) nicht automatisch ausgelöst; die Ursache ist ungeklärt."
     }
    ],
    "naechste_schritte": [
-    "Prüfen der Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' für den CI-Agenten.",
-    "Abnehmen der Live-Änderungen von 'aa6006dc' auf Handy/Browser.",
-    "Importieren der 6 eigenen Clips für Tag 1 nach 'public/videos/'."
+    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY'.",
+    "Nehmen Sie die Live-Änderungen von 'aa6006dc' auf Handy/Browser ab.",
+    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'."
    ],
-   "veraendert": "Das Living Dashboard (`72e888d`) wurde erfolgreich auf den `master`-Branch promoted und deployed, während der `dev`-Branch mit einem neuen Commit (`27d517b`) weiterentwickelt wird.",
+   "veraendert": "Der `dev`-Branch-Commit `27d517b` wurde erfolgreich auf `master` promoted und deployed, und `dev` ist nun mit `ad36d2b` einen Commit voraus.",
    "fragen": [
-    "Soll der Fitness-Tab-Runner auf den aktuellen Stand von 6pack-dev nachgezogen werden?",
-    "Sollen die eigenen Clips für Tag 1 direkt ins Repo committet werden?"
+    "Soll Woche 4 des 6 Pack Promise-Programms ergänzt werden?",
+    "Soll Video-Abdeckung für Übungen ohne URL durch eigene MP4s ergänzt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-13T00:11:35+00:00"
+  "ai_at": "2026-11-13T04:42:09+00:00"
  }
 }
