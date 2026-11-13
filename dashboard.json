@@ -1,0 +1,399 @@
+{
+ "evidence": {
+  "generated_at": "2026-11-13T00:08:24+00:00",
+  "repo": "nimmsel23/6pack-dev",
+  "meta": {
+   "name": "6pack-dev",
+   "description": null,
+   "html_url": "https://github.com/nimmsel23/6pack-dev",
+   "pushed_at": "2026-11-13T00:08:06Z",
+   "default_branch": "master",
+   "visibility": "public",
+   "pages_url": "https://nimmsel23.github.io/6pack-dev/"
+  },
+  "package": {
+   "name": "6pack",
+   "version": "0.1.0"
+  },
+  "branches": {
+   "main": "master",
+   "has_dev": true,
+   "dev_behind": 0,
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-13T01:08:02+01:00",
+   "dev_head": "72e888d 2026-11-13T01:08:02+01:00",
+   "master_head": "c703a5d 2026-11-12T22:33:43+01:00"
+  },
+  "commits": [
+   {
+    "sha": "72e888d",
+    "date": "2026-11-13T01:08:02+01:00",
+    "author": "Alpha",
+    "subject": "feat(ci): Living Dashboard als GitHub Page"
+   },
+   {
+    "sha": "c703a5d",
+    "date": "2026-11-12T22:33:43+01:00",
+    "author": "Alpha",
+    "subject": "fix(store): 6Pack-Startseite im Shell-Layout, deutsche Beschriftung, Store-Bereinigung"
+   },
+   {
+    "sha": "0b4a56e",
+    "date": "2026-11-12T17:45:26+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): CI-Beleg für 90bb68db — Retarget Port, Check, Promote, Deploy"
+   },
+   {
+    "sha": "90bb68d",
+    "date": "2026-11-12T17:41:47+01:00",
+    "author": "Alpha",
+    "subject": "fix(ci): Dependabot base=master→dev Retarget vor Squash (Org c1f9b6ce)"
+   },
+   {
+    "sha": "dbddbd2",
+    "date": "2026-11-12T14:06:11+01:00",
+    "author": "nimmsel23",
+    "subject": "feat(embed): add a shell entry that leaves the document alone (#46)"
+   },
+   {
+    "sha": "20ced77",
+    "date": "2026-11-12T02:19:27+01:00",
+    "author": "Alpha",
+    "subject": "ci: restore Gemini repair + Merge-Agent (full automation)"
+   },
+   {
+    "sha": "9fc6eff",
+    "date": "2026-11-11T20:54:51Z",
+    "author": "nimmdaniel",
+    "subject": "feat(program): Woche 3 des 6 Pack Promise (#45)"
+   },
+   {
+    "sha": "6cf802a",
+    "date": "2026-11-11T19:14:26+01:00",
+    "author": "Alpha",
+    "subject": "docs(agents): simplicity pointer — CI.md §1 spine"
+   },
+   {
+    "sha": "51d8808",
+    "date": "2026-11-11T19:12:15+01:00",
+    "author": "Alpha",
+    "subject": "ci: drop Gemini repair and Merge-Agent (simplicity)"
+   },
+   {
+    "sha": "441a6ff",
+    "date": "2026-11-11T17:47:53+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): CI-Beleg für f2cd05aa — Check, Promote, Pages, Deploy"
+   },
+   {
+    "sha": "f2cd05a",
+    "date": "2026-11-11T17:46:03+01:00",
+    "author": "Alpha",
+    "subject": "fix(security): pin functions uuid 11.1.1 — Dependabot Alert #1"
+   },
+   {
+    "sha": "40aff0b",
+    "date": "2026-11-11T05:44:42+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): CI-Beleg für 3be1c681 — Check, Promote, Pages, Deploy"
+   },
+   {
+    "sha": "3be1c68",
+    "date": "2026-11-11T05:42:25+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): Pages verifiziert, *.apk ignoriert — Freeze-Wartung"
+   },
+   {
+    "sha": "8237d65",
+    "date": "2026-11-11T05:41:59+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update RESULTS.md"
+   },
+   {
+    "sha": "94a5f5f",
+    "date": "2026-11-11T05:41:57+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md"
+   },
+   {
+    "sha": "38cac92",
+    "date": "2026-11-11T05:41:55+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md"
+   },
+   {
+    "sha": "6cf0b30",
+    "date": "2026-11-10T17:45:12+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): CI-Beleg für 0a66dc96 — Check, Promote, Pages, Deploy"
+   },
+   {
+    "sha": "0a66dc9",
+    "date": "2026-11-10T17:42:39+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): Nachmittagslauf — PR #24 stale NEXT geschlossen"
+   },
+   {
+    "sha": "ed654d6",
+    "date": "2026-11-10T17:42:05+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update RESULTS.md"
+   },
+   {
+    "sha": "770f50a",
+    "date": "2026-11-10T17:42:02+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md"
+   }
+  ],
+  "activity": [
+   {
+    "day": "2026-10-24",
+    "n": 23
+   },
+   {
+    "day": "2026-10-25",
+    "n": 4
+   },
+   {
+    "day": "2026-10-26",
+    "n": 12
+   },
+   {
+    "day": "2026-10-27",
+    "n": 0
+   },
+   {
+    "day": "2026-10-28",
+    "n": 3
+   },
+   {
+    "day": "2026-10-29",
+    "n": 26
+   },
+   {
+    "day": "2026-10-30",
+    "n": 1
+   },
+   {
+    "day": "2026-10-31",
+    "n": 5
+   },
+   {
+    "day": "2026-11-01",
+    "n": 4
+   },
+   {
+    "day": "2026-11-02",
+    "n": 3
+   },
+   {
+    "day": "2026-11-03",
+    "n": 0
+   },
+   {
+    "day": "2026-11-04",
+    "n": 1
+   },
+   {
+    "day": "2026-11-05",
+    "n": 28
+   },
+   {
+    "day": "2026-11-06",
+    "n": 12
+   },
+   {
+    "day": "2026-11-07",
+    "n": 27
+   },
+   {
+    "day": "2026-11-08",
+    "n": 2
+   },
+   {
+    "day": "2026-11-09",
+    "n": 19
+   },
+   {
+    "day": "2026-11-10",
+    "n": 22
+   },
+   {
+    "day": "2026-11-11",
+    "n": 10
+   },
+   {
+    "day": "2026-11-12",
+    "n": 5
+   },
+   {
+    "day": "2026-11-13",
+    "n": 1
+   }
+  ],
+  "workflows": [
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-13T00:08:08Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334596496",
+    "sha": "72e888d"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-13T00:08:08Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43334596456",
+    "sha": "72e888d"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T22:43:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43322499448",
+    "sha": "c703a5d"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T21:34:30Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43311586887",
+    "sha": "c703a5d"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T21:34:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43311562142",
+    "sha": "0b4a56e"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T21:34:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43311561781",
+    "sha": "0b4a56e"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-12T21:34:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43311561598",
+    "sha": "0b4a56e"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "cursor/shell-embed-entry-d036",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T10:49:33Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43203756605",
+    "sha": "c49781d"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "cursor/shell-embed-entry-d036",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T10:49:33Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43203756525",
+    "sha": "c49781d"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "cursor/shell-embed-entry-d036",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T10:49:33Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43203756508",
+    "sha": "c49781d"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "cursor/shell-embed-entry-d036",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-12T10:49:33Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43203756496",
+    "sha": "c49781d"
+   }
+  ],
+  "issues": [],
+  "pulls": [],
+  "live_sites": [
+   "https://vos-6pack.web.app"
+  ]
+ },
+ "assessment": {
+  "status": "green",
+  "signals": [],
+  "ai": {
+   "headline": "Entwicklung aktiv: Living Dashboard und CI-Workflows in Bearbeitung",
+   "lage": "Der `dev`-Branch ist aktuell mit einem neuen Feature-Commit (`72e888d`) vor `master`. Zwei CI-Workflows für diesen Commit sind derzeit in Bearbeitung. Mehrere offene Punkte aus `NEXT.md` und `TODO.md` wurden kürzlich abgeschlossen, darunter die Ergänzung von Woche 3 des 6 Pack Promise-Programms.",
+   "auffaelligkeiten": [
+    {
+     "level": "hoch",
+     "text": "Zwei CI-Workflows ('Check (6Pack)', '6Pack deploy (preview + standalone)') für Commit '72e888d' auf 'dev' sind seit 2026-11-13T00:08:08Z in Bearbeitung."
+    },
+    {
+     "level": "info",
+     "text": "Commit '72e888d' ('feat(ci): Living Dashboard als GitHub Page') wurde auf 'dev' gepusht und ist der aktuellste unpromoted Commit."
+    },
+    {
+     "level": "info",
+     "text": "Woche 3 des 6 Pack Promise-Programms wurde am 2026-11-11 ergänzt, wie in 'TODO.md' vermerkt."
+    },
+    {
+     "level": "info",
+     "text": "Die Dependabot Alert #1 ('uuid' < 11.1.1) wurde am 2026-11-11 mit Commit 'f2cd05a' behoben."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' für den CI-Agentenbetrieb sind laut 'NEXT.md' noch zu prüfen/setzen."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Live-Abnahme der UI-Änderungen ('aa6006dc') bezüglich Tailwind-4-Themes und Icon-Rendering steht noch aus."
+    }
+   ],
+   "naechste_schritte": [
+    "Prüfen der Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' für den CI-Agenten.",
+    "Abnehmen der Live-Änderungen von 'aa6006dc' auf Handy/Browser.",
+    "Importieren der 6 eigenen Clips für Tag 1 nach 'public/videos/'."
+   ],
+   "veraendert": "",
+   "fragen": [
+    "Soll Woche 4 des 6 Pack Promise-Programms ergänzt werden?",
+    "Soll der Fitness-Tab-Runner auf den neuesten Stand gebracht werden (Video-Cache, Autostart, Gym-Timer-Töne)?"
+   ],
+   "model": "gemini-2.5-flash"
+  },
+  "ai_at": "2026-11-13T00:08:26+00:00"
+ }
+}
