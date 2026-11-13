@@ -7,16 +7,15 @@
 // in einer localStorage-Outbox und werden beim nächsten Login nachgeschickt
 // (deterministische Doc-ID → erneutes Senden ist idempotent).
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, arrayUnion, serverTimestamp } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
-import { getMessaging, getToken, onMessage, isSupported as isMessagingSupported } from 'firebase/messaging';
 import { buildWorkoutDoc } from './workoutDoc.js';
 import { serializeProgram } from './programSync.js';
+import { enableSixpackPush as registerSixpackPush, isSixpackPushSupported, listenForSixpackPush } from './push.js';
 
 // Gleiches Firebase-Projekt wie die Fitness-App (fitness-aos). Web-Config ist öffentlich.
-import { waitForActiveWorker } from './reminder.js';
 import { isNativeApp } from './nativeReminders.js';
-import { config, VAPID_KEY } from './firebaseConfig.js';
+import { config } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
 
@@ -124,25 +123,11 @@ export function saveProgram(uid, program) {
   return setDoc(doc(db, 'users', uid, 'meta', 'sixpack'), { ...serializeProgram(program), saved_at: serverTimestamp() });
 }
 
-// 6Pack-eigene Push-Registrierung: Token liegen in users/{uid}/meta/sixpackPush
-// Die Cloud Function scheduledSixpackReminders (functions/index.js) liest dort.
-export async function enableSixpackPush(uid) {
-  if (!uid || uid === 'local') throw new Error('Bitte zuerst anmelden.');
-  if (typeof Notification === 'undefined' || !('serviceWorker' in navigator) || !(await isMessagingSupported())) {
-    throw new Error('Push wird auf diesem Gerät/Browser nicht unterstützt.');
-  }
-  const permission = Notification.permission;
-  if (permission !== 'granted') throw new Error('Benachrichtigungen sind blockiert.');
-  const registration = await navigator.serviceWorker.register('./sixpack-messaging-sw.js', { scope: './sixpack-push/' });
-  await waitForActiveWorker(registration);
-  const token = await getToken(getMessaging(app), { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
-  if (!token) throw new Error('Kein Push-Token erhalten.');
-  if (auth.currentUser?.uid !== uid) throw new Error('Das angemeldete Konto hat sich geändert. Bitte erneut versuchen.');
-  await setDoc(doc(db, 'users', uid, 'meta', 'sixpackPush'), {
-    tokens: arrayUnion(token),
-    updated_at: serverTimestamp(),
-  }, { merge: true });
-  return token;
+// 6Pack-eigene Push-Registrierung über push.js (dieselbe Funktion wie die Shell).
+// Token liegen in users/{uid}/meta/sixpackPush. Die Cloud Function
+// scheduledSixpackReminders (functions/index.js) liest dort.
+export function enableSixpackPush(uid) {
+  return registerSixpackPush(uid, { firebaseApp: app, db, auth });
 }
 
 // FCM leitet Nachrichten bei sichtbarer App an die Seite weiter. Der Empfang
@@ -155,20 +140,7 @@ onAuthStateChanged(auth, async (user) => {
   stopPushMessages = null;
   if (!user || isNativeApp) return;
   try {
-    if (!(await isMessagingSupported()) || version !== pushUserVersion) return;
-    stopPushMessages = onMessage(getMessaging(app), async (payload) => {
-      if (auth.currentUser?.uid !== user.uid || payload?.data?.app !== 'sixpack') return;
-      if (Notification.permission !== 'granted') return;
-      try {
-        const registration = await navigator.serviceWorker.getRegistration(new URL('./sixpack-push/', window.location.href).href);
-        if (!registration || auth.currentUser?.uid !== user.uid) return;
-        await registration.showNotification(payload.data.title || '6Pack', {
-          body: payload.data.body || 'Zeit fürs Training',
-          icon: new URL('./icon-192.png', window.location.href).href,
-          tag: 'sixpack-reminder',
-          data: { link: new URL('./', window.location.href).href },
-        });
-      } catch (err) { console.warn('[sixpack] Push anzeigen fehlgeschlagen:', err); }
-    });
+    if (!(await isSixpackPushSupported()) || version !== pushUserVersion) return;
+    stopPushMessages = listenForSixpackPush({ firebaseApp: app, auth, uid: user.uid });
   } catch (err) { console.warn('[sixpack] Push-Empfang nicht verfügbar:', err); }
 });

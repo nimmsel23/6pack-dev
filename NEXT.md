@@ -4,6 +4,7 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
+- ~~automerge-pr Dependabot base=master→dev Retarget~~: Port journal-SSOT `375e122` (Org `c1f9b6ce`/`0e25e4c4`); Dry-Check keine Dep-PRs base=master (AL 2026-11-12).
 - ~~Shell-Theme-Diebstahl~~: `onSubNav` skippt documentElement-Theme; nach Promote Shell-Pin (`vos-release 6pack` / Meta-Bump) prüfen — Sidebar darf nicht mehr rot werden (2026-11-10).
 - ~~Pages/Gemini Checkout fail (`.worktrees/agents-thin` Gitlink)~~: `5ac3c580`; Pages `42757607664` + Deploy `42757607824` success (2026-11-10 AL).
 - ~~Blackscreen vos-6pack (Vite 8 Preload)~~: Fix + Docs + Live `index-CunHDZLw.js` ohne `[]<hash>` (2026-11-10). Hard-Reload falls alter SW klebt.
@@ -46,4 +47,5 @@
 - [ ] Einen echten roten, code-behebbaren CI-Lauf beobachten und bestätigen, dass Reparatur-Commit, grüner Check und vorgesehener Promote/Deploy enden.
 - [ ] Fehler außerhalb des Codes (fehlende Deploy-Credentials, externe Dienste, Runner-Ausfälle) separat als Diagnose melden; keine ungeprüften Änderungen an Secrets oder Deploy-Konfiguration.
 - ~~GitHub Pages~~: aktiv `source.branch=master` + `path=/docs`, `status=built`; Live `https://nimmsel23.github.io/6pack-dev/` + `Index.html` HTTP 200 (AL 2026-11-11, API `repos/.../pages`).
+- ~~Pages-Quelle nach Living Dashboard (`72e888de`)~~: API jetzt `build_type=workflow` (Actions, `dashboard.yml` → `nimmsel23/dashboards@engine`), `status=built`; Dashboard-Lauf `43335039422` build+deploy success (AL 2026-11-13). Der `source=master /docs`-Eintrag oben gilt nicht mehr. HTTP-Live-Check der Seite steht noch aus.
 - [ ] Gemini-Reparaturpfad nach dem Feld-Fix anhand eines isolierten roten Checks verifizieren: Diagnose, Commit, Check-Neustart und nachgelagerter Deploy.

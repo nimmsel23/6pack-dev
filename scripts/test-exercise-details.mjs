@@ -29,7 +29,7 @@ async function compile(file, extra = '', requireExtra = {}) {
   const module = { exports: {} };
   vm.runInNewContext(code, {
     module, exports: module.exports, h, Fragment: 'fragment', window, Notification: { permission: 'granted' },
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
+    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './storeBuild.js' ? { IS_STORE_BUILD: false, storeText: original => original } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
   });
   return module.exports;
 }

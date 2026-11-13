@@ -1,0 +1,7 @@
+// Store-Build (Play/App Store, Observe/Operate): VitalOS-Produkt setzt VITE_VOS_EDITION bzw.
+// VITE_VOS_PRODUCT_BUILD. Standalone- und Owner-Builds setzen beides nicht und bleiben unverändert.
+export const IS_STORE_BUILD = ['store', 'observe', 'operate'].includes(import.meta.env?.VITE_VOS_EDITION)
+  || import.meta.env?.VITE_VOS_PRODUCT_BUILD === '1';
+
+// Deutscher Text im Store-Build, sonst der bisherige (englische) Text.
+export const storeText = (original, german) => (IS_STORE_BUILD ? german : original);

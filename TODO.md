@@ -1,6 +1,7 @@
 # TODO — 6pack-dev
 
 
+- [x] 2026-11-12: Shell-Embed `embed.jsx` (`SixPackEmbed`) plus `push.js`. Standalone (`main.jsx`) unverändert. Runner-Overlay `z-[100]` nicht angefasst.
 - [x] Selfies mit bestehendem Firebase-Login über Firestore geräteübergreifend synchronisieren; Offline-Queue beibehalten.
 
 - [x] Bestehende Photo-Auth/Galerie, Fitness-API und Cloud-Sync zu einem Ablauf zusammenführen; geschützten Altbestand importieren.

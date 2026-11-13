@@ -1,3 +1,23 @@
+## 2026-11-13 — AL: Pages-Quelle nach Living Dashboard verifiziert
+
+- Seit `72e888de` baut `dashboard.yml` (Reusable `nimmsel23/dashboards@engine`) die Pages-Seite: API `build_type=workflow`, `status=built`; Dashboard-Lauf `43335039422` build+deploy success. NEXT-Pages-Eintrag entsprechend nachgezogen.
+- Inventur: `27d517b2` Check `43335039085` success, `origin/master` = `origin/dev`; keine offenen PRs, keine offenen Dependabot-Alerts. `.bak`-Workflows im Checkout sind ungetrackt und gitignored (nur gemeldet).
+- Feature-Freeze: Doku/CI-Wartung, kein Produktfeature.
+
+## 2026-11-12 — AL: automerge-pr Dependabot Retarget (Org c1f9b6ce)
+
+- Port journal-SSOT `375e122` / Org `0e25e4c4`: vor Squash Dependabot-PRs mit `base=master` auf `base=dev` retargeten (nur `dependabot/*`-Heads).
+- Dry-Check: keine offenen Dep-PRs `base=master` (Workflow-Diff reicht als Beleg).
+- Feature-Freeze: CI-Wartung, kein Produktfeature.
+
+## 2026-11-12 — VitalOS-Embed
+
+- `embed.jsx`: `SixPackEmbed` für die Shell. Eingebettet kein `documentElement`, kein `theme-color`, kein `html.style`, kein `location.hash`. Skill-Route `skills/<skillId>` über `onRouteChange`. Eat ruft `onNavigate('fuel')`. `runId` bleibt am Workout.
+- `push.js`: Registrierung auf der Firebase-App des Hosts. Standalone (`standaloneSync.js`) nutzt dasselbe Modul und initialisiert Firebase weiter selbst.
+- Bestehendes `onSubNav` an `SixPackPromiseCard` bleibt (Hash + externer Eat-Link).
+- Runner-Overlay `fixed inset-0 z-[100]` (Portal auf `document.body`) unverändert; liegt über der Shell-Navigation.
+- Test: `node --test scripts/test-embed.mjs`.
+
 ## 2026-11-12 — CI: Gemini + Merge-Agent wiederhergestellt
 
 - Restored: gemini-ci-repair.yml merge-agent.yml (Owner: volle Automatisierung)
