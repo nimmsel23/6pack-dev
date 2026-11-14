@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-14T17:58:41+00:00",
+  "generated_at": "2026-11-14T18:45:16+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-14T17:58:24Z",
+   "pushed_at": "2026-11-14T18:44:55Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,48 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "0432929 2026-11-14T18:58:22+01:00",
+   "dev_ahead": 6,
+   "oldest_unpromoted": "2026-11-14T19:43:04+01:00",
+   "dev_head": "51bbdc7 2026-11-14T19:43:16+01:00",
    "master_head": "0432929 2026-11-14T18:58:22+01:00"
   },
   "commits": [
+   {
+    "sha": "51bbdc7",
+    "date": "2026-11-14T19:43:16+01:00",
+    "author": "Alpha",
+    "subject": "feat(hosting): /6pack und /sixpack führen in derselben App zu 6Pack"
+   },
+   {
+    "sha": "0bb9be5",
+    "date": "2026-11-14T19:43:16+01:00",
+    "author": "Alpha",
+    "subject": "feat: expose setup deep links and reuse host Firestore"
+   },
+   {
+    "sha": "f4310ca",
+    "date": "2026-11-14T19:43:16+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): reference HIIT ABS save guard"
+   },
+   {
+    "sha": "276d2e1",
+    "date": "2026-11-14T19:43:16+01:00",
+    "author": "Alpha",
+    "subject": "fix(session): stop track progress when logging fails"
+   },
+   {
+    "sha": "d723547",
+    "date": "2026-11-14T19:43:16+01:00",
+    "author": "Alpha",
+    "subject": "docs(al): record 2026-11-14 HIIT ABS run"
+   },
+   {
+    "sha": "2ce3a04",
+    "date": "2026-11-14T19:43:04+01:00",
+    "author": "Alpha",
+    "subject": "fix(session): log 6Pack workouts as HIIT ABS"
+   },
    {
     "sha": "0432929",
     "date": "2026-11-14T18:58:22+01:00",
@@ -108,42 +144,6 @@
     "date": "2026-11-11T17:46:03+01:00",
     "author": "Alpha",
     "subject": "fix(security): pin functions uuid 11.1.1 — Dependabot Alert #1"
-   },
-   {
-    "sha": "40aff0b",
-    "date": "2026-11-11T05:44:42+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): CI-Beleg für 3be1c681 — Check, Promote, Pages, Deploy"
-   },
-   {
-    "sha": "3be1c68",
-    "date": "2026-11-11T05:42:25+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): Pages verifiziert, *.apk ignoriert — Freeze-Wartung"
-   },
-   {
-    "sha": "8237d65",
-    "date": "2026-11-11T05:41:59+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update RESULTS.md"
-   },
-   {
-    "sha": "94a5f5f",
-    "date": "2026-11-11T05:41:57+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update NEXT.md"
-   },
-   {
-    "sha": "38cac92",
-    "date": "2026-11-11T05:41:55+01:00",
-    "author": "Alpha",
-    "subject": "docs: auto-update NEXT.md"
-   },
-   {
-    "sha": "6cf0b30",
-    "date": "2026-11-10T17:45:12+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): CI-Beleg für 0a66dc96 — Check, Promote, Pages, Deploy"
    }
   ],
   "activity": [
@@ -229,28 +229,58 @@
    },
    {
     "day": "2026-11-14",
-    "n": 1
+    "n": 7
    }
   ],
   "workflows": [
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-14T17:58:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43623977734",
-    "sha": "0432929"
-   },
    {
     "name": "Check (6Pack)",
     "branch": "dev",
     "event": "push",
     "status": "in_progress",
     "conclusion": null,
-    "created_at": "2026-11-14T17:58:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43623977494",
+    "created_at": "2026-11-14T18:44:57Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43628319503",
+    "sha": "51bbdc7"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-14T18:44:57Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43628319452",
+    "sha": "51bbdc7"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-14T17:58:53Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43624015337",
+    "sha": "0432929"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-14T17:58:53Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43624015334",
+    "sha": "0432929"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-14T17:58:53Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43624015303",
     "sha": "0432929"
    },
    {
@@ -264,16 +294,6 @@
     "sha": "ad36d2b"
    },
    {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-14T14:19:30Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43604259291",
-    "sha": "ad36d2b"
-   },
-   {
     "name": "6Pack deploy (preview + standalone)",
     "branch": "master",
     "event": "workflow_dispatch",
@@ -282,26 +302,6 @@
     "created_at": "2026-11-13T04:42:18Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367231325",
     "sha": "ad36d2b"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T04:42:10Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367216128",
-    "sha": "27d517b"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T00:11:18Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43335038984",
-    "sha": "27d517b"
    },
    {
     "name": "Gemini CI Agent",
@@ -354,23 +354,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Master und Dev auf 0432929 synchronisiert",
-   "lage": "Der `master`-Branch und der `dev`-Branch sind auf Commit `0432929` (`chore: AL-LOG.md entfernt`) synchronisiert. Die zugehörigen Workflows `Check (6Pack)` für `dev` und `Auto-Promote dev -> master (Check (6Pack))` sind aktuell in Bearbeitung.",
+   "headline": "Dev-Branch 6 Commits vor Master, Workflows in Bearbeitung",
+   "lage": "Der `dev`-Branch ist 6 Commits (`51bbdc7` bis `2ce3a04`) vor dem `master`-Branch (`0432929`). Die Workflows `Check (6Pack)` und `6Pack deploy (preview + standalone)` für `dev` sind aktuell in Bearbeitung. Die letzte `Auto-Promote` für `master` auf `0432929` war erfolgreich.",
    "auffaelligkeiten": [
     {
+     "level": "hoch",
+     "text": "Der `dev`-Branch ist 6 Commits (`51bbdc7` bis `2ce3a04`) vor dem `master`-Branch (`0432929`). Die `Auto-Promote` für diese neuen Commits steht noch aus, da die `dev`-Workflows noch laufen."
+    },
+    {
      "level": "info",
-     "text": "Die Workflows `Check (6Pack)` und `Auto-Promote dev -> master (Check (6Pack))` für den aktuellen Commit `0432929` sind noch 'in_progress'."
+     "text": "Die Protokollierung abgeschlossener Runs als `HIIT ABS`-Activity ist laut `TODO.md` erledigt."
+    },
+    {
+     "level": "info",
+     "text": "Die `NEXT.md` listet weiterhin die Prüfung der Repo-Secrets, die Live-Abnahme von `aa6006dc` und den Import der 6 eigenen Clips für Tag 1 als offene Punkte."
     }
    ],
    "naechste_schritte": [
     "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY'.",
-    "Nehmen Sie die Live-Änderungen von 'aa6006dc' auf Handy/Browser ab.",
-    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'."
+    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'.",
+    "Nehmen Sie die Live-Änderungen von 'aa6006dc' auf Handy/Browser ab."
    ],
-   "veraendert": "Die Branches `master` und `dev` sind nun auf Commit `0432929` synchronisiert, zuvor `ad36d2b`.",
-   "fragen": [],
+   "veraendert": "Gegenüber der letzten Einschätzung ist der `dev`-Branch nicht mehr mit `master` synchronisiert, sondern 6 Commits voraus.",
+   "fragen": [
+    "Soll der Fitness-Tab-Runner aus `fitness-dev` nachgezogen werden?",
+    "Soll Woche 4 des 6 Pack Promise-Programms ergänzt werden?"
+   ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-14T17:58:43+00:00"
+  "ai_at": "2026-11-14T18:45:18+00:00"
  }
 }
