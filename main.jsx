@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { createRoot } from 'react-dom/client';
-import SixPackPromiseCard from './SixPackPromiseCard.jsx';
+import { SixPackEmbed } from './embed.jsx';
 import { subscribeSync, signInGoogle, signOutUser, submitWorkout, loadProgram, saveProgram, enableSixpackPush } from './sixpackCloud.js';
 import './styles.css';
 import { loginEmail } from './photoAuth.js';
@@ -49,7 +49,9 @@ function SyncSettings({ state }) {
   );
 }
 
+const subscribeRoute = cb => { window.addEventListener('hashchange', cb); return () => window.removeEventListener('hashchange', cb); };
 function Root() {
+  const route = useSyncExternalStore(subscribeRoute, () => location.hash.replace(/^#\/?/, '').replace(/^setup$/, 'settings'), () => '');
   const [state, setState] = useState({ user: null, pending: 0 });
   useEffect(() => subscribeSync(setState), []);
   useEffect(() => {
@@ -61,9 +63,9 @@ function Root() {
     return () => { disposed = true; stop?.(); };
   }, []);
   return (
-    <main className="w-full h-dvh flex flex-col">
+    <main data-theme="sixpack" className="w-full h-dvh flex flex-col">
       <UpdateBanner />
-      <SixPackPromiseCard uid={state.user?.uid || 'local'} setupContent={<SyncSettings state={state} />} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
+      <SixPackEmbed onNavigate={target => { if (target === 'fuel') window.location.assign('https://fuel-vos.web.app'); }} route={route} onRouteChange={next => { location.hash = next; }} uid={state.user?.uid || 'local'} setupContent={<SyncSettings state={state} />} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
     </main>
   );
 }

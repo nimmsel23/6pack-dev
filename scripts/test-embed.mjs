@@ -211,7 +211,7 @@ async function compile(file, requireExtra = {}) {
   return module.exports;
 }
 
-const app = await compile('SixPackApp.jsx');
+const app = await compile('SixPackApp.jsx', { './storeBuild.js': { IS_STORE_BUILD: false, storeText: original => original } });
 const embedModule = await compile('embed.jsx', { './SixPackApp.jsx': app, './push.js': pushModule });
 const Embed = embedModule.SixPackEmbed;
 

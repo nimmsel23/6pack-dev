@@ -6,7 +6,7 @@
 // in einer localStorage-Outbox und werden beim nächsten Login nachgeschickt
 // (deterministische Doc-ID → erneutes Senden ist idempotent).
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
 import { buildWorkoutDoc } from './workoutDoc.js';
 import { serializeProgram } from './programSync.js';
@@ -18,8 +18,9 @@ import { config } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
 
-const app = getApps().length ? getApp() : initializeApp(config);
-const db = initializeFirestore(app, {
+const existingApp = getApps().some(app => app.name === '[DEFAULT]');
+const app = existingApp ? getApp() : initializeApp(config);
+const db = existingApp ? getFirestore(app) : initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
   ignoreUndefinedProperties: true,
 });
