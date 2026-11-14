@@ -82,7 +82,7 @@ enableSixpackPush(uid, {
 });
 ```
 
-Die Standalone-App (`standaloneSync.js`) ruft dieselbe Funktion mit ihrer
+Die 6Pack-Web-App (`sixpackCloud.js`) ruft dieselbe Funktion mit ihrer
 bereits initialisierten App auf. Vordergrund-Nachrichten:
 `listenForSixpackPush({ firebaseApp, auth, uid })`.
 

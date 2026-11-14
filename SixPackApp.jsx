@@ -1552,18 +1552,21 @@ const RUNNER_FRAME_STYLE = {
   paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
 };
 
-// Das 6Pack-Workout IST das Core HIIT: Die Session wird als HIIT-Activity im Fitness-Activity-Format
-// (type 'hiit', Muskelziel core) geloggt, damit sie in Coverage/Superkompensation zählt. Entscheidend
-// ist die Dauer = tatsächliche Workout-Länge (inkl. Pausen/Wechsel), mindestens 1 Minute.
-// Die Session bleibt eine Kraft-Session (sessionMode 'strength'), aber ohne Reps×Sets/Gewicht.
-function coreHiitActivity(items) {
+// Fitness bekommt ein HIIT-ABS-Element; die einzelnen Moves bleiben dessen Detaildaten.
+function coreHiitActivity(items, runId) {
+  const exercises = items
+    .filter(item => item.type === 'exercise')
+    .map(({ name, seconds }) => ({ name, seconds: Number(seconds) || 0 }));
   return {
+    slot: 'hiit-abs',
+    runId,
     type: 'hiit',
     muscleTarget: 'core',
     muscles: ['core'],
     primaryMuscles: [],
     duration: Math.max(1, Math.round(workoutTotalSeconds(items) / 60)),
-    label: '6Pack · Core HIIT',
+    label: 'HIIT ABS',
+    exercises,
   };
 }
 
@@ -1840,13 +1843,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   function finishWorkout({ startedAt, runId } = {}) {
     const doneWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
     if (doneWorkout && onWorkoutComplete) {
-      const byName = new Map();
-      (doneWorkout.items || []).filter(i => i.type === 'exercise').forEach(i => {
-        byName.set(i.name, (byName.get(i.name) || 0) + (Number(i.seconds) || 0));
-      });
-      const activity = coreHiitActivity(doneWorkout.items || []);
+      const activity = coreHiitActivity(doneWorkout.items || [], runId);
       onWorkoutComplete({
-        block: '6Pack',
+        block: 'HIIT ABS',
         source: 'sixpack',
         modality: 'core',
         program: adhocWorkout ? { id: 'sixpack', adhoc: true } : { id: 'sixpack', day: viewDay },
@@ -1855,7 +1854,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         endedAt: Date.now(),
         notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Core HIIT ${activity.duration} min`,
         activity,
-        exercises: [...byName].map(([name, seconds]) => ({ name, seconds })),
+        // Details live inside the HIIT-ABS slot, never as ordinary session exercises.
       });
     }
     if (adhocWorkout) return;

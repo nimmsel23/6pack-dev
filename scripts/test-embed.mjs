@@ -373,9 +373,9 @@ test('push.js uses the caller Firebase app and does not initialize one', async (
   assert.doesNotMatch(source, /initializeApp\s*\(/);
   assert.match(source, /firebaseApp/);
   assert.match(source, /getMessaging/);
-  const standalone = await readFile(new URL('../standaloneSync.js', import.meta.url), 'utf8');
-  assert.match(standalone, /registerSixpackPush\(uid, \{ firebaseApp: app/);
-  assert.match(standalone, /initializeApp\(config\)/);
+  const sixpackCloud = await readFile(new URL('../sixpackCloud.js', import.meta.url), 'utf8');
+  assert.match(sixpackCloud, /registerSixpackPush\(uid, \{ firebaseApp: app/);
+  assert.match(sixpackCloud, /initializeApp\(config\)/);
 });
 
 test.afterEach(() => {

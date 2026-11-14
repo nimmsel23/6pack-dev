@@ -1,6 +1,6 @@
 // 6Pack-Push auf einer bestehenden Firebase-App.
 // Kein initializeApp: die Shell übergibt ihre App (oder eine Messaging-Instanz),
-// die Standalone-App ihre bereits initialisierte Instanz aus standaloneSync.js.
+// die 6Pack-Web-App ihre bereits initialisierte Instanz aus sixpackCloud.js.
 import { getAuth } from 'firebase/auth';
 import { arrayUnion, doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
 import { getMessaging, getToken, isSupported as isMessagingSupported, onMessage } from 'firebase/messaging';

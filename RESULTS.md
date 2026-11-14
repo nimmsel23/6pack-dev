@@ -13,7 +13,7 @@
 ## 2026-11-12 — VitalOS-Embed
 
 - `embed.jsx`: `SixPackEmbed` für die Shell. Eingebettet kein `documentElement`, kein `theme-color`, kein `html.style`, kein `location.hash`. Skill-Route `skills/<skillId>` über `onRouteChange`. Eat ruft `onNavigate('fuel')`. `runId` bleibt am Workout.
-- `push.js`: Registrierung auf der Firebase-App des Hosts. Standalone (`standaloneSync.js`) nutzt dasselbe Modul und initialisiert Firebase weiter selbst.
+- `push.js`: Registrierung auf der Firebase-App des Hosts. `sixpackCloud.js` nutzt dasselbe Modul und initialisiert Firebase für den Web-Einstieg.
 - Bestehendes `onSubNav` an `SixPackPromiseCard` bleibt (Hash + externer Eat-Link).
 - Runner-Overlay `fixed inset-0 z-[100]` (Portal auf `document.body`) unverändert; liegt über der Shell-Navigation.
 - Test: `node --test scripts/test-embed.mjs`.
@@ -351,7 +351,7 @@ Gemeinsame mini-app-shell erweitert bzw. aktualisiert: versionsunabhängiger öf
 
 ## 2026-10-21 — Track: Firestore-Fortschritt + manueller Tracker
 - Programm-Fortschritt wird pro User nach `users/{uid}/meta/sixpack` synchronisiert (`programSync.js`, Merge nach `updatedAt`, erledigte Tage vereinigt). Rules: durch `users/{uid}/{document=**}` gedeckt.
-- Standalone verdrahtet (`standaloneSync.js::loadProgram/saveProgram`); Fitness-Host muss `loadRemoteProgram`/`saveRemoteProgram` an `SixPackPromiseCard` übergeben (offen).
+- Web-Einstieg verdrahtet (`sixpackCloud.js::loadProgram/saveProgram`); Fitness-Host muss `loadRemoteProgram`/`saveRemoteProgram` an `SixPackPromiseCard` übergeben (offen).
 - Track: Flag-Button pro Tag setzt den Tracker manuell; alle 8 Wochen sichtbar; nach Abschluss springt der Tracker auf den Folgetag des erledigten Tags.
 
 ## 2026-10-21 — Settings-Zahnrad + Erinnerung
@@ -491,7 +491,6 @@ Added weekly Gradle updates for `android/` and Swift Package Manager updates for
 
 Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein langsamer Netzwerk-/Service-Worker-Updatecheck hält den Splash nicht mehr offen; er verschwindet nach dem App-Start (mindestens 200 ms, maximal 12 s nur falls der App-Root gar nicht bereit wird).
 
-
 ## 2026-11-07 — Gemini CI-Agent aktiviert
 
 - Agent-Workflow und lokale Trigger für `6pack-dev` auf `dev` eingerichtet; `GEMINI_API_KEY` als Actions-Secret gesetzt.
@@ -503,3 +502,9 @@ Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein
 - Org-Task `993d0cc0` (+hit, Hintergrund: turn_limit-Abbruch 05:40 beim Erkunden des obsoleten `vos-release-pr`): AGENTS.md-Release-Abschluss steht im Auto-Promote-Standardweg; verifiziert auf `origin/dev` (f4bc65d6, 9586b9d1, Zeile "Release (automatisch): dev committen und pushen ist ausdrücklich erwünscht …") und auf `origin/master`. Task per UUID mit Beleg-Annotation abgeschlossen. Kein Build, kein Deploy.
 - `feat(runner)` 72571775 "Musik-Modus" (abgebrochener Lauf 2026-11-07) liegt unveröffentlicht auf veralteter Basis (9586b9d1, inzwischen 27 Commits hinter origin/dev); per lokalem Branch `vos-al/musik-mode-72571775` gegen Verlust gesichert. Rebase auf origin/dev und Veröffentlichung ausstehend.
 - Befund: lokaler `master` divergent — e08fa339 (Org-Taskwarrior-Konvention v1) unpushed auf dem Checkout, origin/master 37 Commits voraus; Merge nach `dev` oder Verwerfen ist eine CEO-/CTO-Entscheidung, nicht AL-Aufgabe. `AL-LOG.md` erstmals getrackt.
+
+## 2026-11-14 — HIIT ABS Session-Übergabe
+
+- 6Pack schickt den Abschluss als `HIIT ABS`-Activity im gemeinsamen Session-Dokument; Übungsdetails liegen im Activity-Slot statt als normale Session-Exercises. `sixpackCloud.js` übernimmt Gast-Workouts beim Login und lässt Einträge anderer Konten unangetastet.
+- Bei nicht beschreibbarem localStorage versucht ein angemeldeter Nutzer den direkten Firestore-Write; ein Gast erhält einen Fehler statt falscher Speicherbestätigung. Unlesbare Queue-Rohdaten werden nicht überschrieben.
+- Fitness-UI-Ticket für HIIT-ABS-Slot, eingeklappte Details und getrennte Cardio-Sessions in `fitness-dev/TODO.md`; Referenz folgt im Code-Commit. Keine Tests, Builds oder Pushes in diesem Lauf.

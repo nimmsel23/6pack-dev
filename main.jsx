@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import SixPackPromiseCard from './SixPackPromiseCard.jsx';
-import { subscribeSync, signInGoogle, signOutUser, submitWorkout, loadProgram, saveProgram, enableSixpackPush } from './standaloneSync.js';
+import { subscribeSync, signInGoogle, signOutUser, submitWorkout, loadProgram, saveProgram, enableSixpackPush } from './sixpackCloud.js';
 import './styles.css';
 import { loginEmail } from './photoAuth.js';
 import { isNativeApp, nativeReminderDelivery, watchNativeResume } from './nativeReminders.js';
