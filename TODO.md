@@ -1,6 +1,6 @@
 # TODO — 6pack-dev
 
-- [x] 2026-11-14: Abgeschlossene Runs als `HIIT ABS`-Activity mit eingeklappten Übungsdetails protokollieren; Gast-Outbox beim Login übernehmen und Konten trennen (`6pack-dev@f491f5cb`). Fitness-Session-UI als Folge-Ticket in `fitness-dev/TODO.md`.
+- [x] 2026-11-14: Abgeschlossene Runs als `HIIT ABS`-Activity mit eingeklappten Übungsdetails protokollieren; Gast-Outbox beim Login übernehmen und Konten trennen (`f491f5cb`); fehlgeschlagenes Session-Logging stoppt den Track-Fortschritt (`e6fd6cd3`). Fitness-Session-UI als Folge-Ticket in `fitness-dev/TODO.md`.
 
 - [x] 2026-11-12: Shell-Embed `embed.jsx` (`SixPackEmbed`) plus `push.js`. Standalone (`main.jsx`) unverändert. Runner-Overlay `z-[100]` nicht angefasst.
 - [x] Selfies mit bestehendem Firebase-Login über Firestore geräteübergreifend synchronisieren; Offline-Queue beibehalten.
