@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-14T11:45:06+00:00",
+  "generated_at": "2026-11-14T17:58:41+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-13T12:37:07Z",
+   "pushed_at": "2026-11-14T17:58:24Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -21,10 +21,16 @@
    "dev_behind": 0,
    "dev_ahead": 0,
    "oldest_unpromoted": null,
-   "dev_head": "ad36d2b 2026-11-13T05:41:42+01:00",
-   "master_head": "ad36d2b 2026-11-13T05:41:42+01:00"
+   "dev_head": "0432929 2026-11-14T18:58:22+01:00",
+   "master_head": "0432929 2026-11-14T18:58:22+01:00"
   },
   "commits": [
+   {
+    "sha": "0432929",
+    "date": "2026-11-14T18:58:22+01:00",
+    "author": "Alpha",
+    "subject": "chore: AL-LOG.md entfernt"
+   },
    {
     "sha": "ad36d2b",
     "date": "2026-11-13T05:41:42+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-10T17:45:12+01:00",
     "author": "Alpha",
     "subject": "docs(al): CI-Beleg für 0a66dc96 — Check, Promote, Pages, Deploy"
-   },
-   {
-    "sha": "0a66dc9",
-    "date": "2026-11-10T17:42:39+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): Nachmittagslauf — PR #24 stale NEXT geschlossen"
    }
   ],
   "activity": [
@@ -229,28 +229,38 @@
    },
    {
     "day": "2026-11-14",
-    "n": 0
+    "n": 1
    }
   ],
   "workflows": [
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-14T17:58:26Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43623977734",
+    "sha": "0432929"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-14T17:58:26Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43623977494",
+    "sha": "0432929"
+   },
    {
     "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-14T10:56:19Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43587613705",
-    "sha": "ad36d2b"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-14T09:30:06Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43580832862",
+    "created_at": "2026-11-14T16:51:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43617892122",
     "sha": "ad36d2b"
    },
    {
@@ -259,8 +269,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-14T06:44:44Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43567826988",
+    "created_at": "2026-11-14T14:19:30Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43604259291",
     "sha": "ad36d2b"
    },
    {
@@ -282,16 +292,6 @@
     "created_at": "2026-11-13T04:42:10Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367216128",
     "sha": "27d517b"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-13T04:41:47Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43367174481",
-    "sha": "ad36d2b"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -354,16 +354,12 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Master und Dev weiterhin auf ad36d2b synchronisiert",
-   "lage": "Der `master`-Branch und der `dev`-Branch sind weiterhin auf Commit `ad36d2b` (`docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)`) synchronisiert. Die Workflows `Check (6Pack)` für `dev` und `Auto-Promote dev -> master (Check (6Pack))` liefen erfolgreich durch und bestätigen die Synchronisation.",
+   "headline": "Master und Dev auf 0432929 synchronisiert",
+   "lage": "Der `master`-Branch und der `dev`-Branch sind auf Commit `0432929` (`chore: AL-LOG.md entfernt`) synchronisiert. Die zugehörigen Workflows `Check (6Pack)` für `dev` und `Auto-Promote dev -> master (Check (6Pack))` sind aktuell in Bearbeitung.",
    "auffaelligkeiten": [
     {
      "level": "info",
-     "text": "Die Workflows `Merge-Agent` und `PR-AutoMerge (Dependabot -> dev)` liefen am 2026-11-14 erfolgreich durch."
-    },
-    {
-     "level": "info",
-     "text": "Woche 3 des 6 Pack Promise-Programms wurde am 2026-11-11 ergänzt; Woche 4 ist noch offen."
+     "text": "Die Workflows `Check (6Pack)` und `Auto-Promote dev -> master (Check (6Pack))` für den aktuellen Commit `0432929` sind noch 'in_progress'."
     }
    ],
    "naechste_schritte": [
@@ -371,13 +367,10 @@
     "Nehmen Sie die Live-Änderungen von 'aa6006dc' auf Handy/Browser ab.",
     "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung hat sich der Synchronisationsstatus der Branches nicht verändert; alle relevanten Workflows liefen erneut erfolgreich durch.",
-   "fragen": [
-    "Soll der Branch `vos-al/musik-mode-72571775` veröffentlicht werden?",
-    "Soll der Fitness-Tab-Runner auf den aktuellen Stand von 6pack-dev nachgezogen werden?"
-   ],
+   "veraendert": "Die Branches `master` und `dev` sind nun auf Commit `0432929` synchronisiert, zuvor `ad36d2b`.",
+   "fragen": [],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-14T11:45:08+00:00"
+  "ai_at": "2026-11-14T17:58:43+00:00"
  }
 }
