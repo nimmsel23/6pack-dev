@@ -16,6 +16,9 @@ The run is still recorded separately from 6Pack program progress:
 
 Advancing the program does not prove that the session write succeeded. The
 session callback must run independently with the same stable `runId` on retry.
+The runner waits for that callback before advancing the program day. A rejected
+write is reported to the user and leaves program progress unchanged; a persisted
+offline queue item counts as saved locally.
 
 ## Payload produced by the runner
 

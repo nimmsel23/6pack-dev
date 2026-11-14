@@ -1840,22 +1840,28 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     showScreen('runner');
   }
 
-  function finishWorkout({ startedAt, runId } = {}) {
+  async function finishWorkout({ startedAt, runId } = {}) {
     const doneWorkout = adhocWorkout || (viewDay ? getWorkout(viewDay) : null);
     if (doneWorkout && onWorkoutComplete) {
       const activity = coreHiitActivity(doneWorkout.items || [], runId);
-      onWorkoutComplete({
-        block: 'HIIT ABS',
-        source: 'sixpack',
-        modality: 'core',
-        program: adhocWorkout ? { id: 'sixpack', adhoc: true } : { id: 'sixpack', day: viewDay },
-        runId,
-        startedAt: startedAt || Date.now(),
-        endedAt: Date.now(),
-        notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Core HIIT ${activity.duration} min`,
-        activity,
-        // Details live inside the HIIT-ABS slot, never as ordinary session exercises.
-      });
+      try {
+        await onWorkoutComplete({
+          block: 'HIIT ABS',
+          source: 'sixpack',
+          modality: 'core',
+          program: adhocWorkout ? { id: 'sixpack', adhoc: true } : { id: 'sixpack', day: viewDay },
+          runId,
+          startedAt: startedAt || Date.now(),
+          endedAt: Date.now(),
+          notes: `${adhocWorkout ? '6Pack · freies Workout' : `6Pack · Tag ${viewDay}`} · Core HIIT ${activity.duration} min`,
+          activity,
+          // Details live inside the HIIT-ABS slot, never as ordinary session exercises.
+        });
+      } catch (err) {
+        console.error('[sixpack] Workout-Session konnte nicht gespeichert werden:', err);
+        window.alert('Workout nicht gespeichert. Prüfe die Verbindung oder melde dich an und wiederhole den Lauf. Der 6Pack-Fortschritt wurde nicht weitergeschaltet.');
+        return;
+      }
     }
     if (adhocWorkout) return;
     const today = localDate();
