@@ -507,4 +507,4 @@ Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein
 
 - 6Pack schickt den Abschluss als `HIIT ABS`-Activity im gemeinsamen Session-Dokument; Übungsdetails liegen im Activity-Slot statt als normale Session-Exercises. `sixpackCloud.js` übernimmt Gast-Workouts beim Login und lässt Einträge anderer Konten unangetastet.
 - Bei nicht beschreibbarem localStorage versucht ein angemeldeter Nutzer den direkten Firestore-Write; ein Gast erhält einen Fehler statt falscher Speicherbestätigung. Unlesbare Queue-Rohdaten werden nicht überschrieben.
-- Fitness-UI-Ticket für HIIT-ABS-Slot, eingeklappte Details und getrennte Cardio-Sessions in `fitness-dev/TODO.md`; Referenz folgt im Code-Commit. Keine Tests, Builds oder Pushes in diesem Lauf.
+- Fitness-UI-Ticket für HIIT-ABS-Slot, eingeklappte Details und getrennte Cardio-Sessions in `fitness-dev/TODO.md`, bezogen auf `6pack-dev@f491f5cb`. Keine Tests, Builds oder Pushes in diesem Lauf.
