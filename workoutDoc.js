@@ -46,7 +46,7 @@ export function buildWorkoutDoc({
   source, app = source, userId = null,
   modality = 'strength', block, program = null,
   exercises = [], startedAt, endedAt, effort = null, notes = '',
-  activity = null, // Activity im Fitness-Format, z. B. { type: 'hiit', muscleTarget: 'core', duration: 5 } (6Pack: die Session selbst)
+  activity = null, // Fitness-Activity; 6Pack HIIT ABS trägt Übungen als Activity-Details, nicht als Session-Exercises.
   runId = newRunId(),
 }) {
   const start = new Date(startedAt || Date.now());

@@ -1,13 +1,12 @@
-// NUR für die Standalone-6Pack-App (main.jsx). Die Fitness-App importiert diese
-// Datei nie — dort schreibt logExternalWorkout.js über @db, und ein zweites
-// Firebase-Bundle würde die App-Instanz doppeln.
+// Firebase-Zugang des 6Pack-Web-Einstiegs (main.jsx). Fitness bindet die UI ein
+// und speichert über @db; dieser direkte Firebase-Zugang bleibt dem Web-Einstieg vorbehalten.
 //
 // Meldet abgeschlossene Workouts im gemeinsamen Format (workoutDoc.js) nach
 // fitness/{uid}/sessions/{date}__{source}-{runId}. Ohne Login/offline landen sie
 // in einer localStorage-Outbox und werden beim nächsten Login nachgeschickt
 // (deterministische Doc-ID → erneutes Senden ist idempotent).
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut as fbSignOut } from 'firebase/auth';
 import { buildWorkoutDoc } from './workoutDoc.js';
 import { serializeProgram } from './programSync.js';
@@ -19,8 +18,9 @@ import { config } from './firebaseConfig.js';
 
 const OUTBOX_KEY = 'fitness-sixpack-outbox-v1';
 
-const app = getApps().length ? getApp() : initializeApp(config);
-const db = initializeFirestore(app, {
+const existingApp = getApps().some(app => app.name === '[DEFAULT]');
+const app = existingApp ? getApp() : initializeApp(config);
+const db = existingApp ? getFirestore(app) : initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
   ignoreUndefinedProperties: true,
 });
@@ -30,13 +30,33 @@ let currentUser = null;
 const listeners = new Set();
 
 function readOutbox() {
-  try { return JSON.parse(window.localStorage.getItem(OUTBOX_KEY) || '[]'); } catch { return []; }
+  try {
+    const items = JSON.parse(window.localStorage.getItem(OUTBOX_KEY) || '[]');
+    return Array.isArray(items) ? items : [];
+  } catch (err) {
+    console.warn('[sixpack] Outbox ist nicht lesbar; vorhandener Inhalt bleibt erhalten:', err);
+    return [];
+  }
 }
 function writeOutbox(items) {
-  try { window.localStorage.setItem(OUTBOX_KEY, JSON.stringify(items)); } catch { /* voll/privat — dann bleibt nur der Direktversuch */ }
+  try {
+    const stored = window.localStorage.getItem(OUTBOX_KEY);
+    if (stored && !Array.isArray(JSON.parse(stored))) return false;
+    window.localStorage.setItem(OUTBOX_KEY, JSON.stringify(items));
+    return true;
+  } catch (err) {
+    console.warn('[sixpack] Outbox konnte nicht gespeichert werden:', err);
+    return false;
+  }
+}
+function pendingFor(uid = currentUser?.uid) {
+  return readOutbox().filter(item => {
+    const ownerUid = item.ownerUid ?? item.data?.userId ?? null;
+    return ownerUid === null || ownerUid === uid;
+  }).length;
 }
 function emit() {
-  const state = { user: currentUser, pending: readOutbox().length };
+  const state = { user: currentUser, pending: pendingFor() };
   listeners.forEach((fn) => fn(state));
 }
 
@@ -53,12 +73,14 @@ export function flushOutbox() {
   if (flushing) return flushing;
   flushing = (async () => {
     const uid = currentUser.uid;
-    let items = readOutbox();
+    const items = readOutbox();
     for (const item of items) {
+      const ownerUid = item.ownerUid ?? item.data?.userId ?? null;
+      // Guest-Workouts werden beim Login übernommen; fremde Konten bleiben getrennt.
+      if (ownerUid !== null && ownerUid !== uid) continue;
       try {
         await writeToFirestore(uid, item);
-        items = readOutbox().filter((i) => i.docId !== item.docId);
-        writeOutbox(items);
+        writeOutbox(readOutbox().filter((i) => i.docId !== item.docId));
       } catch (err) {
         console.warn('[sixpack] Outbox-Eintrag bleibt liegen:', item.docId, err);
         break;
@@ -92,7 +114,7 @@ onAuthStateChanged(auth, (user) => {
 
 export function subscribeSync(fn) {
   listeners.add(fn);
-  fn({ user: currentUser, pending: readOutbox().length });
+  fn({ user: currentUser, pending: pendingFor() });
   return () => listeners.delete(fn);
 }
 
@@ -104,13 +126,17 @@ export function submitWorkout(workout) {
   const built = buildWorkoutDoc({
     ...workout,
     source: workout.source || 'sixpack',
-    app: 'sixpack-standalone',
+    app: 'sixpack',
     modality: workout.modality || 'core',
     userId: currentUser?.uid || null,
   });
-  const item = { docId: built.docId, data: built.data };
-  writeOutbox([...readOutbox().filter((i) => i.docId !== item.docId), item]);
+  const item = { docId: built.docId, data: built.data, ownerUid: currentUser?.uid || null };
+  const saved = writeOutbox([...readOutbox().filter((i) => i.docId !== item.docId), item]);
   emit();
+  if (!saved) {
+    if (!currentUser) return Promise.reject(new Error('Workout konnte offline nicht gespeichert werden.'));
+    return writeToFirestore(currentUser.uid, item).then(emit);
+  }
   return flushOutbox();
 }
 

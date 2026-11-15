@@ -82,7 +82,7 @@ enableSixpackPush(uid, {
 });
 ```
 
-Die Standalone-App (`standaloneSync.js`) ruft dieselbe Funktion mit ihrer
+Die 6Pack-Web-App (`sixpackCloud.js`) ruft dieselbe Funktion mit ihrer
 bereits initialisierten App auf. Vordergrund-Nachrichten:
 `listenForSixpackPush({ firebaseApp, auth, uid })`.
 
@@ -235,3 +235,7 @@ für ältere Clients kompatibel, sind aber nicht Teil des neuen Sync-Ablaufs.
 
 Architekturgrundlagen: https://firebase.google.com/docs/firestore/use-rest-api
 und https://firebase.google.com/docs/firestore/quotas .
+
+## Setup-Deep-Link und Core Skills
+
+`#settings` (Alias `#setup`) öffnet das vorhandene Setup direkt. Der Standalone-Einstieg nutzt dafür denselben `SixPackEmbed` wie Core Skills. `sixpackCloud.js` verwendet eine bereits initialisierte Standard-Firebase-App samt Firestore weiter. In Core Skills kommt das Theme vom Skills-Wrapper; die eigenständige 6Pack-App behält ihr Theme.

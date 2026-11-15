@@ -37,7 +37,7 @@ Fremde Änderungen und persönliche Daten erhalten.
 | `PrivatePhoto.jsx` | Geschützter Bildabruf, Blob-URL und deren Aufräumen |
 | `selfieCloud.js` | Normaler Foto-Sync nach Firestore und JPEG-Aufbereitung |
 | `photoClient.mjs` | Authentifizierter Import vorhandener Server-Fotos; kein normaler Sync-Transport |
-| `standaloneSync.js`, `workoutDoc.js` | Workout-Outbox und gemeinsames Session-Format |
+| `sixpackCloud.js`, `workoutDoc.js` | Firebase-Login, Workout-Outbox, Programmspeicher und Push-Anbindung; gemeinsames Session-Format |
 | `firebaseConfig.js` | Gemeinsame öffentliche Firebase-Web-Konfiguration; keine Admin-Zugangsdaten |
 | `catalog/`, `build-data.mjs` | Datenquelle und Generator für die Standalone-App |
 | `sixpack.css`, `styles.css` | Gemeinsames Theme bzw. Standalone-Styles |
