@@ -1,3 +1,9 @@
+## 2026-11-16 — Promote: nur qualifizierende Checks auf master
+
+- Ursache des roten Auto-Promote (Run `43823292352`, Job `133151101043`): `git push` von `6d27686` auf geschütztes `master` mit GH006 „Required status check check is expected“. Der einzige Check-Run „check“ (App 15368) ist success, stammt aber aus `workflow_dispatch` (`43818754189`), ausgelöst nach dem GITHUB_TOKEN-Squash der Dependabot-PRs. Ein Dispatch-Lauf erfüllt den Branch-Schutz nicht. Derselbe Push mit einem `push`-Check hat am 2026-11-14 funktioniert (`43628363580` nach `43628319503`, `51bbdc7`).
+- `automerge-pr.yml` zieht `dev` per Fast-Forward auf den bereits geprüften PR-Head (Event `pull_request`/`push`/…) und stößt danach `automerge.yml` an. Kein Squash, kein Check-Dispatch.
+- `automerge.yml` fast-forwardet `master` nur noch bei einem qualifizierenden Check und startet den Live-Deploy per Dispatch. Ein reiner Dispatch-Erfolg wird nicht gepusht.
+
 ## 2026-11-13 — AL: Pages-Quelle nach Living Dashboard verifiziert
 
 - Seit `72e888de` baut `dashboard.yml` (Reusable `nimmsel23/dashboards@engine`) die Pages-Seite: API `build_type=workflow`, `status=built`; Dashboard-Lauf `43335039422` build+deploy success. NEXT-Pages-Eintrag entsprechend nachgezogen.
