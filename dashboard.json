@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-16T09:01:17+00:00",
+  "generated_at": "2026-11-16T11:35:58+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-16T09:00:57Z",
+   "pushed_at": "2026-11-16T11:35:30Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,30 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 5,
-   "oldest_unpromoted": "2026-11-16T06:43:15Z",
-   "dev_head": "5284c1a 2026-11-16T10:00:57+01:00",
-   "master_head": "935cf63 2026-11-16T09:30:24+01:00"
+   "dev_ahead": 3,
+   "oldest_unpromoted": "2026-11-16T11:26:28Z",
+   "dev_head": "f983a53 2026-11-16T11:35:29Z",
+   "master_head": "5284c1a 2026-11-16T10:00:57+01:00"
   },
   "commits": [
+   {
+    "sha": "f983a53",
+    "date": "2026-11-16T11:35:29Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: Check und Dashboard starten"
+   },
+   {
+    "sha": "6f325ac",
+    "date": "2026-11-16T11:33:21Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: Check und Dashboard auf dev starten"
+   },
+   {
+    "sha": "773b94d",
+    "date": "2026-11-16T11:26:28Z",
+    "author": "Cursor Agent",
+    "subject": "dashboard: master-Push baut ebenfalls dev"
+   },
    {
     "sha": "5284c1a",
     "date": "2026-11-16T10:00:57+01:00",
@@ -126,24 +144,6 @@
     "date": "2026-11-12T22:33:43+01:00",
     "author": "Alpha",
     "subject": "fix(store): 6Pack-Startseite im Shell-Layout, deutsche Beschriftung, Store-Bereinigung"
-   },
-   {
-    "sha": "0b4a56e",
-    "date": "2026-11-12T17:45:26+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): CI-Beleg für 90bb68db — Retarget Port, Check, Promote, Deploy"
-   },
-   {
-    "sha": "90bb68d",
-    "date": "2026-11-12T17:41:47+01:00",
-    "author": "Alpha",
-    "subject": "fix(ci): Dependabot base=master→dev Retarget vor Squash (Org c1f9b6ce)"
-   },
-   {
-    "sha": "dbddbd2",
-    "date": "2026-11-12T14:06:11+01:00",
-    "author": "nimmsel23",
-    "subject": "feat(embed): add a shell entry that leaves the document alone (#46)"
    }
   ],
   "activity": [
@@ -229,7 +229,7 @@
    },
    {
     "day": "2026-11-16",
-    "n": 6
+    "n": 9
    }
   ],
   "workflows": [
@@ -237,30 +237,30 @@
     "name": "Check (6Pack)",
     "branch": "dev",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-16T09:01:01Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43835994206",
-    "sha": "5284c1a"
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-16T11:35:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43859096901",
+    "sha": "f983a53"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-16T09:01:01Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43835994198",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-16T09:01:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43836071655",
     "sha": "5284c1a"
    },
    {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "name": "Gemini CI Agent",
     "branch": "master",
     "event": "workflow_run",
     "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-16T08:33:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43832230799",
+    "conclusion": "success",
+    "created_at": "2026-11-16T09:01:23Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43836049812",
     "sha": "935cf63"
    },
    {
@@ -269,19 +269,29 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "skipped",
-    "created_at": "2026-11-16T08:33:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43832229318",
+    "created_at": "2026-11-16T09:01:23Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43836049767",
     "sha": "935cf63"
    },
    {
-    "name": "Gemini CI Agent",
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-16T08:33:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43832229289",
+    "created_at": "2026-11-16T09:01:23Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43836049690",
     "sha": "935cf63"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-16T09:01:01Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43835994198",
+    "sha": "5284c1a"
    },
    {
     "name": "Merge-Agent",
@@ -322,16 +332,6 @@
     "created_at": "2026-11-16T08:33:20Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43832166697",
     "sha": "1d4650b"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T08:30:28Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43831767419",
-    "sha": "935cf63"
    },
    {
     "name": "Merge-Agent",
@@ -514,34 +514,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev-Branch 5 Commits voraus, Master mit CI-Fix aktualisiert",
-   "lage": "Der `dev`-Branch liegt mit 5 Commits vor dem `master`-Branch, der zuletzt mit Commit `935cf63` (fix(ci)) aktualisiert wurde. Aktuell laufen zwei Workflows auf dem `dev`-Branch.",
+   "headline": "Dev-Branch 3 Commits voraus, Master aktualisiert und Check auf Dev erfolgreich",
+   "lage": "Der `dev`-Branch liegt mit 3 Commits vor dem `master`-Branch, der zuletzt mit Commit `5284c1a` aktualisiert wurde. Der letzte Workflow auf `dev` (`Check (6Pack)` für `f983a53`) wurde erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
      "level": "mittel",
-     "text": "Der `dev`-Branch ist 5 Commits vor dem `master`-Branch."
+     "text": "Die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' sind laut `NEXT.md` weiterhin zu prüfen/setzen."
     },
     {
      "level": "mittel",
-     "text": "Der `Auto-Promote` Workflow von `dev` nach `master` wurde für den letzten `master`-Commit `935cf63` übersprungen."
+     "text": "Der Import der 6 eigenen Clips für Tag 1 nach 'public/videos/' ist laut `NEXT.md` noch offen."
     },
     {
      "level": "info",
-     "text": "Zwei Workflows (`Check (6Pack)`, `6Pack deploy (preview + standalone)`) auf `dev` sind aktuell `in_progress`."
+     "text": "Woche 4 des 6 Pack Promise-Programms ist laut `TODO.md` noch zu ergänzen."
     }
    ],
    "naechste_schritte": [
-    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY'.",
-    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/'.",
-    "Warten Sie den Abschluss der laufenden Workflows auf `dev` ab."
+    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`.",
+    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/' wie in `NEXT.md` beschrieben.",
+    "Ergänzen Sie Woche 4 des 6 Pack Promise-Programms mit verifizierten Workouts."
    ],
-   "veraendert": "Der `dev`-Branch ist nicht mehr mit dem `master`-Branch synchronisiert und liegt 5 Commits voraus; die `Auto-Promote` von `dev` nach `master` wurde zuletzt übersprungen.",
+   "veraendert": "Der `dev`-Branch liegt nun 3 Commits vor `master` (zuvor 5), der `master`-Branch wurde mit `5284c1a` aktualisiert, und alle Workflows auf `dev` sind abgeschlossen.",
    "fragen": [
-    "Ist der aktuelle Vorsprung von `dev` gegenüber `master` beabsichtigt?",
-    "War das Überspringen des `Auto-Promote` Workflows für Commit `935cf63` beabsichtigt?"
+    "Soll der Gmail-Agentenkanal für strukturierte 6Pack-Diagnosen konkretisiert und die Zustellung nachgewiesen werden (siehe `NEXT.md`)?",
+    "Soll der Fitness-Tab-Runner auf den aktuellen Stand von 6pack-dev nachgezogen werden, um fehlende Features wie `videoCache.js` und Autostart/Gym-Timer-Töne zu integrieren (siehe `NEXT.md`)?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-16T09:01:19+00:00"
+  "ai_at": "2026-11-16T11:36:01+00:00"
  }
 }
