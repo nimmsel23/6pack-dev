@@ -1,14 +1,13 @@
-# PR-AutoMerge: geoeffnete Dependabot-PRs (-> dev) werden bei gruenem `check` gesquasht.
-# Danach laeuft die gewohnte Kette automatisch weiter: check.yml (Dispatch auf dem
-# neuen dev-Stand) -> Auto-Promote (automerge.yml) -> Live-Deploy (deploy-master.yml).
-#
-# Gruen = der Check-Run namens "check" auf dem PR-Stand ist success (gleiches Kriterium
-# wie der Branch-Schutz auf master). Andere Runs (z. B. Preview) bleiben unberuecksichtigt.
-# Rot bleibt liegen und wird beim naechsten Dependabot-Lauf aktualisiert. Kein Release
-# geht mehr verloren, nur weil niemand den PR zusammenclickt: workflow_run feuert sofort
-# nach gruenem Check, der stuendliche Zeitplan holt verpasste Events nach. Wirkt erst,
-# wenn diese Datei im Default-Branch liegt (der Auto-Promote zieht sie beim naechsten
-# Lauf von dev nach master).
+# PR-AutoMerge: geoeffnete Dependabot-PRs (-> dev).
+# Liegt der PR-Head als Fast-Forward auf dev und hat der Commit einen qualifizierenden
+# Check (push/pull_request/..., nicht workflow_dispatch), wird dev auf genau diesen
+# SHA gezogen. Squash wuerde einen neuen Commit ohne diesen Check erzeugen; der
+# anschliessende workflow_dispatch erfuellt den Branch-Schutz auf master nicht
+# (GH006 "Required status check \"check\" is expected"). Danach stoesst der Lauf
+# automerge.yml an, der master per Fast-Forward nachzieht.
+# Ist kein Fast-Forward moeglich, bleibt der PR offen: Dependabot rebased, der neue
+# Head bekommt einen qualifizierenden Check, der naechste Lauf zieht dev nach.
+# Rot bleibt liegen. Wirkt erst, wenn diese Datei im Default-Branch liegt.
 
 name: PR-AutoMerge (Dependabot -> dev)
 
@@ -41,6 +40,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: dev
       # CI.md Fallensteller base=master: trotz target-branch:dev öffnet Dependabot
       # manchmal gegen master; --base-dev-Filter lässt grüne PRs liegen. SSOT-Pattern
       # (Org 0e25e4c4 / c1f9b6ce): nur dependabot/*-Heads retargeten — Drafts/Non-Dep
@@ -58,34 +61,67 @@ jobs:
               echo "::warning::Retarget von PR #$n fehlgeschlagen."
             fi
           done <<< "$prs"
-      - name: Gruene Dependabot-PRs squaschen
-        id: squash
+      - name: Gruene Dependabot-PRs auf dev bringen
+        id: land
         run: |
           set -euo pipefail
-          merged=0
+          ff=0
+          eligible='^(push|pull_request|pull_request_review|pull_request_target|deployment|deployment_status)$'
+          gate() {
+            local sha="$1" tsv pending=0 qual_event="" qual="" any_success=0 event status conclusion
+            tsv=$(gh api "repos/$REPO/actions/runs?head_sha=$sha&per_page=30" \
+              --jq '[.workflow_runs[] | select(.path==".github/workflows/check.yml")] | sort_by(.run_started_at // .created_at) | reverse | .[] | [.event, .status, (.conclusion // "")] | @tsv')
+            while IFS=$'\t' read -r event status conclusion; do
+              [ -n "${event:-}" ] || continue
+              if [ "$status" != "completed" ] || [ "$conclusion" = "action_required" ]; then
+                pending=1
+              fi
+              if [ "$conclusion" = "success" ]; then
+                any_success=1
+              fi
+              if [ -z "$qual_event" ] && printf '%s\n' "$event" | grep -Eq "$eligible"; then
+                qual_event=$event
+                qual=$conclusion
+              fi
+            done <<< "$tsv"
+            if [ "$pending" = 1 ]; then echo pending; return; fi
+            if [ -n "$qual_event" ]; then
+              if [ "$qual" = "success" ]; then echo "success $qual_event"; else echo "bad $qual"; fi
+              return
+            fi
+            if [ "$any_success" = 1 ]; then echo ineligible; else echo none; fi
+          }
+          git fetch -q origin dev
+          devsha=$(git rev-parse origin/dev)
           prs=$(gh pr list -R "$REPO" --base dev --state open \
-            --json number,headRefName,title,statusCheckRollup \
-            --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName, (.title // ""), ([.statusCheckRollup[]? | select(.name == "check") | .conclusion] | join(","))] | @tsv')
-          while IFS=$'\t' read -r n branch title res; do
+            --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("dependabot/")) | [.number, .headRefName] | @tsv')
+          while IFS=$'\t' read -r n branch; do
             [ -n "${n:-}" ] || continue
-            # Majors (Owner-Freigabe 2026-11-07): auch Major-Bumps automatisch squaschen. Betta ueberwacht Check/Live-Deploy; bei rot geht per Email ein Auftrag an Alpha.
-            case "${res^^}" in
-              SUCCESS)
-                echo "PR #$n ($branch): check gruen -> squash."
-                if gh pr merge "$n" -R "$REPO" --squash --delete-branch; then
-                  merged=1
-                else
-                  echo "::warning::Merge von PR #$n fehlgeschlagen (Konflikt? Dependabot rebased beim naechsten Lauf selbst)."
-                fi
-                ;;
-              *)
-                echo "PR #$n ($branch): check '$res' -> bleibt offen (rot)."
-                ;;
-            esac
+            git fetch -q origin "refs/heads/${branch}:refs/remotes/origin/${branch}" || { echo "::warning::PR #$n ($branch) nicht fetchbar."; continue; }
+            sha=$(git rev-parse "refs/remotes/origin/${branch}")
+            verdict=$(gate "$sha")
+            if [ "$verdict" = "pending" ]; then
+              echo "PR #$n ($branch): Check laeuft noch -> bleibt offen."
+              continue
+            fi
+            if git merge-base --is-ancestor "$devsha" "$sha" && [ "${verdict%% *}" = "success" ]; then
+              if [ "$sha" = "$devsha" ]; then
+                echo "PR #$n ($branch): Head ist schon dev."
+                continue
+              fi
+              echo "PR #$n ($branch): qualifizierter Check (${verdict#success }) auf $sha -> dev per Fast-Forward."
+              git push origin "${sha}:refs/heads/dev"
+              devsha=$sha
+              git update-ref refs/remotes/origin/dev "$sha"
+              ff=1
+              continue
+            fi
+            echo "PR #$n ($branch): kein Fast-Forward mit qualifiziertem Check ($verdict) -> bleibt offen. Dependabot rebased, der naechste Lauf zieht den neuen Head nach."
           done <<< "$prs"
-          echo "merged=$merged" >> "$GITHUB_OUTPUT"
-      - name: check.yml auf dem neuen dev-Stand anstossen
-        if: steps.squash.outputs.merged == '1'
+          echo "ff=$ff" >> "$GITHUB_OUTPUT"
+      - name: Auto-Promote nach Fast-Forward anstossen
+        if: steps.land.outputs.ff == '1'
         run: |
-          echo "Merge mit GITHUB_TOKEN loest keinen Push-Trigger aus -> Check per Dispatch."
-          gh workflow run check.yml -R "$REPO" --ref dev
+          echo "dev zeigt auf einen qualifiziert geprueften Stand -> Promote anstossen (GITHUB_TOKEN-Push loest ihn nicht aus)."
+          gh workflow run automerge.yml -R "$REPO" --ref master
