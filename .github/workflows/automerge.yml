@@ -4,8 +4,11 @@
 #   dev hinter master              -> dev wird per Fast-Forward auf master gezogen
 #   beide haben eigene Commits     -> roter Lauf (kommt nur nach direktem Push auf master vor): von Hand mit normalem Push zusammenfuehren
 # Rot bleibt liegen (kein Promote). Ein Zeitplan (alle 30 Min) faengt haengende Faelle ab. Fast-Forward statt Merge-Commit auf master, weil der Branch-Schutz den Check
-# `check` fuer genau diesen Commit verlangt. Pushes mit GITHUB_TOKEN loesen keine Workflows aus -> der Deploy
-# wird per workflow_dispatch gestartet. Laeuft aus dem Default-Branch; die Datei muss dort liegen.
+# `check` fuer genau diesen Commit verlangt. Der Check zaehlt nur, wenn sein Workflow-Event qualifiziert
+# (push, pull_request, pull_request_review, pull_request_target, deployment, deployment_status).
+# workflow_dispatch ist auf dem Commit sichtbar und success, erfuellt den Context aber nicht: der Push
+# antwortet GH006 "Required status check \"check\" is expected". Pushes mit GITHUB_TOKEN loesen keine
+# Workflows aus -> der Deploy wird per workflow_dispatch gestartet. Laeuft aus dem Default-Branch; die Datei muss dort liegen.
 
 name: Auto-Promote dev -> master (Check (6Pack))
 
@@ -65,14 +68,47 @@ jobs:
             exit 1
           fi
 
-          # Nur ein Check, den ein normaler Push ausgeloest hat, erfuellt den Branch-Schutz; per Dispatch gestartete Checks nicht.
-          res=$(gh api "repos/$REPO/commits/$dev/check-runs" --jq '[.check_runs[]|select(.name=="check")]|first|if .==null then "none" elif .status!="completed" then "pending" else .conclusion end')
-          case "$res" in
+          # Neuester qualifizierender Check (6Pack). Ein juengerer workflow_dispatch
+          # ueberschreibt einen aelteren push/pull_request-Lauf nicht: der Schutz
+          # ignoriert Dispatch und wertet den qualifizierenden Lauf.
+          eligible='^(push|pull_request|pull_request_review|pull_request_target|deployment|deployment_status)$'
+          tsv=$(gh api "repos/$REPO/actions/runs?head_sha=$dev&per_page=30" \
+            --jq '[.workflow_runs[] | select(.path==".github/workflows/'"$CHECK_FILE"'")] | sort_by(.run_started_at // .created_at) | reverse | .[] | [.event, .status, (.conclusion // "")] | @tsv')
+          pending=0
+          qual_event=""
+          qual=""
+          any_success=0
+          while IFS=$'\t' read -r event status conclusion; do
+            [ -n "${event:-}" ] || continue
+            if [ "$status" != "completed" ] || [ "$conclusion" = "action_required" ]; then
+              pending=1
+            fi
+            if [ "$conclusion" = "success" ]; then
+              any_success=1
+            fi
+            if [ -z "$qual_event" ] && printf '%s\n' "$event" | grep -Eq "$eligible"; then
+              qual_event=$event
+              qual=$conclusion
+            fi
+          done <<< "$tsv"
+
+          if [ "$pending" = 1 ]; then
+            echo "Check fuer $dev laeuft noch oder wartet auf Freigabe -> naechster Lauf uebernimmt."
+            exit 0
+          fi
+          if [ -z "$qual_event" ]; then
+            if [ "$any_success" = 1 ]; then
+              echo "Check auf $dev ist success, aber ohne qualifizierendes Event (workflow_dispatch zaehlt fuer den Branch-Schutz nicht). Kein Push auf master."
+              exit 0
+            fi
+            echo "Check fuer $dev fehlt -> naechster Lauf uebernimmt."
+            exit 0
+          fi
+          case "$qual" in
             success)
-              echo "Check gruen auf $dev -> master per Fast-Forward, Live-Deploy per Dispatch."
+              echo "Qualifizierter Check ($qual_event) gruen auf $dev -> master per Fast-Forward, Live-Deploy per Dispatch."
               git push origin "${dev}:refs/heads/master"
               gh workflow run "$DEPLOY_FILE" -R "$REPO" --ref master
               ;;
-            none|pending) echo "Check fuer $dev laeuft noch/fehlt -> naechster Lauf (workflow_run oder Zeitplan) uebernimmt." ;;
-            *) echo "Check auf $dev ist '$res' -> bleibt auf dev liegen (rot)." ;;
+            *) echo "Qualifizierter Check ($qual_event) auf $dev ist '$qual' -> bleibt auf dev liegen." ;;
           esac
