@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-17T16:06:28+00:00",
+  "generated_at": "2026-11-18T13:25:52+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-17T16:06:18Z",
+   "pushed_at": "2026-11-18T10:37:26Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -148,12 +148,8 @@
   ],
   "activity": [
    {
-    "day": "2026-10-28",
-    "n": 3
-   },
-   {
     "day": "2026-10-29",
-    "n": 26
+    "n": 18
    },
    {
     "day": "2026-10-30",
@@ -230,27 +226,31 @@
    {
     "day": "2026-11-17",
     "n": 1
+   },
+   {
+    "day": "2026-11-18",
+    "n": 0
    }
   ],
   "workflows": [
    {
-    "name": "6Pack deploy (preview + standalone)",
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-17T16:06:09Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44121884574",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-18T09:14:41Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44274091977",
     "sha": "2b22af8"
    },
    {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "name": "Merge-Agent",
     "branch": "master",
-    "event": "push",
+    "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-17T16:06:09Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44121884184",
+    "created_at": "2026-11-18T06:57:09Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44255129614",
     "sha": "2b22af8"
    },
    {
@@ -259,19 +259,19 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-17T14:41:46Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44105927078",
-    "sha": "f983a53"
+    "created_at": "2026-11-18T04:34:15Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44238235053",
+    "sha": "2b22af8"
    },
    {
-    "name": "Merge-Agent",
+    "name": "6Pack deploy (preview + standalone)",
     "branch": "master",
-    "event": "schedule",
+    "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-17T08:16:38Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44045350952",
-    "sha": "f983a53"
+    "created_at": "2026-11-17T16:06:09Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44121884574",
+    "sha": "2b22af8"
    },
    {
     "name": "Gemini CI Agent",
@@ -514,12 +514,20 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Branches synchronisiert, neuer Commit, Deployment läuft",
-   "lage": "Der `dev`- und `master`-Branch sind mit Commit `2b22af8` synchronisiert. Der Workflow `Auto-Promote dev -> master (Check (6Pack))` wurde zuletzt erfolgreich abgeschlossen. Ein `6Pack deploy (preview + standalone)` auf `master` läuft aktuell.",
+   "headline": "Branches synchronisiert, Deployment erfolgreich abgeschlossen",
+   "lage": "Der `dev`- und `master`-Branch sind weiterhin mit Commit `2b22af8` synchronisiert. Der Workflow `Auto-Promote dev -> master (Check (6Pack))` wurde erneut erfolgreich abgeschlossen. Das `6Pack deploy (preview + standalone)` auf `master` ist nun erfolgreich beendet.",
    "auffaelligkeiten": [
     {
      "level": "info",
-     "text": "Der Workflow \"6Pack deploy (preview + standalone)\" auf dem master-Branch (Run 44121884574) ist aktuell noch \"in_progress\"."
+     "text": "Der Workflow '6Pack deploy (preview + standalone)' auf master (sha 2b22af8) wurde erfolgreich abgeschlossen."
+    },
+    {
+     "level": "info",
+     "text": "Die Branches dev und master sind weiterhin synchronisiert auf Commit 2b22af8."
+    },
+    {
+     "level": "info",
+     "text": "Seit dem letzten Bericht gab es keine neuen Commits auf den Hauptbranches."
     }
    ],
    "naechste_schritte": [
@@ -527,10 +535,13 @@
     "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/' wie in `NEXT.md` beschrieben.",
     "Ergänzen Sie Woche 4 des 6 Pack Promise-Programms mit verifizierten Workouts."
    ],
-   "veraendert": "Der synchronisierte Commit hat sich von `f983a53` auf `2b22af8` geändert, und ein Deployment-Workflow ist aktiv.",
-   "fragen": [],
+   "veraendert": "Das zuvor laufende Deployment `6Pack deploy (preview + standalone)` auf `master` wurde erfolgreich abgeschlossen.",
+   "fragen": [
+    "Sollen die eigenen Clips für Tag 1 (hands_back_tucks etc.) mit committet werden, wie in `NEXT.md` erwähnt?",
+    "Soll der Fitness-Tab-Runner in 6pack-dev mit den neueren Funktionen (videoCache.js, Autostart/Gym-Timer-Töne) aus fitness-dev nachgezogen werden?"
+   ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-17T16:06:34+00:00"
+  "ai_at": "2026-11-18T13:25:54+00:00"
  }
 }
