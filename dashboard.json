@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-20T13:35:33+00:00",
+  "generated_at": "2026-11-20T16:56:07+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-20T07:37:38Z",
+   "pushed_at": "2026-11-20T16:55:57Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -21,10 +21,16 @@
    "dev_behind": 0,
    "dev_ahead": 0,
    "oldest_unpromoted": null,
-   "dev_head": "5ba5b41 2026-11-20T07:45:18+01:00",
-   "master_head": "5ba5b41 2026-11-20T07:45:18+01:00"
+   "dev_head": "30db809 2026-11-20T17:55:46+01:00",
+   "master_head": "30db809 2026-11-20T17:55:46+01:00"
   },
   "commits": [
+   {
+    "sha": "30db809",
+    "date": "2026-11-20T17:55:46+01:00",
+    "author": "vitalos-org-bot[bot]",
+    "subject": "Eigene Übungsvideos über Firebase Storage zuordnen (#54)"
+   },
    {
     "sha": "5ba5b41",
     "date": "2026-11-20T07:45:18+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-13T05:41:42+01:00",
     "author": "Alpha",
     "subject": "docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)"
-   },
-   {
-    "sha": "27d517b",
-    "date": "2026-11-13T01:11:14+01:00",
-    "author": "Alpha",
-    "subject": "chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert"
    }
   ],
   "activity": [
@@ -229,19 +229,99 @@
    },
    {
     "day": "2026-11-20",
-    "n": 1
+    "n": 2
    }
   ],
   "workflows": [
    {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
-    "event": "schedule",
+    "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T13:13:46Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44742464455",
+    "created_at": "2026-11-20T16:55:49Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44778254750",
+    "sha": "30db809"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-20T16:55:49Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44778254178",
+    "sha": "30db809"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-20T16:22:05Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772664398",
     "sha": "5ba5b41"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:22:05Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772664183",
+    "sha": "5ba5b41"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "codex/exercise-video-upload",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:21:45Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772609416",
+    "sha": "d5a9e27"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "codex/exercise-video-upload",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:21:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772571038",
+    "sha": "d5a9e27"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "codex/exercise-video-upload",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:21:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772571007",
+    "sha": "d5a9e27"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "codex/exercise-video-upload",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:21:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772570995",
+    "sha": "d5a9e27"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "codex/exercise-video-upload",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-20T16:21:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772570417",
+    "sha": "d5a9e27"
    },
    {
     "name": "Merge-Agent",
@@ -252,36 +332,6 @@
     "created_at": "2026-11-20T10:30:27Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44719803992",
     "sha": "5ba5b41"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T07:28:14Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44695187734",
-    "sha": "5ba5b41"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T06:45:54Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44690108632",
-    "sha": "5ba5b41"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T06:45:46Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44690093571",
-    "sha": "2b22af8"
    },
    {
     "name": "Check (6Pack)",
@@ -372,16 +422,6 @@
     "created_at": "2026-11-16T08:05:31Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43828491881",
     "sha": "a70a4de"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "codex/fix-promote-protected-master",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T08:05:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43828491808",
-    "sha": "a70a4de"
    }
   ],
   "issues": [
@@ -417,34 +457,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev und Master synchron, alle Workflows erfolgreich; Issue #53 erstellt",
-   "lage": "Der `dev`-Branch ist mit `master` auf Commit `5ba5b41` synchronisiert. Alle relevanten Workflows auf `dev` und `master`, einschließlich \"Check (6Pack)\" für `5ba5b41` und \"Auto-Promote dev -> master (Check (6Pack))\", wurden erfolgreich abgeschlossen. Ein neues Issue #53 wurde erstellt, das ein Runner-Overlay-Problem beschreibt.",
+   "headline": "Dev und Master synchron auf 30db809; neues Issue #52; Deploy läuft",
+   "lage": "Der `dev`-Branch ist mit `master` auf Commit `30db809` synchronisiert. Der Workflow \"Auto-Promote dev -> master (Check (6Pack))\" für `30db809` war erfolgreich, aber der \"6Pack deploy (preview + standalone)\"-Workflow läuft noch. Ein neues Issue #52 wurde erstellt, das die Verbesserung der Stimme und eigene Übungsvideos betrifft.",
    "auffaelligkeiten": [
     {
-     "level": "info",
-     "text": "Der `dev`-Branch ist mit `master` auf Commit `5ba5b41` synchronisiert."
+     "level": "hoch",
+     "text": "Der Workflow \"6Pack deploy (preview + standalone)\" für Commit 30db809 auf master ist noch \"in_progress\"."
     },
     {
      "level": "info",
-     "text": "Der Workflow \"Check (6Pack)\" für Commit `5ba5b41` auf `dev` wurde erfolgreich abgeschlossen."
+     "text": "Issue #52 \"ELD-35: Stimme verbessern (austauschbar, Auswahl durch Daniel) + eigene Übungsvideos statt Fremdclips\" wurde erstellt."
     },
     {
-     "level": "mittel",
-     "text": "Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\" wurde neu erstellt."
+     "level": "info",
+     "text": "Die Aufgabe \"Eigene Übungsvideos\" in TODO.md ist als erledigt markiert, passend zum Commit 30db809."
     }
    ],
    "naechste_schritte": [
+    "Überprüfen Sie den Status des Workflows \"6Pack deploy (preview + standalone)\" für Commit 30db809.",
     "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`.",
-    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/' wie in `NEXT.md` beschrieben.",
     "Analysieren Sie Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\"."
    ],
-   "veraendert": "Der `dev`-Branch ist nun mit `master` auf Commit `5ba5b41` synchronisiert und der Workflow \"Check (6Pack)\" für diesen Commit wurde erfolgreich abgeschlossen; zudem wurde Issue #53 erstellt.",
+   "veraendert": "Der `dev`-Branch und `master` sind auf Commit `30db809` aktualisiert, wobei der aktuelle `6Pack deploy`-Workflow noch läuft und ein neues Issue #52 erstellt wurde.",
    "fragen": [
-    "Sollen die importierten eigenen Clips für Tag 1 direkt ins Repo committet werden?",
-    "Soll der Fitness-Tab-Runner auf den aktuellen Stand von 6pack-dev nachgezogen werden?"
+    "Soll die Umsetzung der Sprachausgabe für ELD-35 (Issue #52) beauftragt werden?",
+    "Sollen die eigenen Clips für Tag 1 direkt im Repo committed werden, wie in `NEXT.md` erwähnt?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-20T13:35:35+00:00"
+  "ai_at": "2026-11-20T16:56:10+00:00"
  }
 }
