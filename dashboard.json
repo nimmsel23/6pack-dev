@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-19T13:52:35+00:00",
+  "generated_at": "2026-11-20T06:45:35+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-18T13:26:08Z",
+   "pushed_at": "2026-11-20T06:45:18Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,18 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "2b22af8 2026-11-17T17:06:07+01:00",
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-20T07:45:18+01:00",
+   "dev_head": "5ba5b41 2026-11-20T07:45:18+01:00",
    "master_head": "2b22af8 2026-11-17T17:06:07+01:00"
   },
   "commits": [
+   {
+    "sha": "5ba5b41",
+    "date": "2026-11-20T07:45:18+01:00",
+    "author": "nimmsel23",
+    "subject": "docs(todo): ELD-35 im Backlog verankern (Stimme + eigene Videos, keine Umsetzung)"
+   },
    {
     "sha": "2b22af8",
     "date": "2026-11-17T17:06:07+01:00",
@@ -138,19 +144,9 @@
     "date": "2026-11-13T01:11:14+01:00",
     "author": "Alpha",
     "subject": "chore(portal): portal.mjs + docs/apps.* aus vitalos vos-portal --all synchronisiert"
-   },
-   {
-    "sha": "72e888d",
-    "date": "2026-11-13T01:08:02+01:00",
-    "author": "Alpha",
-    "subject": "feat(ci): Living Dashboard als GitHub Page"
    }
   ],
   "activity": [
-   {
-    "day": "2026-10-30",
-    "n": 1
-   },
    {
     "day": "2026-10-31",
     "n": 5
@@ -230,17 +226,31 @@
    {
     "day": "2026-11-19",
     "n": 0
+   },
+   {
+    "day": "2026-11-20",
+    "n": 1
    }
   ],
   "workflows": [
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-20T06:45:20Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44690038955",
+    "sha": "5ba5b41"
+   },
    {
     "name": "PR-AutoMerge (Dependabot -> dev)",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-19T13:32:54Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44534536309",
+    "created_at": "2026-11-20T03:33:03Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44668487163",
     "sha": "2b22af8"
    },
    {
@@ -249,8 +259,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-19T13:02:14Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44529486561",
+    "created_at": "2026-11-20T02:36:38Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44662025298",
     "sha": "2b22af8"
    },
    {
@@ -259,8 +269,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-19T07:59:23Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44483849625",
+    "created_at": "2026-11-19T23:54:25Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44641495101",
     "sha": "2b22af8"
    },
    {
@@ -282,16 +292,6 @@
     "created_at": "2026-11-16T11:35:59Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43859157690",
     "sha": "5284c1a"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T11:35:32Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43859096901",
-    "sha": "f983a53"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -462,49 +462,21 @@
     "created_at": "2026-11-16T06:42:48Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43818653744",
     "sha": "f508fb2"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-6f5e12e2e5",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T06:42:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43818652982",
-    "sha": "35f8a68"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-6f5e12e2e5",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T06:42:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43818652945",
-    "sha": "35f8a68"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-6f5e12e2e5",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T06:42:48Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43818652786",
-    "sha": "35f8a68"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-6f5e12e2e5",
-    "event": "pull_request_target",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T06:42:47Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43818650287",
-    "sha": "35f8a68"
    }
   ],
-  "issues": [],
+  "issues": [
+   {
+    "number": 52,
+    "title": "ELD-35: Stimme verbessern (austauschbar, Auswahl durch Daniel) + eigene Übungsvideos statt Fremdclips",
+    "created_at": "2026-11-20T06:44:17Z",
+    "updated_at": "2026-11-20T06:44:17Z",
+    "labels": [
+     "enhancement"
+    ],
+    "url": "https://github.com/nimmsel23/6pack-dev/issues/52",
+    "author": "nimmsel23"
+   }
+  ],
   "pulls": [],
   "live_sites": [
    "https://vos-6pack.web.app"
@@ -514,34 +486,30 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Branches synchronisiert, Workflows erfolgreich abgeschlossen",
-   "lage": "Der `dev`- und `master`-Branch sind weiterhin mit Commit `2b22af8` synchronisiert. Die Workflows `Auto-Promote dev -> master (Check (6Pack))`, `PR-AutoMerge (Dependabot -> dev)` und `Merge-Agent` wurden erfolgreich abgeschlossen. Das `6Pack deploy (preview + standalone)` auf `master` ist weiterhin erfolgreich.",
+   "headline": "Dev-Branch voraus, Check-Workflow läuft; Issue #52 erstellt",
+   "lage": "Der `dev`-Branch ist mit Commit `5ba5b41` einen Commit vor `master`, der auf `2b22af8` steht. Der Workflow \"Check (6Pack)\" auf `dev` für Commit `5ba5b41` ist aktuell noch `in_progress`. Die Workflows `PR-AutoMerge (Dependabot -> dev)`, `Merge-Agent`, `Auto-Promote dev -> master (Check (6Pack))` und `6Pack deploy (preview + standalone)` auf `master` wurden erfolgreich abgeschlossen.",
    "auffaelligkeiten": [
     {
-     "level": "info",
-     "text": "Die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' sind gemäß `NEXT.md` noch zu prüfen/setzen."
+     "level": "hoch",
+     "text": "Der Workflow \"Check (6Pack)\" für den neuesten Commit `5ba5b41` auf `dev` ist noch `in_progress`, was eine Promotion zu `master` blockieren könnte."
     },
     {
      "level": "info",
-     "text": "Der Import der 6 eigenen Clips für Tag 1 nach 'public/videos/' ist weiterhin offen."
-    },
-    {
-     "level": "info",
-     "text": "Woche 4 des 6 Pack Promise-Programms ist laut `TODO.md` noch nicht ergänzt."
+     "text": "Issue #52 \"ELD-35: Stimme verbessern...\" wurde erstellt und im Backlog verankert, wie in Commit `5ba5b41` dokumentiert."
     }
    ],
    "naechste_schritte": [
+    "Überwachen Sie den Fortschritt des Workflows \"Check (6Pack)\" für Commit `5ba5b41`.",
     "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`.",
-    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/' wie in `NEXT.md` beschrieben.",
-    "Ergänzen Sie Woche 4 des 6 Pack Promise-Programms mit verifizierten Workouts."
+    "Importieren Sie die 6 eigenen Clips für Tag 1 nach 'public/videos/' wie in `NEXT.md` beschrieben."
    ],
-   "veraendert": "Die Workflows `PR-AutoMerge (Dependabot -> dev)` und `Merge-Agent` wurden seit der letzten Einschätzung erfolgreich auf `master` ausgeführt.",
+   "veraendert": "Gegenüber der letzten Einschätzung ist der `dev`-Branch nun einen Commit (`5ba5b41`) vor `master`, und der zugehörige \"Check (6Pack)\"-Workflow ist `in_progress`.",
    "fragen": [
-    "Konkretisieren Sie den Gmail-Agentenkanal für die Zustellung strukturierter 6Pack-Diagnosen.",
-    "Entscheiden Sie über das Nachziehen des Fitness-Tab-Runners, da dieser älter ist als der in 6pack-dev."
+    "Soll der ältere Fitness-Tab-Runner mit fehlenden Funktionen (z.B. `videoCache.js`, Autostart) nachgezogen werden?",
+    "Wann sollen die 6 Pack Promise-Programm-Workouts für Woche 4 ergänzt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-19T13:52:37+00:00"
+  "ai_at": "2026-11-20T06:45:38+00:00"
  }
 }
