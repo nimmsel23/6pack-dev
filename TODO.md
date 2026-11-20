@@ -1,5 +1,6 @@
 # TODO — 6pack-dev
 
+- [ ] **ELD-35: Stimme verbessern (austauschbar, Auswahl durch Daniel) + eigene Übungsvideos statt Fremdclips (Backlog, keine Umsetzung bis Auftrag).** Quelle: [ELD-35](https://linear.app/eldanioo/issue/ELD-35). Sichtbar im Living Dashboard über [Issue #52](https://github.com/nimmsel23/6pack-dev/issues/52).
 - [x] 2026-11-14: Abgeschlossene Runs als `HIIT ABS`-Activity mit eingeklappten Übungsdetails protokollieren; Gast-Outbox beim Login übernehmen und Konten trennen (`f491f5cb`); fehlgeschlagenes Session-Logging stoppt den Track-Fortschritt (`e6fd6cd3`). Fitness-Session-UI als Folge-Ticket in `fitness-dev/TODO.md`.
 
 - [x] 2026-11-12: Shell-Embed `embed.jsx` (`SixPackEmbed`) plus `push.js`. Standalone (`main.jsx`) unverändert. Runner-Overlay `z-[100]` nicht angefasst.
