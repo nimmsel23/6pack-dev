@@ -21,7 +21,8 @@
     "run:android": "pnpm run native:sync && cap run android",
     "test:embed": "node --test scripts/test-embed.mjs",
     "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs",
-    "test:calendar": "node scripts/test-calendar-reminders.mjs"
+    "test:calendar": "node scripts/test-calendar-reminders.mjs",
+    "test:exercise-video": "node scripts/test-exercise-video.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.0",

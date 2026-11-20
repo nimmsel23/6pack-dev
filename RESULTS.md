@@ -1,3 +1,11 @@
+## 2026-11-20 — Eigene Übungsvideos (ELD-35, nur Video)
+
+- Auftrag von Daniel, Freeze-Ausnahme: pro Übung ein eigenes Video, Kamera oder Galerie, Upload nach Firebase Storage, Zuordnung in Firestore. Stimme bleibt offen.
+- Wiedergabe in Detail und Runner nimmt das eigene Video, sobald eine Zuordnung mit Status `pending` oder `approved` und einer https-URL da ist. Sonst bleibt der bisherige Fallback (localStorage, Katalog, Bundle-Clip).
+- Grenzen: `video/*`, 100 MB, 60 Sekunden. Optionaler Ausschnitt als `clipStart`/`clipEnd`, die der Player in der Schleife abfährt. Upload über `uploadBytesResumable` mit Fortschritt und Abbruch.
+- Rules im Repo, nicht deployed: `storage.rules` (in `firebase.json` verdrahtet, Hosting-Deploy lässt sie aus) und `firestore.exercise-videos.rules` (Fragment, nicht die Firestore-SSOT). Lesen nur für angemeldete Nutzer; Gäste bleiben beim Fallback. Kein Löschen, kein Überschreiben des Storage-Objekts.
+- Prüfung 2026-11-20: `GET` auf `fitness-aos.firebasestorage.app` und `fitness-aos.appspot.com` liefert 404. Bucket nicht angelegt, nichts aktiviert und nichts deployed.
+
 ## 2026-11-16 — Promote: nur qualifizierende Checks auf master
 
 - Ursache des roten Auto-Promote (Run `43823292352`, Job `133151101043`): `git push` von `6d27686` auf geschütztes `master` mit GH006 „Required status check check is expected“. Der einzige Check-Run „check“ (App 15368) ist success, stammt aber aus `workflow_dispatch` (`43818754189`), ausgelöst nach dem GITHUB_TOKEN-Squash der Dependabot-PRs. Ein Dispatch-Lauf erfüllt den Branch-Schutz nicht. Derselbe Push mit einem `push`-Check hat am 2026-11-14 funktioniert (`43628363580` nach `43628319503`, `51bbdc7`).

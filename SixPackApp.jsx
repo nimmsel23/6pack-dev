@@ -4,6 +4,8 @@ import { IS_STORE_BUILD, storeText } from './storeBuild.js';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
+import { clipLoopHandlers, resolveExercisePlayback } from './exerciseVideo.js';
+import { uploadExerciseVideo, watchExerciseVideos } from './exerciseVideoCloud.js';
 import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,6 +31,21 @@ const EXERCISE_POOL = SIXPACK_EXERCISE_POOL;
 const EXERCISE_VIDEOS_BY_NAME = Object.fromEntries(
   Object.values(SIXPACK_EXERCISE_DETAILS).map(exercise => [exercise.name, exercise.videoUrl || ''])
 );
+const EXERCISE_ID_BY_NAME = Object.fromEntries(
+  Object.values(SIXPACK_EXERCISE_DETAILS).map(exercise => [exercise.name, exercise.id])
+);
+function exerciseIdOf(item) {
+  if (!item) return '';
+  if (item.exerciseId && SIXPACK_EXERCISE_DETAILS[item.exerciseId]) return item.exerciseId;
+  return EXERCISE_ID_BY_NAME[item.name] || '';
+}
+function playbackFor(item, videoUrls = {}, ownVideos = {}) {
+  return resolveExercisePlayback({
+    exerciseId: exerciseIdOf(item),
+    ownVideos,
+    fallbackUrl: videoUrls[item?.name] ?? item?.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[item?.name] ?? '',
+  });
+}
 // Sprechbarer Name für Namen, die die Sprachausgabe schlecht liest ("90/90 Crunch" → Alias aus dem Katalog).
 const SPOKEN_NAMES_BY_NAME = Object.fromEntries(
   Object.values(SIXPACK_EXERCISE_DETAILS).filter(exercise => exercise.spokenName).map(exercise => [exercise.name, exercise.spokenName])
@@ -797,10 +814,10 @@ function primeAudio() {
 }
 
 // Cachebare Datei-Video-URLs eines Workouts (Embeds gehen nicht). Gleiche Auflösung wie im Runner.
-function workoutVideoSources(workout, videoUrls = {}) {
+function workoutVideoSources(workout, videoUrls = {}, ownVideos = {}) {
   return (workout?.items || [])
     .filter(i => i.type === 'exercise')
-    .map(i => videoDescriptor(videoUrls[i.name] ?? i.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[i.name] ?? ''))
+    .map(i => videoDescriptor(playbackFor(i, videoUrls, ownVideos).url))
     .filter(v => v?.kind === 'file' && isCacheableVideo(v.src))
     .map(v => v.src);
 }
@@ -846,7 +863,7 @@ function advanceRunnerState(state, workout) {
   return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
-function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false }) {
+function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, ownVideos = {} }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   const completionReported = useRef(false);
@@ -1349,13 +1366,14 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false }
       ))}
     </div>
   );
-  const selectedVideoUrl = current?.type === 'exercise'
-    ? (videoUrls[current.name] ?? current.videoUrl ?? EXERCISE_VIDEOS_BY_NAME[current.name] ?? '')
-    : '';
+  const playback = current?.type === 'exercise' ? playbackFor(current, videoUrls, ownVideos) : { url: '', clip: null };
+  const selectedVideoUrl = playback.url;
+  const videoClip = playback.clip;
   const video = videoDescriptor(selectedVideoUrl);
   const remoteVideoUrl = video?.src;
   const videoRef = useRef(null);
   const [cachedVideo, setCachedVideo] = useState({ url: '', blob: '' });
+  useEffect(() => { setVideoError(false); }, [remoteVideoUrl]);
   const [checkedVideo, setCheckedVideo] = useState('');
   // Cache zuerst: Ist die Datei gecacht, geht der Runner nie ans Netz. Die Cache-Abfrage dauert Millisekunden;
   // erst danach (nicht gecacht / Fehler) wird die Netz-URL als Quelle gesetzt. Video darf den Runner nie aufhalten.
@@ -1512,7 +1530,7 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false }
         <div className="mt-4 flex-1 min-h-0 flex flex-col">
           <div className="flex-1 min-h-0 rounded-2xl overflow-hidden flex items-center justify-center text-center" style={{ background: '#111', border: '1px solid var(--line)' }}>
             {videoUrl && !videoError ? (
-              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={remoteVideoUrl} ref={videoRef} src={videoUrl} autoPlay muted loop playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} />
+              video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${current.name}`} className="w-full h-full border-0" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={`${remoteVideoUrl}:${videoClip?.start ?? ''}:${videoClip?.end ?? ''}`} ref={videoRef} src={videoUrl} autoPlay muted loop={!videoClip} playsInline preload="auto" controls className="w-full h-full object-contain" onError={() => setVideoError(true)} {...clipLoopHandlers(videoClip)} />
             ) : (
               <span className="text-xs px-4" style={{ color: 'var(--dim)' }}>
                 {videoError ? 'Video konnte nicht geladen werden.' : 'Noch kein Video für diese Übung hinterlegt.'}
@@ -1573,7 +1591,18 @@ function coreHiitActivity(items, runId) {
 export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, onWorkoutComplete, loadRemoteProgram, saveRemoteProgram, enablePush, localReminders, setupContent, embedded = false, route = '', onRouteChange, onNavigate }) {
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
+  const [ownVideos, setOwnVideos] = useState({});
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
+
+  useEffect(() => {
+    let stop;
+    try {
+      stop = watchExerciseVideos(next => setOwnVideos(next || {}));
+    } catch {
+      return undefined;
+    }
+    return typeof stop === 'function' ? stop : undefined;
+  }, [uid]);
 
   // App bleibt auf dem iPhone oft über Nacht offen → beim Zurückkehren und
   // jede Minute auf den neuen Kalendertag nachziehen (Ruhetag abschließen).
@@ -1889,13 +1918,13 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
     if (IS_STORE_BUILD || !precacheDay || isRestDay(precacheDay)) return undefined;
     const timer = window.setTimeout(() => {
       const workout = getWorkout(precacheDay);
-      cacheVideos(workoutVideoSources(workout, loadVideoUrls())).catch(() => {});
+      cacheVideos(workoutVideoSources(workout, loadVideoUrls(), ownVideos)).catch(() => {});
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [precacheDay]);
+  }, [precacheDay, ownVideos]);
   useEffect(() => {
-    if (activeWorkout && screen !== 'runner') cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls())).catch(() => {});
-  }, [activeWorkout, screen === 'runner']);
+    if (activeWorkout && screen !== 'runner') cacheVideos(workoutVideoSources(activeWorkout, loadVideoUrls(), ownVideos)).catch(() => {});
+  }, [activeWorkout, ownVideos, screen === 'runner']);
 
   // Standalone/PWA: ganze App auf Rot/Schwarz (documentElement).
   // Eingebettet (embedded) und der bisherige Shell-Host (onSubNav) lassen
@@ -1925,6 +1954,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
             exercise={SIXPACK_EXERCISE_DETAILS[viewExerciseId] || (viewExerciseItem?.name ? { name: viewExerciseItem.name, focusLabel: 'Core' } : null)}
             coaching={SIXPACK_EXERCISE_COACHING[viewExerciseId]}
             item={viewExerciseItem}
+            ownVideos={ownVideos}
+            signedIn={Boolean(uid && uid !== 'local')}
+            onUploadExerciseVideo={uploadExerciseVideo}
             backLabel={exerciseReturnScreen === 'learn' ? storeText('Learn', 'Lernen') : 'Workout'}
             onBack={closeExercise}
           />
@@ -1953,7 +1985,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={IS_STORE_BUILD ? undefined : () => showScreen('selfies')} />
+          <RunnerScreen autoStart ownVideos={ownVideos} workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={IS_STORE_BUILD ? undefined : () => showScreen('selfies')} />
 
         )}
     </section>

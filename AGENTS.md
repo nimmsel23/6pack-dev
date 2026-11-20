@@ -31,6 +31,9 @@ Fremde Änderungen und persönliche Daten erhalten.
 | `SixPackApp.jsx` | Screens, Programm, Workout-Runner, Audio und Navigation |
 | `ExerciseDetailScreen.jsx`, `ExerciseMuscles.jsx` | Gemeinsame Übungsdetails vor dem Workout und aus Learn |
 | `exerciseMedia.js`, `catalogContent.mjs` | Gemeinsame Medien-Auflösung und KB-Anreicherung beider Generatoren |
+| `exerciseVideo.js` | Prüfung, Pfad und Vorrang eigener Übungsvideos (ohne Firebase) |
+| `exerciseVideoCloud.js` | Resumable Upload und Firestore-Abo auf der bestehenden Firebase-App |
+| `ExerciseVideoUpload.jsx` | Kamera- oder Galerie-Aufnahme an der Übung |
 | `SelfiesScreen.jsx` | Login und Account-Grenze der Foto-Oberfläche |
 | `photoAuth.js` | Bestehenden Firebase-Login nutzen; Google/E-Mail, Logout |
 | `SelfiesGallery.jsx` | Kamera, Mehrfachauswahl, Offline-Queue und expliziter Altbestand-Import |
@@ -77,6 +80,9 @@ Firestore-Rules/Indexes haben ihre einzige deploybare Source of Truth in
 `~/vitalos/firestore.rules` und `~/vitalos/firestore.indexes.json`.
 Neue Rules vor einem davon abhängigen Client veröffentlichen; der erlaubte
 Production-Weg ist VitalOS-CI (`deploy-firestore-rules.yml`), kein direkter Agent-Deploy.
+`firestore.exercise-videos.rules` ist nur das Fragment für `exerciseVideos` und
+ersetzt dieses Ruleset nicht. `storage.rules` gilt für den noch nicht angelegten
+Storage-Bucket und wird nicht mit dem Hosting-Deploy veröffentlicht.
 
 ## Build, Tests und generierte Dateien
 

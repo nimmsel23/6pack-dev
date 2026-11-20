@@ -45,3 +45,6 @@ jobs:
 
       - name: Exercise preview regression checks
         run: node scripts/test-exercise-details.mjs
+
+      - name: Exercise video mapping checks
+        run: node scripts/test-exercise-video.mjs

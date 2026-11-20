@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import * as esbuild from 'esbuild';
 import * as data from '../sixpackData.generated.js';
 import * as exerciseMedia from '../exerciseMedia.js';
+import * as exerciseVideo from '../exerciseVideo.js';
 import * as programSync from '../programSync.js';
 import * as reminder from '../reminder.js';
 
@@ -205,7 +206,7 @@ async function compile(file, requireExtra = {}) {
   const module = { exports: {} };
   const sandbox = {
     module, exports: module.exports, h, Fragment: 'fragment', window, document, history, location, URL, URLSearchParams, console, Notification: { permission: 'default' },
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './exerciseMedia.js' ? exerciseMedia : name === './programSync.js' ? programSync : name === './reminder.js' ? reminder : name === './push.js' ? pushModule : name === './videoCache.js' ? { cacheVideos: () => Promise.resolve(), getCachedVideoBlobUrl: async () => null, isCacheableVideo: () => false } : moduleStub()),
+    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './exerciseMedia.js' ? exerciseMedia : name === './exerciseVideo.js' ? exerciseVideo : name === './programSync.js' ? programSync : name === './reminder.js' ? reminder : name === './push.js' ? pushModule : name === './videoCache.js' ? { cacheVideos: () => Promise.resolve(), getCachedVideoBlobUrl: async () => null, isCacheableVideo: () => false } : moduleStub()),
   };
   vm.runInNewContext(code, sandbox);
   return module.exports;
