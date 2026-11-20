@@ -1,0 +1,61 @@
+rules_version = '2';
+// FRAGMENT für die Zuordnung eigener Übungsvideos.
+// Nicht allein deployen. Die deploybare Firestore-SSOT bleibt
+// vitalos/firestore.rules und geht über VitalOS-CI. Dieses match muss
+// dorthin übernommen werden. Ein Deploy dieser Datei als komplettes
+// Ruleset würde alle anderen Regeln ersetzen.
+//
+// Lesen: jedes angemeldete Konto (die Übung zeigt dasselbe Demo-Video).
+// Schreiben: nur angemeldete Nutzer, nur die bekannten Felder, Status
+// pending oder approved, Dauer höchstens 60 Sekunden, Größe höchstens 100 MB.
+// Löschen ist aus.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function videoData() {
+      return request.resource.data;
+    }
+    function isSeconds(value) {
+      return value is int || value is float;
+    }
+    function clipOk(data) {
+      return (!('clipStart' in data) && !('clipEnd' in data))
+        || (
+          isSeconds(data.clipStart)
+          && isSeconds(data.clipEnd)
+          && data.clipStart >= 0
+          && data.clipEnd > data.clipStart
+          && data.clipEnd - data.clipStart <= 60
+          && data.clipEnd <= data.duration + 0.05
+        );
+    }
+    function videoOk(exerciseId) {
+      return signedIn()
+        && exerciseId.matches('^[a-z][a-z0-9_]{0,63}$')
+        && videoData().keys().hasOnly([
+          'exerciseId', 'storagePath', 'uploaderUid', 'createdAt',
+          'duration', 'status', 'contentType', 'sizeBytes', 'clipStart', 'clipEnd'
+        ])
+        && videoData().exerciseId == exerciseId
+        && videoData().uploaderUid == request.auth.uid
+        && videoData().storagePath.matches('^exerciseVideos/' + exerciseId + '/[A-Za-z0-9][A-Za-z0-9_-]{0,80}$')
+        && videoData().contentType.matches('video/.+')
+        && videoData().sizeBytes is int
+        && videoData().sizeBytes > 0
+        && videoData().sizeBytes <= 100 * 1024 * 1024
+        && isSeconds(videoData().duration)
+        && videoData().duration > 0
+        && videoData().duration <= 60
+        && videoData().status in ['pending', 'approved']
+        && videoData().createdAt == request.time
+        && clipOk(videoData());
+    }
+    match /exerciseVideos/{exerciseId} {
+      allow read: if signedIn();
+      allow create, update: if videoOk(exerciseId);
+      allow delete: if false;
+    }
+  }
+}

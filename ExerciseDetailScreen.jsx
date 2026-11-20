@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import BackHeader from './BackHeader.jsx';
 import ExerciseMuscles from './ExerciseMuscles.jsx';
+import ExerciseVideoUpload from './ExerciseVideoUpload.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
+import { clipLoopHandlers, resolveExercisePlayback } from './exerciseVideo.js';
 
-export default function ExerciseDetailScreen({ exercise, coaching, item, onBack, backLabel = 'Learn' }) {
+export default function ExerciseDetailScreen({ exercise, coaching, item, onBack, backLabel = 'Learn', ownVideos = {}, signedIn = false, onUploadExerciseVideo }) {
   const heading = useRef(null);
   useEffect(() => { heading.current?.scrollIntoView({ block: 'start' }); heading.current?.focus({ preventScroll: true }); }, []);
   const [overrides] = useState(loadVideoUrls);
   const [videoError, setVideoError] = useState(false);
   if (!exercise) return null;
-  const selectedVideo = overrides[exercise.name] ?? item?.videoUrl ?? exercise.videoUrl ?? '';
+  const fallbackUrl = overrides[exercise.name] ?? item?.videoUrl ?? exercise.videoUrl ?? '';
+  const playback = resolveExercisePlayback({ exerciseId: exercise.id, ownVideos, fallbackUrl });
+  const selectedVideo = playback.url;
   const video = videoDescriptor(selectedVideo);
   const videoUrl = video?.src;
+  const videoClip = video?.kind === 'file' ? playback.clip : null;
   return (
     <div ref={heading} tabIndex={-1} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); onBack(); } }}>
       <BackHeader label={exercise.name} onBack={onBack} backLabel={backLabel} />
@@ -24,9 +29,11 @@ export default function ExerciseDetailScreen({ exercise, coaching, item, onBack,
       <ExerciseMuscles exercise={exercise} />
       <section className="px-4 py-3" aria-label="Übungsvideo">
         <h2 className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: '#e2001a' }}>Video</h2>
-        {videoUrl && !videoError ? video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${exercise.name}`} className="w-full aspect-video rounded-xl border-0 bg-black" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={videoUrl} src={videoUrl} controls muted playsInline loop preload="metadata" className="w-full aspect-video rounded-xl bg-black object-contain" onError={() => setVideoError(true)} /> : <p className="rounded-xl p-4 text-sm" style={{ background: '#1a1a1a', color: 'var(--dim)' }}>{videoError ? 'Das Video konnte nicht geladen werden.' : 'Für diese Übung ist noch kein Video hinterlegt.'}</p>}
-        {exercise.videoSource && selectedVideo === exercise.videoUrl && <a className="block mt-2 text-xs underline" style={{ color: 'var(--dim)' }} href={exercise.videoSource} target="_blank" rel="noopener noreferrer">Videoquelle: {exercise.videoAuthor || 'Original ansehen'}</a>}
+        {playback.source === 'own' && <p className="text-xs mb-2" style={{ color: 'var(--dim)' }}>{playback.status === 'approved' ? 'Eigenes Video' : 'Eigenes Video · hochgeladen'}</p>}
+        {videoUrl && !videoError ? video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${exercise.name}`} className="w-full aspect-video rounded-xl border-0 bg-black" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={`${videoUrl}:${videoClip?.start ?? ''}:${videoClip?.end ?? ''}`} src={videoUrl} controls muted playsInline loop={!videoClip} preload="metadata" className="w-full aspect-video rounded-xl bg-black object-contain" onError={() => setVideoError(true)} {...clipLoopHandlers(videoClip)} /> : <p className="rounded-xl p-4 text-sm" style={{ background: '#1a1a1a', color: 'var(--dim)' }}>{videoError ? 'Das Video konnte nicht geladen werden.' : 'Für diese Übung ist noch kein Video hinterlegt.'}</p>}
+        {playback.source !== 'own' && exercise.videoSource && selectedVideo === exercise.videoUrl && <a className="block mt-2 text-xs underline" style={{ color: 'var(--dim)' }} href={exercise.videoSource} target="_blank" rel="noopener noreferrer">Videoquelle: {exercise.videoAuthor || 'Original ansehen'}</a>}
         {(!videoUrl || videoError) && <a className="block mt-2 text-sm underline" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${exercise.name} exercise demonstration ATHLEAN-X`)}`} target="_blank" rel="noopener noreferrer">Übungsvideo suchen</a>}
+        {exercise.id && <ExerciseVideoUpload exerciseId={exercise.id} exerciseName={exercise.name} signedIn={signedIn} onUpload={onUploadExerciseVideo} />}
       </section>
       <section className="px-4 py-3" aria-label="Ausführung">
         <h2 className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: '#e2001a' }}>Ausführung</h2>

@@ -5,6 +5,7 @@ import * as esbuild from 'esbuild';
 import * as data from '../sixpackData.generated.js';
 import { MUSCLE_GEOMETRY } from '../muscleGeometry.js';
 import { videoDescriptor, loadVideoUrls } from '../exerciseMedia.js';
+import * as exerciseVideo from '../exerciseVideo.js';
 
 const states = [];
 let cursor = 0;
@@ -29,7 +30,7 @@ async function compile(file, extra = '', requireExtra = {}) {
   const module = { exports: {} };
   vm.runInNewContext(code, {
     module, exports: module.exports, h, Fragment: 'fragment', window, Notification: { permission: 'granted' },
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './storeBuild.js' ? { IS_STORE_BUILD: false, storeText: original => original } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
+    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './exerciseVideo.js' ? exerciseVideo : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './storeBuild.js' ? { IS_STORE_BUILD: false, storeText: original => original } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
   });
   return module.exports;
 }
@@ -120,11 +121,38 @@ filePlayer.props.onError(); cursor = 0;
 rendered = detailModule.default({ exercise: { ...jackknife, videoUrl: 'https://media.invalid/clip.mp4' }, onBack() {} });
 assert.equal(nodes(rendered, node => node.type === 'video').length, 0);
 assert(nodes(rendered, node => node.type === 'a').some(node => node.props.href.includes('search_query=')));
+const ownUrl = 'https://firebasestorage.googleapis.com/v0/b/fitness-aos.firebasestorage.app/o/exerciseVideos%2Fjackknifes%2Fabc?alt=media&token=1';
+rendered = drawDetail({
+  exercise: jackknife,
+  ownVideos: { jackknifes: { status: 'pending', url: ownUrl, clipStart: 1, clipEnd: 4 } },
+  onBack() {},
+});
+const ownPlayer = nodes(rendered, node => node.type === 'video')[0];
+assert.equal(ownPlayer.props.src, ownUrl);
+assert.equal(ownPlayer.props.loop, false);
+assert.equal(typeof ownPlayer.props.onTimeUpdate, 'function');
+assert.equal(nodes(rendered, node => node.type === 'iframe').length, 0, 'own video replaces the catalog embed');
 rendered = drawDetail({ exercise: { name: 'Old saved exercise' }, onBack() {} });
 assert.equal(nodes(rendered, node => node.type === 'iframe' || node.type === 'video').length, 0);
 assert.equal(videoDescriptor('https://'), null);
 assert.equal(videoDescriptor('https://youtu.be/invalid'), null);
 console.log('Actual detail rendering: instructions, embedded/file media, failed media and missing catalog data passed.');
+
+const uploadModule = await compile('../ExerciseVideoUpload.jsx');
+states.length = 0;
+cursor = 0;
+const uploadTree = uploadModule.default({ exerciseId: 'jackknifes', exerciseName: 'Jackknifes', signedIn: false, onUpload() { return { done: Promise.resolve() }; } });
+const fileInputs = nodes(uploadTree, node => node.type === 'input' && node.props.type === 'file');
+assert.equal(fileInputs.length, 2);
+assert.equal(fileInputs.filter(node => node.props.capture === 'environment' && node.props.accept === 'video/*').length, 1);
+assert.equal(fileInputs.filter(node => node.props.accept === 'video/*' && !node.props.capture).length, 1);
+assert(nodes(uploadTree, node => node.type === 'button').some(node => String(node.children).includes('Mit Kamera aufnehmen')));
+assert(nodes(uploadTree, node => node.type === 'button').some(node => String(node.children).includes('Aus Galerie')));
+nodes(uploadTree, node => node.type === 'button').find(node => String(node.children).includes('Mit Kamera aufnehmen')).props.onClick();
+cursor = 0;
+const blocked = uploadModule.default({ exerciseId: 'jackknifes', exerciseName: 'Jackknifes', signedIn: false, onUpload() { return { done: Promise.resolve() }; } });
+assert(nodes(blocked, node => node.props.role === 'alert').some(node => String(node.children).includes('anmelden')));
+console.log('Exercise video upload: camera capture and gallery inputs are on the exercise.');
 
 // Enabling the switch must not silently fall back to an app-open timer.
 globalThis.Notification = { permission: 'granted' };

@@ -44,6 +44,26 @@ manuell ändern. Fitness verwendet `scripts/build-sixpack-data.mjs`.
 `publish-fitness.mjs` ist kein vollständiger Integrationsweg: das direkte
 6pack-Submodule aktualisieren und den Fitness-Gitlink committen.
 
+## Hochgeladene Übungsvideos
+
+In der Übungsansicht kann ein angemeldetes Konto der Übung ein eigenes Video
+zuordnen: „Mit Kamera aufnehmen“ (`<input type="file" accept="video/*" capture="environment">`)
+oder „Aus Galerie“. Die Datei muss `video/*` sein, höchstens 100 MB und 60 Sekunden.
+Start und Ende sind optional und gelten nur für die Wiedergabe.
+
+Die Datei geht per resumable Upload nach Firebase Storage
+`exerciseVideos/{exerciseId}/{fileId}` im Projekt `fitness-aos`
+(Bucket `fitness-aos.firebasestorage.app`, Region vor dem Anlegen `europe-west3`).
+Firestore `exerciseVideos/{exerciseId}` hält nur die Zuordnung: `exerciseId`,
+`storagePath`, `uploaderUid`, `createdAt`, `duration`, `status` (`pending` oder
+`approved`), `contentType`, `sizeBytes`, optional `clipStart` und `clipEnd`.
+Keine Videodatei liegt im Git.
+
+Sobald so eine Zuordnung lesbar ist, spielen Detailansicht und Runner sie statt
+Katalog, localStorage-Override und Bundle-Clip. Ohne Anmeldung oder ohne
+Zuordnung bleibt der bisherige Fallback. Storage- und Firestore-Rules liegen im
+Repo und sind nicht deployed; der Bucket war am 2026-11-20 nicht angelegt.
+
 ## Prüfung
 
 Regressionstests prüfen Listen-Navigation, Rückkehr, unveränderten Shuffle,
