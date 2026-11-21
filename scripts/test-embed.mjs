@@ -280,6 +280,12 @@ test('embed leaves document, theme-color and hash alone; Eat calls onNavigate(fu
   assert.equal(replaceStateCount, 0);
   assert.equal(themeMeta.content, '#112233');
   assert.equal(documentElement.getAttribute('data-theme'), null);
+  assert.equal(tree.props.style.height, '100dvh');
+  assert.equal(tree.props.style.maxWidth, 'none');
+  assert.equal(tree.props.style.boxSizing, 'border-box');
+  assert.match(tree.props.style.paddingTop, /safe-area-inset-top/);
+  assert.match(tree.props.style.paddingBottom, /safe-area-inset-bottom/);
+  assert.equal(tree.props.style.margin, 0);
   assert.deepEqual(mutations, []);
 });
 

@@ -15,7 +15,6 @@ import { showWorkoutNotification, clearWorkoutNotification, requestWorkoutNotifi
 import { getReminder, reminderSupported, requestReminderPermission } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
-import { currentBuildLabel } from './appUpdate.js';
 import UpdatePrompt from './UpdatePrompt.jsx';
 
 const SIXPACK_PROGRAM_KEY = 'fitness-sixpack-program-v1';
@@ -248,7 +247,7 @@ function syncProgramToDate(program, today = localDate()) {
   return p;
 }
 
-function HomeScreen({ program, onOpenToday, onNav, eatInApp, embedded = false, hasSettings = true }) {
+function HomeScreen({ program, onOpenToday, onNav, eatInApp, hasSettings = true }) {
   const today = localDate();
   // Heute schon trainiert → für den Rest des Tages Rest anzeigen.
   const trainedToday = program.lastCompletedOn === today;
@@ -267,10 +266,8 @@ function HomeScreen({ program, onOpenToday, onNav, eatInApp, embedded = false, h
   const menuColumns = menuButtons.length % 3 === 0 ? 3 : 2;
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Eingebettet (Shell) hat der Container keine feste Höhe: ohne Mindesthöhen kollabieren die Flex-Kinder
-          (flex-1 basis-0) auf 0 und die Menü-Beschriftungen liegen übereinander. */}
-      <div className={`flex-1 basis-0 min-h-0 flex flex-col${embedded ? ' min-h-[19rem]' : ''}`}>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col" style={{ width: '100%', maxWidth: 'none' }}>
+      <div className="flex min-h-0 flex-1 basis-0 flex-col">
       <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ background: '#111' }}>
         <div className="text-xs font-black tracking-[0.3em]" style={{ color: '#e2001a' }}>6PP</div>
         <div className="flex items-center gap-3">
@@ -310,7 +307,7 @@ function HomeScreen({ program, onOpenToday, onNav, eatInApp, embedded = false, h
       </button>
       </div>
 
-      <div className={`grid ${menuColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'} grid-rows-2 gap-px mt-px flex-1 basis-0 min-h-0${embedded ? ' min-h-[14rem]' : ''}`} style={{ background: 'var(--line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className={`mt-px grid min-h-0 flex-1 basis-0 ${menuColumns === 3 ? 'grid-cols-3' : 'grid-cols-2'} grid-rows-2 gap-px`} style={{ background: 'var(--line)' }}>
         {menuButtons.map(({ id, label, Icon, href }) => {
           const Element = href ? 'a' : 'button';
           return (
@@ -686,11 +683,6 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
       </>}
       {/* Store-Build: Google-Kalender-Anbindung ist im Produkt-Backend nicht eingerichtet (Sackgasse) und nicht deklariert. */}
       {!IS_STORE_BUILD && <CalendarReminderSettings uid={uid} />}
-      {typeof currentBuildLabel === 'function' && currentBuildLabel() ? (
-        <p className="px-4 pt-6 pb-8 text-center text-[10px] font-semibold tracking-wide" style={{ color: 'var(--dim)' }}>
-          Version {currentBuildLabel()}
-        </p>
-      ) : null}
     </div>
   );
 }
@@ -1574,11 +1566,31 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
 // Runner füllt den ganzen sichtbaren Bildschirm (kein Scrollen): Video nimmt den Restplatz.
 // Per Portal an document.body, damit er auch in der Fitness-Einbettung (transformierte Eltern) wirklich
 // den ganzen Bildschirm belegt.
-const RUNNER_FRAME = 'fixed inset-0 z-[100] flex flex-col px-5 overflow-hidden';
+// Volle Viewport-Fläche, Safe Area nur als Innenabstand (border-box, Hintergrund läuft darunter).
+const SCREEN_FRAME = {
+  boxSizing: 'border-box',
+  width: '100%',
+  maxWidth: 'none',
+  height: '100dvh',
+  minHeight: '100dvh',
+  margin: 0,
+  background: '#0a0a0a',
+  paddingTop: 'env(safe-area-inset-top, 0px)',
+  paddingRight: 'env(safe-area-inset-right, 0px)',
+  paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+  paddingLeft: 'env(safe-area-inset-left, 0px)',
+};
+
+const RUNNER_FRAME = 'fixed inset-0 z-[100] flex flex-col overflow-hidden';
 const RUNNER_FRAME_STYLE = {
-  background: 'var(--bg)',
+  boxSizing: 'border-box',
+  width: '100%',
+  maxWidth: 'none',
+  background: 'var(--bg, #0a0a0a)',
   paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+  paddingRight: 'calc(env(safe-area-inset-right, 0px) + 20px)',
   paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
+  paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 20px)',
 };
 
 // Fitness bekommt ein HIIT-ABS-Element; die einzelnen Moves bleiben dessen Detaildaten.
@@ -1954,9 +1966,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, [inShell]);
 
   return (
-    <section className={inShell ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
+    <section className="flex w-full flex-col overflow-hidden" style={SCREEN_FRAME}>
         <UpdatePrompt />
-        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} embedded={inShell} hasSettings={hasSettings} />}
+        {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} hasSettings={hasSettings} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} reminderAvailable={reminderAvailable} />}
 
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}

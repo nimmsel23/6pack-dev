@@ -176,6 +176,15 @@ settings = app.SettingsScreen({ ...settingsProps, enablePush: async () => {} });
 await nodes(settings, node => node.props.role === 'switch')[0].props.onClick();
 assert.equal(reminderChanges[0].enabled, true);
 console.log('Reminder settings: failed registration stays disabled; confirmed registration enables reminders.');
+function textOf(node) {
+  if (node == null || typeof node === 'boolean') return '';
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join('');
+  if (typeof node === 'object') return textOf(node.children);
+  return '';
+}
+assert.doesNotMatch(textOf(settings), /Version\s+\d/);
+console.log('Settings show no build version.');
 
 delete globalThis.Notification;
 

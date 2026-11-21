@@ -63,7 +63,7 @@ function Root() {
     return () => { disposed = true; stop?.(); };
   }, []);
   return (
-    <main data-theme="sixpack" className="w-full h-dvh flex flex-col">
+    <main data-theme="sixpack" className="flex w-full flex-col overflow-hidden" style={{ width: '100%', maxWidth: 'none', height: '100dvh', minHeight: '100dvh', margin: 0, background: '#0a0a0a' }}>
       <SixPackEmbed onNavigate={target => { if (target === 'fuel') window.location.assign('https://fuel-vos.web.app'); }} route={route} onRouteChange={next => { location.hash = next; }} uid={state.user?.uid || 'local'} setupContent={<SyncSettings state={state} />} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
     </main>
   );

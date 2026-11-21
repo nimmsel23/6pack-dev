@@ -22,6 +22,14 @@ function jsonResponse(body, { ok = true, type = 'application/json' } = {}) {
   };
 }
 
+test('viewport-fit=cover stays in the document and the build id stays internal', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /name="viewport"[^>]*viewport-fit=cover/);
+  assert.equal(currentBuildLabel(), 'dev');
+  const app = await readFile(new URL('../SixPackApp.jsx', import.meta.url), 'utf8');
+  assert.doesNotMatch(app, /Version \{currentBuildLabel/);
+});
+
 test('dev build and matching builds do not count as an update', async () => {
   const fetchImpl = async () => jsonResponse({ build: '0.1.0+bbbbbbb' });
   const dev = await checkForAppUpdate({
@@ -294,6 +302,11 @@ test('the prompt shows Jetzt aktualisieren and calls apply', async () => {
   walk(tree);
   const button = nodes.find(node => node.type === 'button' && node.children?.includes('Jetzt aktualisieren'));
   assert.ok(button);
+  const overlay = nodes.find(node => node.props?.role === 'dialog');
+  assert.equal(overlay.props.style.width, '100%');
+  assert.equal(overlay.props.style.maxWidth, 'none');
+  assert.match(overlay.props.style.paddingTop, /safe-area-inset-top/);
+  assert.equal(nodes.some(node => node.props?.className?.includes('max-w-')), false);
   await button.props.onClick();
   assert.equal(applied, 1);
 });

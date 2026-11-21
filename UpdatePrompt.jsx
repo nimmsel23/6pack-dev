@@ -41,15 +41,20 @@ export default function UpdatePrompt() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="sixpack-update-title"
-      className="fixed inset-0 flex items-end justify-center px-4"
+      className="fixed inset-0 flex items-end"
       style={{
         zIndex: 400,
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: 'none',
         background: 'rgba(0,0,0,0.78)',
-        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingRight: 'env(safe-area-inset-right, 0px)',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        paddingLeft: 'env(safe-area-inset-left, 0px)',
       }}
     >
-      <div className="w-full max-w-sm rounded-3xl p-5" style={{ background: '#1a1a1a', border: '2px solid #e2001a' }}>
+      <div className="w-full p-4" style={{ width: '100%', maxWidth: 'none', background: '#1a1a1a', borderTop: '2px solid #e2001a' }}>
         <div id="sixpack-update-title" className="text-lg font-black" style={{ color: '#fff' }}>Neue Version</div>
         <p className="mt-2 text-sm font-semibold leading-relaxed" style={{ color: '#eee' }}>
           Ein Update von 6Pack ist da. Jetzt aktualisieren lädt die neue Version und aktiviert sie.

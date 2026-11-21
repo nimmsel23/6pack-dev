@@ -1,7 +1,12 @@
+## 2026-11-21 — Voller Bildschirm, keine Versionszeile
+
+- Sichtbare Zeile `Version 0.1.0+…` ist aus den Einstellungen entfernt. Build-Kennung und `version.json` bleiben für das Update-Popup.
+- Startseite, Runner und Update-Popup füllen die Viewport-Fläche: Breite 100 %, keine max-width, Höhe 100dvh, `box-sizing: border-box`. Safe Area nur als Padding. `viewport-fit=cover` bleibt im Viewport-Meta.
+
 ## 2026-11-21 — In-App-Update-Popup
 
 - Vorlage: Journal `src/components/UpdateManager.jsx` (Prüfung beim Start, bei `visibilitychange`, Fokus/`pageshow` und alle 10 Minuten über `registration.update()`). Übernommen von Fuel `src/client/registerSW.js` und `VersionCard.jsx`: Button „Jetzt aktualisieren“ sendet `SKIP_WAITING` und lädt neu. Zusätzlich `version.json`, weil der 6Pack-Worker schon beim Install `skipWaiting` aufruft und das einmalige `sw-update-available` vor dem UI verloren gehen kann.
-- Popup sitzt in `UpdatePrompt.jsx` und damit in Standalone und in der Shell (`SixPackEmbed`). „Später“ blendet es 10 Minuten aus. Die Build-Kennung (`Paketversion+Git`) steht unten in den Einstellungen.
+- Popup sitzt in `UpdatePrompt.jsx` und damit in Standalone und in der Shell (`SixPackEmbed`). „Später“ blendet es 10 Minuten aus. Die Build-Kennung bleibt intern (`version.json` und Bundle), ohne sichtbare Versionszeile.
 - Kein Auto-Reload. `version.json` wird mit `no-store` geladen und von Firebase nicht gecacht.
 
 ## 2026-11-21 — Runner: 5s-Pause auch vor und nach 30-/45-s-Blöcken
