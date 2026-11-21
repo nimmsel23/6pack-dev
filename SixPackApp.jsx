@@ -163,9 +163,9 @@ function getVerifiedWorkout(day) {
 }
 
 // Generiert einen Tagesplan im Format des Day-8-Screenshots: 4-6 Übungen
-// à 30 oder 60 Sekunden, dazwischen normal ein kurzer 5s-Übergang (unsichtbar
-// in der Liste), aber 1-2x pro Workout ein echter Rest-Block (30 oder 45s),
-// der als eigene Zeile erscheint — exakt wie "Rest · 45 Seconds" im Screenshot.
+// à 30 oder 60 Sekunden. Zwischen jedem Block liegt ein kurzer 5s-Übergang
+// (unsichtbar in der Liste). 1-2x pro Workout ein echter Rest-Block (30 oder
+// 45s) als eigene Zeile — wie "Rest · 45 Seconds". Davor und danach ebenfalls 5s.
 function generateDayWorkout(day) {
   if (isRestDay(day)) return { day, rest: true, exercises: [] };
 
@@ -822,17 +822,30 @@ function workoutVideoSources(workout, videoUrls = {}, ownVideos = {}) {
     .map(v => v.src);
 }
 
-// Kurzer Übergang zwischen zwei direkt aufeinanderfolgenden Übungen (Zeit zum
-// Umpositionieren). Vor/nach einem echten Rest-Block entfällt er.
+// 5s-Wechsel zwischen jedem Paar aufeinanderfolgender Blöcke (Übung oder
+// 30-/45-s-Pause). Die lange Pause ist selbst ein Block; davor und danach
+// liegt dieselbe 5s-Pause mit Ansage des nächsten Blocks.
 const TRANSITION_SECONDS = 5;
 // "30/10 seconds left": langsamer sprechen und entsprechend früher (Sekunden vor der Marke) beginnen.
 const HINT_SPEECH_RATE = 0.8;
 const HINT_LEAD_SECONDS = 1;
-// Zwischen zwei Übungen liegen fünf echte Timer-Sekunden. Nach der Übungsansage
+// Zwischen zwei Blöcken liegen fünf echte Timer-Sekunden. Nach der Ansage
 // werden im verbleibenden Countdown die jeweils noch übrigen 3, 2 und 1 Sekunden gesprochen.
 
 function needsTransition(items, index) {
-  return items[index]?.type === 'exercise' && items[index + 1]?.type === 'exercise';
+  return Boolean(items[index]) && Boolean(items[index + 1]);
+}
+
+// Text der Wechsel-Ansage. Pause: "45 seconds rest". Übung: Name plus Dauer.
+// "begin in" nur im Start-Intro (countdown).
+function blockSpeech(item, { sideSwitch = false, countdown = false, side = '', spoken = item?.name || '' } = {}) {
+  const secondsLabel = `${item.seconds} ${item.seconds === 1 ? 'second' : 'seconds'}`;
+  const text = item.type === 'rest'
+    ? `${secondsLabel} rest`
+    : sideSwitch
+      ? 'Switch sides'
+      : `${spoken}${side ? `, ${side}` : ''} for ${secondsLabel}`;
+  return countdown ? `${text}, begin in` : text;
 }
 
 function workoutTotalSeconds(items) {
@@ -965,9 +978,6 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
     return item?.type === 'exercise' && previous?.type === 'exercise' && previous.name === item.name;
   }
 
-  // Alle Sprachansagen sind komplett Englisch (en-US).
-  const secondsText = (n) => `${n} ${n === 1 ? 'second' : 'seconds'}`;
-
   // Name + Dauer in einer Utterance, z.B. "I-S-O Reverse Crunches for 30 seconds" bzw. "45 seconds rest".
   // Bei Seitenwechsel ("Side Plank Lifts" → "Side Plank Lifts") wird statt Name + Dauer nur
   // "Switch sides" angesagt (User-Vorgabe 2026-10-24).
@@ -976,20 +986,14 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
   function announce(item, index, { countdown = false, full = false, side = '', onend } = {}) {
     if (!('speechSynthesis' in window)) { onend?.(); return; }
     window.speechSynthesis.cancel();
-    if (item.type === 'rest') {
-      speak(`${secondsText(item.seconds)} rest${countdown ? ', begin in' : ''}`, 'en-US', { onend });
-      return;
-    }
     // Zweite Seite: nur "Switch sides" statt Name + Dauer (die Übung ist ja dieselbe).
-    const text = !full && index != null && isSideSwitch(index)
-      ? 'Switch sides'
-      : `${spokenName(item.name)}${side ? `, ${side}` : ''} for ${secondsText(item.seconds)}`;
-    if (!countdown) {
-      speak(text, 'en-US', { onend });
-      return;
-    }
-    const withLeadIn = `${text}, begin in`;
-    speak(withLeadIn, 'en-US', { onend });
+    const text = blockSpeech(item, {
+      sideSwitch: !full && index != null && isSideSwitch(index),
+      countdown,
+      side,
+      spoken: item.type === 'rest' ? '' : spokenName(item.name),
+    });
+    speak(text, 'en-US', { onend });
   }
 
   // Kurze Ansage genau zum Zeitpunkt (Countdown-Zahl, "go"): läuft noch eine Ansage, wird sie
@@ -1143,7 +1147,7 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
       return;
     }
     if (state.transition) {
-      // Nächste Übung schon im Übergang ansagen (ohne "begin in"), damit man sich in Position bringen kann.
+      // Nächsten Block schon im Übergang ansagen (Übung oder "45 seconds rest", ohne "begin in").
       // Die Zahlen kommen im Countdown-Effekt unten; beim Start der Übung folgt nur der Startton (kein "go").
       const nextIndex = state.itemIndex + 1;
       const nextItem = workout.items[nextIndex];

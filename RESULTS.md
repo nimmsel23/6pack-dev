@@ -1,3 +1,9 @@
+## 2026-11-21 — Runner: 5s-Pause auch vor und nach 30-/45-s-Blöcken
+
+- Owner-Regel (Daniel): Zwischen zwei Blöcken immer 5 Sekunden mit Ansage des nächsten Blocks. 30- und 45-s-Pausen bleiben eigene Blöcke; davor und danach liegt dieselbe 5s-Pause.
+- Vorher galt der 5s-Wechsel nur von Übung zu Übung. `needsTransition` lässt ihn jetzt vor jedem folgenden Block zu. Die Ansage bleibt der bestehende Wechsel-Text ("Crunches for 30 seconds" bzw. "45 seconds rest"), danach 3, 2, 1.
+- Test: `scripts/test-exercise-details.mjs` (Ablauf Übung → 5s → Pause → 5s → Übung, Katalog-Pausen, Sprechtext).
+
 ## 2026-11-21 — Security: Übungsvideo-Zuordnung nur vom Uploader
 
 - Freeze-Wartung, kein Feature. Befunde aus dem Review zu #54 (`30db809`): jedes angemeldete Konto konnte `exerciseVideos/{exerciseId}` überschreiben, weil nur die neue `uploaderUid` geprüft wurde; Storage-Objekte waren nicht löschbar und pro Nutzer unbegrenzt.

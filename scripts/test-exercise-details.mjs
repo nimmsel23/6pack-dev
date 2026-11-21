@@ -38,7 +38,7 @@ function nodes(tree, match) {
   if (!tree || typeof tree !== 'object') return [];
   return [...(match(tree) ? [tree] : []), ...(tree.children || []).flat(Infinity).flatMap(child => nodes(child, match))];
 }
-const app = await compile('../SixPackApp.jsx', '\nexport { DayScreen, ShuffleScreen, FavoritesScreen, WorkoutExerciseRow, SettingsScreen };');
+const app = await compile('../SixPackApp.jsx', '\nexport { DayScreen, ShuffleScreen, FavoritesScreen, WorkoutExerciseRow, SettingsScreen, needsTransition, advanceRunnerState, createRunnerState, workoutTotalSeconds, blockSpeech, TRANSITION_SECONDS };');
 const render = () => { cursor = 0; return app.default({ uid: 'test' }); };
 let tree = render();
 const home = nodes(tree, node => node.type?.name === 'HomeScreen')[0];
@@ -215,3 +215,67 @@ for (const day of [15, 16, 18, 19, 20]) {
   }
 }
 for (const day of [17, 21]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Woche 3 Tag ${day} ist Ruhetag`);
+
+// 5s zwischen jedem Block, 30/45-s-Pause bleibt ein eigener Block, davor und danach wieder 5s mit Ansage.
+{
+  const exercise = (name, seconds) => ({ type: 'exercise', name, seconds });
+  const rest = (seconds) => ({ type: 'rest', name: 'Rest', seconds });
+  const items = [exercise('Crunches', 2), rest(3), exercise('Plank', 2), exercise('Plank', 2)];
+  assert.equal(app.TRANSITION_SECONDS, 5);
+  for (let index = 0; index < items.length - 1; index += 1) {
+    assert.equal(app.needsTransition(items, index), true, `5s nach Block ${index}`);
+  }
+  assert.equal(app.needsTransition(items, items.length - 1), false, 'nach dem letzten Block keine Pause');
+  assert.equal(app.workoutTotalSeconds(items), 2 + 5 + 3 + 5 + 2 + 5 + 2);
+
+  const workout = { items };
+  let state = { ...app.createRunnerState(workout), running: true };
+  const phases = [];
+  const note = (next) => {
+    const key = next.done ? 'done' : next.transition ? `gap-${next.itemIndex}` : `block-${next.itemIndex}`;
+    const last = phases.at(-1);
+    if (!last || last.key !== key) {
+      phases.push({
+        key,
+        ticks: 0,
+        type: next.done ? 'done' : next.transition ? 'transition' : items[next.itemIndex].type,
+        seconds: next.done ? 0 : next.transition ? app.TRANSITION_SECONDS : items[next.itemIndex].seconds,
+      });
+    }
+    phases.at(-1).ticks += 1;
+  };
+  note(state);
+  for (let guard = 0; !state.done && guard < 100; guard += 1) {
+    state = app.advanceRunnerState(state, workout);
+    note(state);
+  }
+  assert.equal(state.done, true);
+  assert.deepEqual(phases.map((phase) => [phase.type, phase.ticks, phase.seconds]), [
+    ['exercise', 2, 2],
+    ['transition', 5, 5],
+    ['rest', 3, 3],
+    ['transition', 5, 5],
+    ['exercise', 2, 2],
+    ['transition', 5, 5],
+    ['exercise', 2, 2],
+    ['done', 1, 0],
+  ]);
+
+  assert.equal(app.blockSpeech(rest(45)), '45 seconds rest');
+  assert.equal(app.blockSpeech(rest(30)), '30 seconds rest');
+  assert.equal(app.blockSpeech(exercise('Crunches', 30), { spoken: 'Crunches' }), 'Crunches for 30 seconds');
+  assert.equal(app.blockSpeech(exercise('Crunches', 30), { spoken: 'Crunches', countdown: true }), 'Crunches for 30 seconds, begin in');
+  assert.equal(app.blockSpeech(exercise('Side Plank', 30), { sideSwitch: true }), 'Switch sides');
+  assert.equal(app.blockSpeech(rest(45), { countdown: true }), '45 seconds rest, begin in');
+
+  for (const workout of Object.values(data.SIXPACK_VERIFIED_WORKOUTS)) {
+    workout.items.forEach((item, index) => {
+      if (item.type !== 'rest') return;
+      assert.ok(item.seconds === 30 || item.seconds === 45, `Pausenblock ${item.seconds}s`);
+      assert.equal(app.needsTransition(workout.items, index - 1), true, '5s vor dem Pausen-Block');
+      if (workout.items[index + 1]) assert.equal(app.needsTransition(workout.items, index), true, '5s nach dem Pausen-Block');
+      assert.equal(app.blockSpeech(item), `${item.seconds} seconds rest`);
+    });
+  }
+  console.log('Runner: 5s with voice before and after every 30/45s rest block; rest keeps its own duration.');
+}

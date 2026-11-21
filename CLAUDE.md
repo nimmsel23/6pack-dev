@@ -13,7 +13,7 @@ Android-Entwicklung: `pnpm run build:android` baut Debug-APK, `pnpm run run:andr
 
 ## Runner (`SixPackPromiseCard.jsx` → `RunnerScreen`) — Anforderungen aus Gym-Tests
 
-- 5s-Wechsel zwischen direkt aufeinanderfolgenden Übungen (`TRANSITION_SECONDS`).
+- 5s-Wechsel zwischen allen aufeinanderfolgenden Blöcken (`TRANSITION_SECONDS`), auch vor und nach einer 30- oder 45-s-Pause. Die lange Pause ist selbst ein Block.
 - Start jeder Übung/Pause: hoher kurzer Piep, Ende: tiefer langer Tüt.
 - Alle Sprachansagen **komplett Englisch** (en-US, User-Vorgabe 2026-10-16): Ansage mit Dauer ("Crunches" … "30 seconds", "Rest, 45 seconds"), "Switch sides" beim Seitenwechsel, "10 seconds left" 10 s vor Ende einer Übung; der
   5s-Wechsel selbst wird nicht angesagt.
@@ -63,7 +63,7 @@ Android-Entwicklung: `pnpm run build:android` baut Debug-APK, `pnpm run run:andr
 
 - **Ansagen-Korrekturen (User-Vorgabe 2026-11-01, ersetzt entsprechende Punkte oben):**
   - Welcome-Satz im Intro nur noch "Welcome to Six Pack Promise." (kein "Let's get ready!").
-  - 5s-Wechsel zwischen Übungen: Übung + Dauer wird ohne "begin in" angesagt, danach 3, 2, 1; beim Start nur der Startton, **kein "go"**. "begin in" gibt es nur im Start-Intro.
+  - 5s-Wechsel zwischen Blöcken (Übung oder 30-/45-s-Pause): nächster Block plus Dauer ohne "begin in" (Pause: "45 seconds rest"), danach 3, 2, 1; beim Start nur der Startton, **kein "go"**. "begin in" gibt es nur im Start-Intro. Vor und nach jedem Pausen-Block liegt dieselbe 5s-Pause mit Ansage.
   - "30 seconds left" / "10 seconds left": langsamer gesprochen (`HINT_SPEECH_RATE` 0,8) und eine Sekunde früher gestartet (`HINT_LEAD_SECONDS` = 1, d. h. bei 31 s bzw. 11 s Restzeit). Übungen ≤ 31 s bzw. ≤ 11 s bekommen den jeweiligen Hinweis nicht.
   - Manuelles Überspringen (Wischen/Punkte) und "Wiederholen": Übungsname + Dauer werden komplett neu angesagt, auch bei der zweiten Seite einer einseitigen Übung (kein "Switch sides" in diesem Fall).
   - Workout-Ende ("Workout fertig"): Button "Foto aufnehmen" öffnet den Selfies-Screen (dort `capture="user"`), zusätzlich "Zurück".
