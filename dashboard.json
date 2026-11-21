@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T19:05:29+00:00",
+  "generated_at": "2026-11-21T20:04:09+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T19:04:54Z",
+   "pushed_at": "2026-11-21T20:03:52Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -20,11 +20,17 @@
    "has_dev": true,
    "dev_behind": 0,
    "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-21T20:04:52+01:00",
-   "dev_head": "285bc9c 2026-11-21T20:04:52+01:00",
-   "master_head": "4f38af4 2026-11-21T19:31:17+01:00"
+   "oldest_unpromoted": "2026-11-21T20:03:44Z",
+   "dev_head": "a446ff3 2026-11-21T20:03:44Z",
+   "master_head": "285bc9c 2026-11-21T20:04:52+01:00"
   },
   "commits": [
+   {
+    "sha": "a446ff3",
+    "date": "2026-11-21T20:03:44Z",
+    "author": "Cursor Agent",
+    "subject": "runner: 5s-Pause auch vor und nach 30-/45-s-Blöcken"
+   },
    {
     "sha": "285bc9c",
     "date": "2026-11-21T20:04:52+01:00",
@@ -138,12 +144,6 @@
     "date": "2026-11-14T19:43:16+01:00",
     "author": "Alpha",
     "subject": "feat: expose setup deep links and reuse host Firestore"
-   },
-   {
-    "sha": "f4310ca",
-    "date": "2026-11-14T19:43:16+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): reference HIIT ABS save guard"
    }
   ],
   "activity": [
@@ -229,28 +229,58 @@
    },
    {
     "day": "2026-11-21",
-    "n": 5
+    "n": 6
    }
   ],
   "workflows": [
    {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "queued",
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
     "conclusion": null,
-    "created_at": "2026-11-21T19:05:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939044045",
-    "sha": "4f38af4"
+    "created_at": "2026-11-21T20:03:54Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254930",
+    "sha": "a446ff3"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T20:03:54Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254916",
+    "sha": "a446ff3"
    },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T19:51:25Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44943163729",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T19:05:36Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939058309",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
     "event": "workflow_run",
-    "status": "queued",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-21T19:05:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939043968",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939044045",
     "sha": "4f38af4"
    },
    {
@@ -261,36 +291,6 @@
     "conclusion": "skipped",
     "created_at": "2026-11-21T19:05:26Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939043964",
-    "sha": "4f38af4"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-21T19:04:56Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44938991922",
-    "sha": "285bc9c"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T19:04:56Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44938991894",
-    "sha": "285bc9c"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T18:33:59Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44936225687",
     "sha": "4f38af4"
    },
    {
@@ -387,34 +387,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev 1 Commit voraus; Storage-Regeln nun in VitalOS; Secrets offen",
-   "lage": "Der `dev`-Branch (Commit `285bc9c`) ist 1 Commit vor `master` (Commit `4f38af4`). Der Workflow `Check (6Pack)` auf `dev` für `285bc9c` ist erfolgreich abgeschlossen, während der `6Pack deploy` Workflow läuft. Die Verantwortung für Storage-Regeln wurde nach `vitalos` verschoben, jedoch ist der Firebase Storage Bucket laut `TODO.md` weiterhin nicht angelegt.",
+   "headline": "Dev 1 Commit voraus; Workflows laufen; Storage Bucket fehlt weiterhin",
+   "lage": "Der `dev`-Branch (Commit `a446ff3`) ist 1 Commit vor `master` (Commit `285bc9c`). Die Workflows `Check (6Pack)` und `6Pack deploy` für `a446ff3` auf `dev` laufen aktuell. Der Firebase Storage Bucket ist laut `TODO.md` weiterhin nicht angelegt, obwohl die Verantwortung für Storage-Regeln nach `vitalos` verschoben wurde.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der Firebase Storage Bucket `fitness-aos.firebasestorage.app` ist laut `TODO.md` weiterhin nicht angelegt, was die Funktion eigener Übungsvideos blockiert."
+     "text": "Der Firebase Storage Bucket (`fitness-aos.firebasestorage.app`, `fitness-aos.appspot.com`) ist laut `TODO.md` nicht angelegt und antwortet mit 404."
+    },
+    {
+     "level": "mittel",
+     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind gemäß `NEXT.md` noch zu prüfen/setzen."
     },
     {
      "level": "info",
-     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind laut `NEXT.md` noch zu prüfen und zu setzen."
-    },
-    {
-     "level": "info",
-     "text": "Zwei Workflows (`Gemini CI Agent`, `Auto-Promote dev -> master`) sind für `master` (Commit `4f38af4`) in der Warteschlange."
+     "text": "Die Workflows `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev` für Commit `a446ff3` sind aktuell 'in_progress'."
     }
    ],
    "naechste_schritte": [
     "Prüfen Sie den Status des Firebase Storage Buckets, da dieser laut `TODO.md` noch nicht aktiv ist.",
-    "Beobachten Sie den Abschluss des '6Pack deploy' Workflows auf 'dev' für Commit '285bc9c'.",
-    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`."
+    "Beobachten Sie den Abschluss der Workflows `Check (6Pack)` und `6Pack deploy` auf `dev` für Commit `a446ff3`.",
+    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung ist der `master`-Branch auf `4f38af4` aktualisiert, der `dev`-Branch auf `285bc9c` vorgerückt, und die Verantwortung für Storage-Regeln wurde nach `vitalos` verlagert.",
+   "veraendert": "Der `dev`-Branch wurde mit Commit `a446ff3` aktualisiert und der vorherige `dev`-Head `285bc9c` wurde erfolgreich nach `master` promotet, wodurch sich die Referenz-Commits verschoben haben.",
    "fragen": [
-    "Soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktion eigener Übungsvideos zu ermöglichen?",
-    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` priorisiert und gesetzt werden?"
+    "Soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktionalität für eigene Übungsvideos zu ermöglichen?",
+    "Wann sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` geprüft und gesetzt werden, um den CI-Agenten vollständig zu aktivieren?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T19:05:30+00:00"
+  "ai_at": "2026-11-21T20:04:12+00:00"
  }
 }
