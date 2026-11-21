@@ -1,3 +1,9 @@
+## 2026-11-21 — In-App-Update-Popup
+
+- Vorlage: Journal `src/components/UpdateManager.jsx` (Prüfung beim Start, bei `visibilitychange`, Fokus/`pageshow` und alle 10 Minuten über `registration.update()`). Übernommen von Fuel `src/client/registerSW.js` und `VersionCard.jsx`: Button „Jetzt aktualisieren“ sendet `SKIP_WAITING` und lädt neu. Zusätzlich `version.json`, weil der 6Pack-Worker schon beim Install `skipWaiting` aufruft und das einmalige `sw-update-available` vor dem UI verloren gehen kann.
+- Popup sitzt in `UpdatePrompt.jsx` und damit in Standalone und in der Shell (`SixPackEmbed`). „Später“ blendet es 10 Minuten aus. Die Build-Kennung (`Paketversion+Git`) steht unten in den Einstellungen.
+- Kein Auto-Reload. `version.json` wird mit `no-store` geladen und von Firebase nicht gecacht.
+
 ## 2026-11-21 — Runner: 5s-Pause auch vor und nach 30-/45-s-Blöcken
 
 - Owner-Regel (Daniel): Zwischen zwei Blöcken immer 5 Sekunden mit Ansage des nächsten Blocks. 30- und 45-s-Pausen bleiben eigene Blöcke; davor und danach liegt dieselbe 5s-Pause.

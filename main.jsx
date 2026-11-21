@@ -64,30 +64,8 @@ function Root() {
   }, []);
   return (
     <main data-theme="sixpack" className="w-full h-dvh flex flex-col">
-      <UpdateBanner />
       <SixPackEmbed onNavigate={target => { if (target === 'fuel') window.location.assign('https://fuel-vos.web.app'); }} route={route} onRouteChange={next => { location.hash = next; }} uid={state.user?.uid || 'local'} setupContent={<SyncSettings state={state} />} onWorkoutComplete={submitWorkout} loadRemoteProgram={loadProgram} saveRemoteProgram={saveProgram} enablePush={isNativeApp ? undefined : enableSixpackPush} localReminders={nativeReminderDelivery} />
     </main>
-  );
-}
-
-// Update erst im Nachhinein melden (nie den Start blockieren): der neue Service Worker ist installiert,
-// die laufende Seite bleibt unberührt, bis jemand "Neu laden" tippt. Event kommt aus dem SW-Register-Snippet.
-function UpdateBanner() {
-  const [available, setAvailable] = useState(false);
-  useEffect(() => {
-    const show = () => setAvailable(true);
-    window.addEventListener('sw-update-available', show);
-    return () => window.removeEventListener('sw-update-available', show);
-  }, []);
-  if (!available) return null;
-  return (
-    <div role="status" className="flex items-center justify-between gap-3 px-4 py-2 text-[12px] font-semibold shrink-0" style={{ background: 'var(--card, #1a1a1a)', color: 'var(--text, #fff)' }}>
-      <span>Update verfügbar</span>
-      <span className="flex gap-3">
-        <button type="button" onClick={() => window.location.reload()} className="underline">Neu laden</button>
-        <button type="button" onClick={() => setAvailable(false)} aria-label="Hinweis schließen">×</button>
-      </span>
-    </div>
   );
 }
 

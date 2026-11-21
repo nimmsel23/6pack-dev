@@ -15,6 +15,8 @@ import { showWorkoutNotification, clearWorkoutNotification, requestWorkoutNotifi
 import { getReminder, reminderSupported, requestReminderPermission } from './reminder.js';
 import { mergePrograms, setTrackerDay } from './programSync.js';
 import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SIXPACK_EXERCISE_COACHING, SIXPACK_CALISTHENICS_SKILLS, SIXPACK_VERIFIED_WORKOUTS } from './sixpackData.js';
+import { currentBuildLabel } from './appUpdate.js';
+import UpdatePrompt from './UpdatePrompt.jsx';
 
 const SIXPACK_PROGRAM_KEY = 'fitness-sixpack-program-v1';
 const SIXPACK_FAVORITES_KEY = 'fitness-sixpack-workout-favorites-v1';
@@ -684,6 +686,11 @@ function SettingsScreen({ uid, reminder, onChange, onBack, enablePush, pushState
       </>}
       {/* Store-Build: Google-Kalender-Anbindung ist im Produkt-Backend nicht eingerichtet (Sackgasse) und nicht deklariert. */}
       {!IS_STORE_BUILD && <CalendarReminderSettings uid={uid} />}
+      {typeof currentBuildLabel === 'function' && currentBuildLabel() ? (
+        <p className="px-4 pt-6 pb-8 text-center text-[10px] font-semibold tracking-wide" style={{ color: 'var(--dim)' }}>
+          Version {currentBuildLabel()}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -1948,6 +1955,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
 
   return (
     <section className={inShell ? 'w-full min-h-0' : 'w-full flex-1 min-h-0 overflow-y-auto'}>
+        <UpdatePrompt />
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} embedded={inShell} hasSettings={hasSettings} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} reminderAvailable={reminderAvailable} />}
 

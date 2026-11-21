@@ -48,3 +48,6 @@ jobs:
 
       - name: Exercise video mapping checks
         run: node scripts/test-exercise-video.mjs
+
+      - name: In-app update prompt
+        run: node --test scripts/test-app-update.mjs

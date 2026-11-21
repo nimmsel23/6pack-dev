@@ -59,7 +59,7 @@ Android-Entwicklung: `pnpm run build:android` baut Debug-APK, `pnpm run run:andr
 - Navigation: Netz zuerst, aber nur `navTimeoutMs` = 400 (`mini-app.json`), danach Cache. Updates kommen trotzdem an: der Browser prüft `sw.js` selbst, der neue SW precacht die Shell. Splash: `minMs` 0, Update-Fenster 800 ms. Keine künstlichen Wartezeiten beim Start einbauen.
 - Runner-Video: Cache zuerst — solange die Cache-Abfrage läuft, ist keine Quelle gesetzt; gecachte Dateien gehen nie ans Netz.
 - Neue Funktionen dürfen nie auf eine Netzantwort warten, bevor der Runner/Start bedienbar ist; Netzfehler still abfangen.
-- Updates (User-Vorgabe 2026-10-26): wie die anderen Apps erst im Nachhinein melden — `mini-app.json` `register: { expose: true }` feuert `sw-update-available`, `UpdateBanner` in `main.jsx` zeigt "Update verfügbar · Neu laden". Kein Auto-Reload: `register.reloadWindowMs: 0` in `mini-app.json` (Option im Paket `~/vitalos/packages/mini-app-shell` ergänzt, hier nur `stamp.mjs` vendored; die übrige Vendor-Drift wurde bewusst nicht übernommen).
+- Updates (User-Vorgabe 2026-10-26, Popup 2026-11-21): kein Auto-Reload (`register.reloadWindowMs: 0`). `register.expose` feuert weiter `sw-update-available`. `UpdatePrompt` in `SixPackApp.jsx` (Standalone und Shell) prüft beim Start, bei `visibilitychange`/Fokus und alle 10 Minuten den Service Worker und `version.json`. Modal „Jetzt aktualisieren“ sendet `SKIP_WAITING` und lädt neu. „Später“ blendet 10 Minuten aus. Die Build-Kennung steht in den Einstellungen. Der Start wartet nicht auf die Prüfung.
 
 - **Ansagen-Korrekturen (User-Vorgabe 2026-11-01, ersetzt entsprechende Punkte oben):**
   - Welcome-Satz im Intro nur noch "Welcome to Six Pack Promise." (kein "Let's get ready!").
