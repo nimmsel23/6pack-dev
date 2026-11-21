@@ -154,6 +154,38 @@ const blocked = uploadModule.default({ exerciseId: 'jackknifes', exerciseName: '
 assert(nodes(blocked, node => node.props.role === 'alert').some(node => String(node.children).includes('anmelden')));
 console.log('Exercise video upload: camera capture and gallery inputs are on the exercise.');
 
+const editorModule = await compile('../ExerciseClipEditor.jsx');
+const trimChanges = [];
+const editor = editorModule.default({
+  url: 'blob:clip',
+  duration: 12,
+  start: 1,
+  end: 4,
+  busy: false,
+  progress: null,
+  status: '',
+  error: '',
+  onChange(next) { trimChanges.push(next); },
+  onCancel() {},
+  onUpload() {},
+});
+const editorButtons = nodes(editor, node => node.type === 'button');
+assert(editorButtons.some(node => String(node.children).includes('Hochladen')));
+assert(editorButtons.some(node => String(node.children).includes('Abbrechen')));
+assert(editorButtons.some(node => String(node.children).includes('Clip abspielen')));
+const editorVideo = nodes(editor, node => node.type === 'video')[0];
+assert.equal(editorVideo.props.muted, true);
+assert.equal(editorVideo.props.playsInline, true);
+assert.equal(editorVideo.props.controls, undefined);
+const handles = nodes(editor, node => node.type?.name === 'TrimHandle');
+assert.deepEqual(handles.map(node => node.props.label), ['Anfang des Clips', 'Ende des Clips']);
+assert.equal(nodes(editor, node => node.props.role === 'dialog')[0].props['aria-label'], 'Clip ausschneiden');
+const endHandle = handles.find(node => node.props.label === 'Ende des Clips').type(handles.find(node => node.props.label === 'Ende des Clips').props);
+assert.equal(endHandle.props['aria-label'], 'Ende des Clips');
+endHandle.props.onKeyDown({ key: 'ArrowRight', shiftKey: false, preventDefault() {} });
+assert.deepEqual(trimChanges[0], { start: 1, end: 4.1 });
+console.log('Clip editor: full-screen trim handles, muted preview, upload and cancel.');
+
 // Enabling the switch must not silently fall back to an app-open timer.
 globalThis.Notification = { permission: 'granted' };
 states.length = 0;

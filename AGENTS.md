@@ -34,6 +34,8 @@ Fremde Änderungen und persönliche Daten erhalten.
 | `exerciseVideo.js` | Prüfung, Pfad und Vorrang eigener Übungsvideos (ohne Firebase) |
 | `exerciseVideoCloud.js` | Resumable Upload und Firestore-Abo auf der bestehenden Firebase-App |
 | `ExerciseVideoUpload.jsx` | Kamera- oder Galerie-Aufnahme an der Übung |
+| `ExerciseClipEditor.jsx` | Vollbild-Ausschnitt vor dem Upload (Start, Ende, Clip abspielen) |
+| `exerciseClipCut.js` | Paket-Kopie des bestätigten Clips, ohne Neukodierung |
 | `SelfiesScreen.jsx` | Login und Account-Grenze der Foto-Oberfläche |
 | `photoAuth.js` | Bestehenden Firebase-Login nutzen; Google/E-Mail, Logout |
 | `SelfiesGallery.jsx` | Kamera, Mehrfachauswahl, Offline-Queue und expliziter Altbestand-Import |

@@ -1,6 +1,8 @@
 # TODO — 6pack-dev
 
 - [ ] **ELD-35 Stimme:** austauschbare Sprachausgabe, Auswahl und Budget durch Daniel. Keine Umsetzung, bis der Auftrag die Stimme einschließt. Quelle: [ELD-35](https://linear.app/eldanioo/issue/ELD-35). Sichtbar über [Issue #52](https://github.com/nimmsel23/6pack-dev/issues/52).
+- [x] 2026-11-21: Vor dem Upload eines Übungsvideos den Clip im Vollbild wählen (Anfang, Ende, abspielen). Hochgeladen wird der geschnittene Clip; ohne Schnitt auf dem Gerät bleiben `clipStart`/`clipEnd`.
+- [ ] Geräteprüfung iPhone (Safari, PWA, VitalOS-iframe): Griff ziehen, Clip abspielen, hochgeladenes Video startet am gewählten Anfang. Der Schnitt ist hier nur mit einem synthetischen MP4 geprüft.
 - [x] 2026-11-20: Eigene Übungsvideos (ELD-35, Freeze-Ausnahme, nur der Videoteil): In der Übung Kamera (`capture=environment`) oder Galerie, Prüfung (100 MB, 60 s, optionaler Ausschnitt), resumable Upload nach Firebase Storage, Zuordnung in Firestore `exerciseVideos/{exerciseId}`. Die Übungsansicht spielt das eigene Video, sonst den bisherigen Fallback. Rules liegen im Repo (`storage.rules`, `firestore.exercise-videos.rules`) und sind nicht deployed. Der Bucket `fitness-aos.firebasestorage.app` und `fitness-aos.appspot.com` antworten mit 404; Storage ist nicht angelegt.
 - [x] 2026-11-14: Abgeschlossene Runs als `HIIT ABS`-Activity mit eingeklappten Übungsdetails protokollieren; Gast-Outbox beim Login übernehmen und Konten trennen (`f491f5cb`); fehlgeschlagenes Session-Logging stoppt den Track-Fortschritt (`e6fd6cd3`). Fitness-Session-UI als Folge-Ticket in `fitness-dev/TODO.md`.
 

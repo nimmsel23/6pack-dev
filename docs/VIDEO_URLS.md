@@ -48,8 +48,19 @@ manuell ändern. Fitness verwendet `scripts/build-sixpack-data.mjs`.
 
 In der Übungsansicht kann ein angemeldetes Konto der Übung ein eigenes Video
 zuordnen: „Mit Kamera aufnehmen“ (`<input type="file" accept="video/*" capture="environment">`)
-oder „Aus Galerie“. Die Datei muss `video/*` sein, höchstens 100 MB und 60 Sekunden.
-Start und Ende sind optional und gelten nur für die Wiedergabe.
+oder „Aus Galerie“. Die Datei muss `video/*` sein und höchstens 100 MB.
+Danach öffnet ein Vollbild-Editor (Vorschau, zwei Griffe, „Clip abspielen“,
+„Hochladen“, „Abbrechen“). Hochgeladen wird erst nach „Hochladen“, und nur
+der gewählte Clip, höchstens 60 Sekunden.
+
+Der Clip wird ohne Neukodierung aus den vorhandenen Paketen geschnitten
+(H.264 oder HEVC, MP4 und MOV) und als MP4 hochgeladen. ffmpeg.wasm,
+MediaRecorder und eine WebCodecs-Neukodierung sind auf dem iPhone in der
+Shell nicht verlässlich und werden nicht benutzt. Gelingt die Paket-Kopie
+nicht, speichert die Zuordnung `clipStart` und `clipEnd`, und der Player
+spielt nur diesen Bereich. Dafür muss die Datei selbst höchstens 60 Sekunden
+lang sein. Diese beiden Felder erlaubt `vitalos/firestore.rules` bereits.
+Neue Namen wie `trimStart` wären dort nicht zulässig.
 
 Die Datei geht per resumable Upload nach Firebase Storage
 `exerciseVideos/{exerciseId}/{uid}` im Projekt `fitness-aos`
@@ -59,7 +70,8 @@ Objekt pro Konto und Übung. `customMetadata.uploaderUid` muss dieselbe UID sein
 Ein erneuter Upload überschreibt dieses Objekt; löschen darf dasselbe Konto.
 Firestore `exerciseVideos/{exerciseId}` hält nur die Zuordnung: `exerciseId`,
 `storagePath`, `uploaderUid`, `createdAt`, `duration`, `status` (`pending` oder
-`approved`), `contentType`, `sizeBytes`, optional `clipStart` und `clipEnd`.
+`approved`), `contentType`, `sizeBytes`, optional `clipStart` und `clipEnd`
+(nur wenn der Ausschnitt nicht als eigene Datei geschnitten werden konnte).
 Anlegen nur, solange noch kein Dokument existiert und `uploaderUid` das eigene
 Konto ist. Ändern und Löschen nur durch diesen Uploader oder die vorhandene
 `isCoach()`-Prüfung im VitalOS-Ruleset. `uploaderUid` bleibt beim Ändern gleich,

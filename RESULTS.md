@@ -1,3 +1,10 @@
+## 2026-11-21 — Clip-Editor vor dem Übungsvideo-Upload
+
+- Nach Kamera oder Galerie öffnet ein Vollbild-Editor: stumme Vorschau, zwei Griffe für Anfang und Ende, „Clip abspielen“, „Hochladen“ und „Abbrechen“. Hochgeladen wird erst nach der Bestätigung.
+- Der Clip wird ohne Neukodierung geschnitten (Mediabunny, Paket-Kopie, H.264 und HEVC/MOV) und als MP4 hochgeladen. ffmpeg.wasm, MediaRecorder und WebCodecs-Neukodierung laufen auf dem iPhone in der Shell nicht verlässlich und werden nicht verwendet.
+- Gelingt der Schnitt nicht, bleibt bei einer Datei bis 60 Sekunden der Ausschnitt in den bestehenden Feldern `clipStart`/`clipEnd`. Der Player spielt nur diesen Bereich. `vitalos/firestore.rules` erlaubt die Felder bereits; hier wird nichts an den Rules geändert.
+- Prüfung: `node scripts/test-exercise-video.mjs` (Trim-Fenster und echter Schnitt an einem synthetischen Clip), `node scripts/test-exercise-details.mjs`. Headless Chrome, iPhone-Format: Griff auf 1,5 s, „Hochladen“ liefert `clip.mp4` ohne `clipStart`/`clipEnd`.
+
 ## 2026-11-21 — Voller Bildschirm, keine Versionszeile
 
 - Sichtbare Zeile `Version 0.1.0+…` ist aus den Einstellungen entfernt. Build-Kennung und `version.json` bleiben für das Update-Popup.

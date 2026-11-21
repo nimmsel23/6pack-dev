@@ -7,11 +7,17 @@ import {
   clipLoopHandlers,
   contentTypeForFile,
   exerciseVideoStoragePath,
+  formatTrimSeconds,
+  initialTrim,
   mapUploadError,
+  moveTrimHandle,
   parseExerciseVideoRecord,
+  planExerciseClipUpload,
   resolveExercisePlayback,
+  trimCoversFile,
   validateExerciseVideo,
 } from '../exerciseVideo.js';
+import { cutExerciseClip } from '../exerciseClipCut.js';
 
 const uid = 'friend';
 const path = exerciseVideoStoragePath('jackknifes', uid);
@@ -121,6 +127,42 @@ assert.match(mapUploadError({ code: 'storage/bucket-not-found' }), /nicht aktiv/
 assert.match(mapUploadError({ code: 'storage/retry-limit-exceeded' }), /Netz/);
 assert.equal(mapUploadError({ message: 'token leaked in the error' }), 'Upload fehlgeschlagen. Erneut versuchen.');
 
+assert.deepEqual(initialTrim(12.24), { start: 0, end: 12.24 });
+assert.deepEqual(initialTrim(90), { start: 0, end: 60 });
+assert.deepEqual(initialTrim(0), { start: 0, end: 0 });
+assert.equal(trimCoversFile(12, 0, 12), true);
+assert.equal(trimCoversFile(90, 0, 60), false);
+assert.deepEqual(moveTrimHandle(12, 0, 12, 'end', 5), { start: 0, end: 5 });
+assert.deepEqual(moveTrimHandle(12, 0, 12, 'start', 3), { start: 3, end: 12 });
+assert.deepEqual(moveTrimHandle(12, 2, 4, 'start', 11), { start: 11, end: 11.5 });
+assert.deepEqual(moveTrimHandle(90, 0, 60, 'end', 90), { start: 30, end: 90 });
+assert.deepEqual(moveTrimHandle(90, 30, 90, 'start', 0), { start: 0, end: 60 });
+assert.deepEqual(moveTrimHandle(12, 0, 12, 'end', 0.1), { start: 0, end: 0.5 });
+assert.deepEqual(moveTrimHandle(0.3, 0, 0.3, 'end', 0.2), { start: 0, end: 0.3 });
+assert.equal(formatTrimSeconds(12.5), '12,5 s');
+assert.equal(formatTrimSeconds(-2), '0,0 s');
+
+const whole = planExerciseClipUpload({ durationSeconds: 12.2, start: 0, end: 12.2 });
+assert.equal(whole.mode, 'file');
+assert.equal(whole.clipStart, null);
+assert.equal(whole.durationSeconds, 12.2);
+const ranged = planExerciseClipUpload({ durationSeconds: 12.2, start: 1.25, end: 9.2 });
+assert.equal(ranged.mode, 'range');
+assert.deepEqual([ranged.clipStart, ranged.clipEnd], [1.25, 9.2]);
+assert.match(planExerciseClipUpload({ durationSeconds: 12, start: 1, end: 1.2 }).error, /kurz/);
+assert.match(planExerciseClipUpload({ durationSeconds: 90, start: 10, end: 40 }).error, /nicht geschnitten/);
+const cutPlan = planExerciseClipUpload({
+  durationSeconds: 90,
+  start: 10,
+  end: 40,
+  cut: { file: { size: 20, type: 'video/mp4' }, durationSeconds: 30 },
+});
+assert.equal(cutPlan.mode, 'cut');
+assert.equal(cutPlan.clipStart, null);
+assert.equal(cutPlan.clipEnd, null);
+assert.equal(cutPlan.durationSeconds, 30);
+assert.equal(cutPlan.file.type, 'video/mp4');
+
 const storageRules = readFileSync(new URL('../storage.exercise-videos.rules', import.meta.url), 'utf8');
 const firestoreRules = readFileSync(new URL('../firestore.exercise-videos.rules', import.meta.url), 'utf8');
 const cloud = readFileSync(new URL('../exerciseVideoCloud.js', import.meta.url), 'utf8');
@@ -158,4 +200,16 @@ assert.match(cloud, /exerciseVideoStoragePath\(exerciseId,\s*uid\)/);
 assert.match(cloud, /customMetadata:\s*\{\s*uploaderUid:\s*uid\s*\}/);
 assert.doesNotMatch(cloud, /newVideoFileId/);
 
-console.log('Exercise video mapping: validation, path, clip, fallback preference and rules limits passed.');
+const sample = new File(
+  [readFileSync(new URL('./fixtures/trim-sample.mp4', import.meta.url))],
+  'trim-sample.mp4',
+  { type: 'video/mp4' },
+);
+const cut = await cutExerciseClip(sample, 0.8, 2.2);
+assert.equal(cut.file.type, 'video/mp4');
+assert.equal(cut.file.name, 'clip.mp4');
+assert.ok(cut.file.size > 500 && cut.file.size < sample.size, `cut size ${cut.file.size}`);
+assert.ok(cut.durationSeconds > 1.1 && cut.durationSeconds < 1.8, `cut duration ${cut.durationSeconds}`);
+await assert.rejects(cutExerciseClip(new File(['kein video'], 'notes.txt', { type: 'text/plain' }), 0, 1));
+
+console.log('Exercise video mapping: validation, path, clip, trim and rules limits passed.');

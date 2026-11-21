@@ -3,6 +3,7 @@
 
 export const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 export const MAX_VIDEO_SECONDS = 60;
+export const MIN_CLIP_SECONDS = 0.5;
 export const EXERCISE_VIDEO_COLLECTION = 'exerciseVideos';
 export const VIDEO_STATUSES = ['pending', 'approved'];
 
@@ -39,12 +40,121 @@ export function normalizeClip(durationSeconds, clipStart, clipEnd) {
   if (start < 0 || end <= start || end > durationSeconds + 0.05) {
     return { error: 'Der Ausschnitt liegt außerhalb des Videos.' };
   }
-  if (end - start < 0.5) return { error: 'Der Ausschnitt ist zu kurz.' };
+  if (end - start < MIN_CLIP_SECONDS) return { error: 'Der Ausschnitt ist zu kurz.' };
   if (end - start > MAX_VIDEO_SECONDS) return { error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
   const startRounded = roundSeconds(start);
   const endRounded = roundSeconds(Math.min(end, durationSeconds));
   if (endRounded <= startRounded) return { error: 'Der Ausschnitt ist zu kurz.' };
   return { start: startRounded, end: endRounded };
+}
+
+// Anfang der Auswahl. Ein Video über 60 Sekunden startet mit den ersten 60.
+export function initialTrim(durationSeconds) {
+  const duration = asSeconds(durationSeconds);
+  if (duration == null || duration <= 0) return { start: 0, end: 0 };
+  return { start: 0, end: roundSeconds(Math.min(duration, MAX_VIDEO_SECONDS)) };
+}
+
+// Die Auswahl ist das ganze Video, nicht ein Ausschnitt.
+export function trimCoversFile(durationSeconds, start, end) {
+  const duration = asSeconds(durationSeconds);
+  const rangeStart = asSeconds(start);
+  const rangeEnd = asSeconds(end);
+  if (duration == null || rangeStart == null || rangeEnd == null || duration <= 0) return false;
+  return rangeStart <= 0.02 && Math.abs(rangeEnd - duration) <= 0.02;
+}
+
+// Ein Griff zieht das Fenster mit. Die Länge bleibt zwischen 0,5 und 60 Sekunden.
+export function moveTrimHandle(durationSeconds, start, end, edge, rawValue) {
+  const duration = asSeconds(durationSeconds);
+  let rangeStart = asSeconds(start);
+  let rangeEnd = asSeconds(end);
+  const raw = asSeconds(rawValue);
+  if (duration == null || duration <= 0 || rangeStart == null || rangeEnd == null || raw == null) {
+    return initialTrim(durationSeconds);
+  }
+  if (duration <= MIN_CLIP_SECONDS) return { start: 0, end: roundSeconds(duration) };
+  const maxSpan = Math.min(MAX_VIDEO_SECONDS, duration);
+  const minSpan = MIN_CLIP_SECONDS;
+  const next = Math.min(duration, Math.max(0, raw));
+  if (edge === 'start') {
+    rangeStart = Math.min(next, duration - minSpan);
+    rangeEnd = Math.max(rangeEnd, rangeStart + minSpan);
+    if (rangeEnd - rangeStart > maxSpan) rangeEnd = rangeStart + maxSpan;
+    if (rangeEnd > duration) {
+      rangeEnd = duration;
+      rangeStart = Math.max(0, rangeEnd - maxSpan);
+    }
+  } else {
+    rangeEnd = Math.max(next, minSpan);
+    rangeStart = Math.min(rangeStart, rangeEnd - minSpan);
+    if (rangeEnd - rangeStart > maxSpan) rangeStart = rangeEnd - maxSpan;
+    if (rangeStart < 0) {
+      rangeStart = 0;
+      rangeEnd = Math.min(duration, maxSpan);
+    }
+  }
+  rangeStart = Math.max(0, Math.min(rangeStart, duration));
+  rangeEnd = Math.max(0, Math.min(rangeEnd, duration));
+  if (rangeEnd - rangeStart < minSpan) {
+    if (edge === 'start') rangeStart = Math.max(0, rangeEnd - minSpan);
+    else rangeEnd = Math.min(duration, rangeStart + minSpan);
+  }
+  return { start: roundSeconds(rangeStart), end: roundSeconds(rangeEnd) };
+}
+
+export function formatTrimSeconds(seconds) {
+  const value = asSeconds(seconds);
+  const safe = value == null ? 0 : Math.max(0, value);
+  return `${roundSeconds(safe).toFixed(1).replace('.', ',')} s`;
+}
+
+// `cut` ist der geschnittene Clip. Ohne ihn bleibt bei einem Video bis 60 Sekunden
+// der Ausschnitt in clipStart/clipEnd. Längere Dateien brauchen den echten Schnitt.
+export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}) {
+  const duration = asSeconds(durationSeconds);
+  const roundedDuration = duration == null ? null : roundSeconds(duration);
+  if (roundedDuration == null || roundedDuration <= 0) {
+    return { ok: false, error: 'Die Videolänge konnte nicht gelesen werden.' };
+  }
+  const rangeStart = asSeconds(start);
+  const rangeEnd = asSeconds(end);
+  if (rangeStart == null || rangeEnd == null) {
+    return { ok: false, error: 'Start und Ende müssen Sekunden sein.' };
+  }
+  if (trimCoversFile(duration, rangeStart, rangeEnd)) {
+    if (duration > MAX_VIDEO_SECONDS) {
+      return { ok: false, error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
+    }
+    return { ok: true, mode: 'file', clipStart: null, clipEnd: null, durationSeconds: roundedDuration };
+  }
+  const clip = normalizeClip(duration, rangeStart, rangeEnd);
+  if (clip.error) return { ok: false, error: clip.error };
+  if (cut?.file) {
+    const cutDuration = asSeconds(cut.durationSeconds);
+    const roundedCut = cutDuration == null ? null : roundSeconds(cutDuration);
+    if (roundedCut == null || roundedCut <= 0 || roundedCut > MAX_VIDEO_SECONDS + 0.05) {
+      return { ok: false, error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
+    }
+    return {
+      ok: true,
+      mode: 'cut',
+      file: cut.file,
+      clipStart: null,
+      clipEnd: null,
+      durationSeconds: Math.min(roundedCut, MAX_VIDEO_SECONDS),
+    };
+  }
+  if (duration > MAX_VIDEO_SECONDS) {
+    return { ok: false, error: 'Der Clip konnte auf diesem Gerät nicht geschnitten werden. Bitte ein Video bis 60 Sekunden wählen.' };
+  }
+  return {
+    ok: true,
+    mode: 'range',
+    clipStart: clip.start,
+    clipEnd: clip.end,
+    durationSeconds: roundedDuration,
+  };
 }
 
 export function contentTypeForFile(file) {
