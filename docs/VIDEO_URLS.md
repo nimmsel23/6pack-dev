@@ -64,8 +64,8 @@ Anlegen nur, solange noch kein Dokument existiert und `uploaderUid` das eigene
 Konto ist. Ändern und Löschen nur durch diesen Uploader oder die vorhandene
 `isCoach()`-Prüfung im VitalOS-Ruleset. `uploaderUid` bleibt beim Ändern gleich,
 `storagePath` ist `exerciseVideos/{exerciseId}/{uploaderUid}`.
-Keine Videodatei liegt im Git. Die Regeln sind Stand 2026-11-21 noch nicht
-deployed; das Fragment `firestore.exercise-videos.rules` wird 1:1 in
+Keine Videodatei liegt im Git. `storage.rules` deployt `deploy.yml`
+beim master-Push (Schritt „Storage-Regeln (live)“); das Fragment `firestore.exercise-videos.rules` wird 1:1 in
 `vitalos/firestore.rules` übernommen. `node scripts/test-exercise-video-rules.mjs`
 prüft am lokalen Emulator (Projekt `demo-sixpack`), dass ein fremdes Konto
 nicht überschreibt oder löscht, der Uploader das darf, und ohne Anmeldung
@@ -73,8 +73,9 @@ nichts geht.
 
 Sobald so eine Zuordnung lesbar ist, spielen Detailansicht und Runner sie statt
 Katalog, localStorage-Override und Bundle-Clip. Ohne Anmeldung oder ohne
-Zuordnung bleibt der bisherige Fallback. Storage- und Firestore-Rules liegen im
-Repo und sind nicht deployed; der Bucket war am 2026-11-20 nicht angelegt.
+Zuordnung bleibt der bisherige Fallback. Storage-Rules kommen per `deploy.yml`
+(master); die Firestore-Rules deployt `vitalos`. Der Bucket
+`fitness-aos.firebasestorage.app` existiert (Stand 2026-11-21).
 
 ## Prüfung
 

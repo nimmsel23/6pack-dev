@@ -1,6 +1,6 @@
 rules_version = '2';
 // Firebase Storage für eigene Übungsvideos im Projekt fitness-aos.
-// Nicht deployen, solange der Bucket nicht angelegt ist.
+// Wird beim master-Push von deploy.yml deployt ("Storage-Regeln (live)").
 // Lesen: nur angemeldete Nutzer, wie die übrigen Firebase-Daten der App.
 // Gäste bleiben beim Katalog-Video.
 // Schreiben: nur video/*, höchstens 100 MB, höchstens ein Objekt pro Konto

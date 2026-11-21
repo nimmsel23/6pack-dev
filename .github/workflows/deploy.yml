@@ -1,7 +1,7 @@
 # Pull Request (nach dev oder master): eigener 24h-PR-Channel mit Kommentar (PR-Weg wie fitness-dev;
 # Check (6Pack) und Auto-Merge für den Release-Weg dev -> master liegen in check.yml/automerge.yml).
 # Branch dev: 24h-Preview-Channel "dev" mit Telegram-Link.
-# Branch master: Standalone-Site vos-6pack.web.app mit Telegram-Nachricht.
+# Branch master: Standalone-Site vos-6pack.web.app mit Telegram-Nachricht + Storage-Regeln (storage.rules).
 # vitalos.web.app (Meta-Repo-Shell) wird separat durch dessen Workflow deployt.
 # Hosting-Ziel "sixpack" im Projekt fitness-aos, siehe .firebaserc.
 # Ohne Firebase-Secret wird nur gebaut und der Deploy übersprungen.
@@ -130,3 +130,13 @@ jobs:
             🔗 ${{ steps.firebase_live.outputs.details_url }}
 
             Commit: ${{ github.event.head_commit.message }}
+
+      # Storage-Regeln (eigene Übungsvideos) gehören nur diesem Repo; kein anderes
+      # Repo setzt Regeln für fitness-aos.firebasestorage.app. Firestore-Regeln
+      # deployt weiterhin vitalos (firestore.rules).
+      - name: Storage-Regeln (live)
+        if: env.FIREBASE_SA != '' && github.event_name != 'pull_request' && github.ref_name == 'master'
+        run: |
+          printf '%s' "$FIREBASE_SA" > "$RUNNER_TEMP/sa.json"
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" \
+            npx -y firebase-tools@latest deploy --only storage --project fitness-aos --non-interactive
