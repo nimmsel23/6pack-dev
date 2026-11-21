@@ -76,8 +76,5 @@
         "**/*.test.*"
       ]
     }
-  ],
-  "storage": {
-    "rules": "storage.rules"
-  }
+  ]
 }

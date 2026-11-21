@@ -121,7 +121,7 @@ assert.match(mapUploadError({ code: 'storage/bucket-not-found' }), /nicht aktiv/
 assert.match(mapUploadError({ code: 'storage/retry-limit-exceeded' }), /Netz/);
 assert.equal(mapUploadError({ message: 'token leaked in the error' }), 'Upload fehlgeschlagen. Erneut versuchen.');
 
-const storageRules = readFileSync(new URL('../storage.rules', import.meta.url), 'utf8');
+const storageRules = readFileSync(new URL('../storage.exercise-videos.rules', import.meta.url), 'utf8');
 const firestoreRules = readFileSync(new URL('../firestore.exercise-videos.rules', import.meta.url), 'utf8');
 const cloud = readFileSync(new URL('../exerciseVideoCloud.js', import.meta.url), 'utf8');
 for (const rules of [storageRules, firestoreRules]) {

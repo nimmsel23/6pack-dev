@@ -81,8 +81,11 @@ Firestore-Rules/Indexes haben ihre einzige deploybare Source of Truth in
 Neue Rules vor einem davon abhängigen Client veröffentlichen; der erlaubte
 Production-Weg ist VitalOS-CI (`deploy-firestore-rules.yml`), kein direkter Agent-Deploy.
 `firestore.exercise-videos.rules` ist nur das Fragment für `exerciseVideos` und
-ersetzt dieses Ruleset nicht. `storage.rules` gilt für den noch nicht angelegten
-Storage-Bucket und wird nicht mit dem Hosting-Deploy veröffentlicht.
+ersetzt dieses Ruleset nicht. Gleiches gilt für Storage: SSOT ist
+`~/vitalos/storage.rules`, `storage.exercise-videos.rules` hier ist nur das
+Fragment für die Tests. Beide Rulesets deployt VitalOS-CI automatisch nach
+grünem Product-Check auf master (inkl. Emulator-Test). Dieses Repo deployt
+nie Rules (Storage- und Firestore-Rules gelten projektweit für fitness-aos).
 
 ## Build, Tests und generierte Dateien
 

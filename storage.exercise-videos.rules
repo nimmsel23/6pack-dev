@@ -1,6 +1,8 @@
 rules_version = '2';
-// Firebase Storage für eigene Übungsvideos im Projekt fitness-aos.
-// Wird beim master-Push von deploy.yml deployt ("Storage-Regeln (live)").
+// Fragment: 6Pack-Abschnitt der Storage-Rules (eigene Übungsvideos) für die Tests hier.
+// SSOT und Deploy: vitalos/storage.rules über vitalos deploy-firestore-rules.yml
+// (automatisch nach grünem Product-Check). Änderungen 1:1 dort übernehmen.
+// NICHT aus diesem Repo deployen — Storage-Rules gelten projektweit.
 // Lesen: nur angemeldete Nutzer, wie die übrigen Firebase-Daten der App.
 // Gäste bleiben beim Katalog-Video.
 // Schreiben: nur video/*, höchstens 100 MB, höchstens ein Objekt pro Konto

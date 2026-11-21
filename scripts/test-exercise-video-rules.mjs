@@ -57,7 +57,7 @@ function record(uid, extra = {}) {
 
 async function run() {
   const firestoreRules = emulatorFirestoreRules(readFileSync(join(root, 'firestore.exercise-videos.rules'), 'utf8'));
-  const storageRules = readFileSync(join(root, 'storage.rules'), 'utf8');
+  const storageRules = readFileSync(join(root, 'storage.exercise-videos.rules'), 'utf8');
   const testEnv = await initializeTestEnvironment({
     projectId,
     firestore: { rules: firestoreRules },
@@ -127,10 +127,10 @@ function startEmulator() {
   const dir = mkdtempSync(join(tmpdir(), 'exercise-video-rules-'));
   const fragment = readFileSync(join(root, 'firestore.exercise-videos.rules'), 'utf8');
   writeFileSync(join(dir, 'firestore.rules'), emulatorFirestoreRules(fragment));
-  writeFileSync(join(dir, 'storage.rules'), readFileSync(join(root, 'storage.rules')));
+  writeFileSync(join(dir, 'storage.exercise-videos.rules'), readFileSync(join(root, 'storage.exercise-videos.rules')));
   writeFileSync(join(dir, 'firebase.json'), JSON.stringify({
     firestore: { rules: 'firestore.rules' },
-    storage: { rules: 'storage.rules' },
+    storage: { rules: 'storage.exercise-videos.rules' },
     emulators: {
       firestore: { host: '127.0.0.1', port: 8765 },
       storage: { host: '127.0.0.1', port: 9198 },
