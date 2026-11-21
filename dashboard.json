@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T18:33:25+00:00",
+  "generated_at": "2026-11-21T19:05:29+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T18:33:06Z",
+   "pushed_at": "2026-11-21T19:04:54Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -20,11 +20,17 @@
    "has_dev": true,
    "dev_behind": 0,
    "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-21T19:31:17+01:00",
-   "dev_head": "4f38af4 2026-11-21T19:31:17+01:00",
-   "master_head": "1872f7b 2026-11-21T19:30:02+01:00"
+   "oldest_unpromoted": "2026-11-21T20:04:52+01:00",
+   "dev_head": "285bc9c 2026-11-21T20:04:52+01:00",
+   "master_head": "4f38af4 2026-11-21T19:31:17+01:00"
   },
   "commits": [
+   {
+    "sha": "285bc9c",
+    "date": "2026-11-21T20:04:52+01:00",
+    "author": "Alpha",
+    "subject": "rules: 6pack deployt keine Rules mehr, Storage-SSOT liegt in vitalos"
+   },
    {
     "sha": "4f38af4",
     "date": "2026-11-21T19:31:17+01:00",
@@ -138,18 +144,12 @@
     "date": "2026-11-14T19:43:16+01:00",
     "author": "Alpha",
     "subject": "docs(al): reference HIIT ABS save guard"
-   },
-   {
-    "sha": "276d2e1",
-    "date": "2026-11-14T19:43:16+01:00",
-    "author": "Alpha",
-    "subject": "fix(session): stop track progress when logging fails"
    }
   ],
   "activity": [
    {
     "day": "2026-11-01",
-    "n": 1
+    "n": 0
    },
    {
     "day": "2026-11-02",
@@ -229,29 +229,29 @@
    },
    {
     "day": "2026-11-21",
-    "n": 4
+    "n": 5
    }
   ],
   "workflows": [
    {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "in_progress",
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "queued",
     "conclusion": null,
-    "created_at": "2026-11-21T18:33:08Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44936149892",
+    "created_at": "2026-11-21T19:05:26Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939044045",
     "sha": "4f38af4"
    },
    {
-    "name": "6Pack deploy (preview + standalone)",
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T18:30:49Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935935449",
-    "sha": "1872f7b"
+    "event": "workflow_run",
+    "status": "queued",
+    "conclusion": null,
+    "created_at": "2026-11-21T19:05:26Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939043968",
+    "sha": "4f38af4"
    },
    {
     "name": "PR-AutoMerge (Dependabot -> dev)",
@@ -259,39 +259,39 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "skipped",
-    "created_at": "2026-11-21T18:30:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935922647",
-    "sha": "0018089"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T18:30:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935922628",
-    "sha": "0018089"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T18:30:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935922613",
-    "sha": "0018089"
+    "created_at": "2026-11-21T19:05:26Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939043964",
+    "sha": "4f38af4"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
     "branch": "dev",
     "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T19:04:56Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44938991922",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-21T18:30:06Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935862982",
-    "sha": "1872f7b"
+    "created_at": "2026-11-21T19:04:56Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44938991894",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T18:33:59Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44936225687",
+    "sha": "4f38af4"
    },
    {
     "name": "Merge-Agent",
@@ -387,34 +387,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev 1 Commit voraus; Workflows laufen; Storage für Videos weiter inaktiv",
-   "lage": "Der `dev`-Branch mit Commit `4f38af4` ist 1 Commit vor `master` (Commit `1872f7b`). Der Workflow `Check (6Pack)` auf `dev` für `4f38af4` ist aktuell in Bearbeitung. Obwohl die Implementierung eigener Übungsvideos abgeschlossen ist, sind die benötigten Storage-Regeln laut `TODO.md` nicht deployed und der Firebase Storage Bucket nicht angelegt, was die Funktion blockiert.",
+   "headline": "Dev 1 Commit voraus; Storage-Regeln nun in VitalOS; Secrets offen",
+   "lage": "Der `dev`-Branch (Commit `285bc9c`) ist 1 Commit vor `master` (Commit `4f38af4`). Der Workflow `Check (6Pack)` auf `dev` für `285bc9c` ist erfolgreich abgeschlossen, während der `6Pack deploy` Workflow läuft. Die Verantwortung für Storage-Regeln wurde nach `vitalos` verschoben, jedoch ist der Firebase Storage Bucket laut `TODO.md` weiterhin nicht angelegt.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der Firebase Storage Bucket für eigene Übungsvideos ist laut `TODO.md` weiterhin nicht angelegt und die Storage-Regeln nicht deployed, obwohl Commit `6bd0a9c` die Deployment-Logik für master-Pushes ergänzt hat."
+     "text": "Der Firebase Storage Bucket `fitness-aos.firebasestorage.app` ist laut `TODO.md` weiterhin nicht angelegt, was die Funktion eigener Übungsvideos blockiert."
     },
     {
      "level": "info",
-     "text": "Der Workflow 'Check (6Pack)' auf dem 'dev'-Branch für Commit '4f38af4' ist aktuell 'in_progress'."
+     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind laut `NEXT.md` noch zu prüfen und zu setzen."
     },
     {
      "level": "info",
-     "text": "Issue #53 'Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout' ist offen."
+     "text": "Zwei Workflows (`Gemini CI Agent`, `Auto-Promote dev -> master`) sind für `master` (Commit `4f38af4`) in der Warteschlange."
     }
    ],
    "naechste_schritte": [
-    "Prüfen Sie den Status des Firebase Storage Buckets und der Storage-Regeln, da diese laut `TODO.md` noch nicht aktiv sind.",
-    "Beobachten Sie den Abschluss des 'Check (6Pack)' Workflows auf 'dev' für Commit '4f38af4'.",
+    "Prüfen Sie den Status des Firebase Storage Buckets, da dieser laut `TODO.md` noch nicht aktiv ist.",
+    "Beobachten Sie den Abschluss des '6Pack deploy' Workflows auf 'dev' für Commit '285bc9c'.",
     "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`."
    ],
-   "veraendert": "Der 'dev'-Branch ist nun 1 Commit vor 'master', nachdem Commit '1872f7b' auf 'master' promoted und deployed wurde, und die Workflows für '1872f7b' auf 'dev' abgeschlossen sind.",
+   "veraendert": "Gegenüber der letzten Einschätzung ist der `master`-Branch auf `4f38af4` aktualisiert, der `dev`-Branch auf `285bc9c` vorgerückt, und die Verantwortung für Storage-Regeln wurde nach `vitalos` verlagert.",
    "fragen": [
-    "Soll die Gmail-Zustellung des CI-Agentenkanals gemäß `NEXT.md` konkretisiert und eingerichtet werden?",
-    "Soll die Implementierung der austauschbaren Sprachausgabe für ELD-35 (Issue #52) beauftragt werden?"
+    "Soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktion eigener Übungsvideos zu ermöglichen?",
+    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` priorisiert und gesetzt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T18:33:27+00:00"
+  "ai_at": "2026-11-21T19:05:30+00:00"
  }
 }
