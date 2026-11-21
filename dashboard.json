@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T12:59:35+00:00",
+  "generated_at": "2026-11-21T18:30:25+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T07:56:15Z",
+   "pushed_at": "2026-11-21T18:30:04Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,24 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "0018089 2026-11-21T07:55:25Z",
+   "dev_ahead": 2,
+   "oldest_unpromoted": "2026-11-21T19:30:02+01:00",
+   "dev_head": "1872f7b 2026-11-21T19:30:02+01:00",
    "master_head": "0018089 2026-11-21T07:55:25Z"
   },
   "commits": [
+   {
+    "sha": "1872f7b",
+    "date": "2026-11-21T19:30:02+01:00",
+    "author": "Alpha",
+    "subject": "portal: App-Links statt Dev-Dashboard, alter Pfad leitet weiter"
+   },
+   {
+    "sha": "6bd0a9c",
+    "date": "2026-11-21T19:30:02+01:00",
+    "author": "Alpha",
+    "subject": "deploy: Storage-Regeln beim master-Push mit deployen"
+   },
    {
     "sha": "0018089",
     "date": "2026-11-21T07:55:25Z",
@@ -132,24 +144,12 @@
     "date": "2026-11-14T19:43:16+01:00",
     "author": "Alpha",
     "subject": "docs(al): record 2026-11-14 HIIT ABS run"
-   },
-   {
-    "sha": "2ce3a04",
-    "date": "2026-11-14T19:43:04+01:00",
-    "author": "Alpha",
-    "subject": "fix(session): log 6Pack workouts as HIIT ABS"
-   },
-   {
-    "sha": "0432929",
-    "date": "2026-11-14T18:58:22+01:00",
-    "author": "Alpha",
-    "subject": "chore: AL-LOG.md entfernt"
    }
   ],
   "activity": [
    {
     "day": "2026-11-01",
-    "n": 4
+    "n": 1
    },
    {
     "day": "2026-11-02",
@@ -229,10 +229,50 @@
    },
    {
     "day": "2026-11-21",
-    "n": 1
+    "n": 3
    }
   ],
   "workflows": [
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T18:30:06Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935863007",
+    "sha": "1872f7b"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T18:30:06Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44935862982",
+    "sha": "1872f7b"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T18:07:39Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44933792496",
+    "sha": "0018089"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T15:38:09Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44920230642",
+    "sha": "0018089"
+   },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
@@ -241,16 +281,6 @@
     "conclusion": "success",
     "created_at": "2026-11-21T12:46:34Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44905570611",
-    "sha": "0018089"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T11:26:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44899133579",
     "sha": "0018089"
    },
    {
@@ -271,36 +301,6 @@
     "conclusion": "success",
     "created_at": "2026-11-21T07:56:09Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44882509161",
-    "sha": "30db809"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T07:55:30Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44882463881",
-    "sha": "0018089"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T07:55:30Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44882463869",
-    "sha": "0018089"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T07:42:10Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44881458114",
     "sha": "30db809"
    },
    {
@@ -387,34 +387,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev und Master synchron; Workflows für 0018089 erfolgreich; neue Issues",
-   "lage": "Der `dev`-Branch ist mit `master` auf Commit `0018089` synchronisiert. Alle relevanten Workflows für `0018089` auf `dev` und `master`, inklusive \"Auto-Promote dev -> master (Check (6Pack))\" und \"6Pack deploy (preview + standalone)\", wurden erfolgreich abgeschlossen. Die Implementierung eigener Übungsvideos wurde mit Commit `30db809` abgeschlossen, während die Stimmverbesserung für Issue #52 noch offen ist.",
+   "headline": "Dev 2 Commits voraus; Workflows laufen; Storage für Videos inaktiv",
+   "lage": "Der `dev`-Branch ist mit Commit `1872f7b` zwei Commits vor `master` (Commit `0018089`). Die zugehörigen Workflows auf `dev` sind aktuell in Bearbeitung. Obwohl die Implementierung eigener Übungsvideos abgeschlossen ist, sind die benötigten Storage-Regeln nicht deployed und der Firebase Storage Bucket nicht angelegt, was die Funktion blockiert.",
    "auffaelligkeiten": [
     {
+     "level": "hoch",
+     "text": "Die Workflows \"Check (6Pack)\" und \"6Pack deploy (preview + standalone)\" für den `dev`-Branch (Commit `1872f7b`) sind seit 2026-11-21T18:30:06Z im Status `in_progress`."
+    },
+    {
      "level": "mittel",
-     "text": "Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\" wurde neu erstellt."
+     "text": "Die Funktionalität für eigene Übungsvideos ist trotz Code-Implementierung (Commit `30db809`) nicht aktiv, da die Storage-Regeln nicht deployed und der Firebase Storage Bucket nicht angelegt sind (laut `TODO.md`)."
     },
     {
      "level": "info",
-     "text": "Die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' sind laut `NEXT.md` weiterhin zu prüfen."
-    },
-    {
-     "level": "info",
-     "text": "Der Videoteil von Issue #52 (ELD-35) ist laut `TODO.md` abgeschlossen, der Stimmteil bleibt offen."
+     "text": "Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\" ist weiterhin offen."
     }
    ],
    "naechste_schritte": [
     "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`.",
-    "Analysieren Sie Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\".",
-    "Klären Sie den verbleibenden Teil zur Stimmverbesserung von Issue #52."
+    "Beobachten Sie den Abschluss der `in_progress` Workflows auf `dev` für Commit `1872f7b`.",
+    "Deployen Sie die Storage-Regeln und legen Sie den Firebase Storage Bucket für eigene Übungsvideos an."
    ],
-   "veraendert": "Der `dev`-Branch ist nun mit `master` auf Commit `0018089` synchronisiert, und die zuvor laufenden Workflows für `dev` sind erfolgreich abgeschlossen.",
+   "veraendert": "Der `dev`-Branch ist nicht mehr mit `master` synchronisiert, sondern zwei Commits voraus.",
    "fragen": [
-    "Soll die Stimmverbesserung für Issue #52 (ELD-35) priorisiert und ein Budget dafür festgelegt werden?",
-    "Wie soll mit dem neu aufgetretenen Bug in Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\" verfahren werden?"
+    "Soll die Stimmverbesserung für Issue #52 (ELD-35) mit Budget und Auswahl durch Daniel beauftragt werden?",
+    "Soll nach erfolgreichem Abschluss der `dev`-Workflows der Commit `1872f7b` auf `master` promotet werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T12:59:37+00:00"
+  "ai_at": "2026-11-21T18:30:29+00:00"
  }
 }
