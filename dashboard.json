@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T20:04:09+00:00",
+  "generated_at": "2026-11-21T20:05:31+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T20:03:52Z",
+   "pushed_at": "2026-11-21T20:04:24Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,10 +19,10 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 1,
-   "oldest_unpromoted": "2026-11-21T20:03:44Z",
+   "dev_ahead": 0,
+   "oldest_unpromoted": null,
    "dev_head": "a446ff3 2026-11-21T20:03:44Z",
-   "master_head": "285bc9c 2026-11-21T20:04:52+01:00"
+   "master_head": "a446ff3 2026-11-21T20:03:44Z"
   },
   "commits": [
    {
@@ -235,10 +235,50 @@
   "workflows": [
    {
     "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T20:04:27Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944304710",
+    "sha": "a446ff3"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T20:04:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944287940",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-21T20:04:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944287763",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T20:04:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944287736",
+    "sha": "285bc9c"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
     "branch": "dev",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-21T20:03:54Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254930",
     "sha": "a446ff3"
@@ -247,51 +287,11 @@
     "name": "Check (6Pack)",
     "branch": "dev",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-21T20:03:54Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254916",
     "sha": "a446ff3"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T19:51:25Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44943163729",
-    "sha": "285bc9c"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T19:05:36Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939058309",
-    "sha": "285bc9c"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T19:05:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939044045",
-    "sha": "4f38af4"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-21T19:05:26Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44939043964",
-    "sha": "4f38af4"
    },
    {
     "name": "Merge-Agent",
@@ -387,34 +387,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev 1 Commit voraus; Workflows laufen; Storage Bucket fehlt weiterhin",
-   "lage": "Der `dev`-Branch (Commit `a446ff3`) ist 1 Commit vor `master` (Commit `285bc9c`). Die Workflows `Check (6Pack)` und `6Pack deploy` für `a446ff3` auf `dev` laufen aktuell. Der Firebase Storage Bucket ist laut `TODO.md` weiterhin nicht angelegt, obwohl die Verantwortung für Storage-Regeln nach `vitalos` verschoben wurde.",
+   "headline": "Dev und Master synchronisiert; Workflows erfolgreich; Storage Bucket fehlt",
+   "lage": "Der `dev`-Branch ist nun mit `master` auf Commit `a446ff3` synchronisiert. Die Workflows `Check (6Pack)` und `6Pack deploy` für `a446ff3` auf `dev` sowie der anschließende Promote und Deploy auf `master` wurden erfolgreich abgeschlossen. Der Firebase Storage Bucket ist laut `TODO.md` weiterhin nicht angelegt, obwohl die Verantwortung für Storage-Regeln nach `vitalos` verschoben wurde.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der Firebase Storage Bucket (`fitness-aos.firebasestorage.app`, `fitness-aos.appspot.com`) ist laut `TODO.md` nicht angelegt und antwortet mit 404."
+     "text": "Der Firebase Storage Bucket (`fitness-aos.firebasestorage.app`) ist laut `TODO.md` weiterhin nicht angelegt und antwortet mit 404."
     },
     {
-     "level": "mittel",
+     "level": "info",
      "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind gemäß `NEXT.md` noch zu prüfen/setzen."
     },
     {
      "level": "info",
-     "text": "Die Workflows `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev` für Commit `a446ff3` sind aktuell 'in_progress'."
+     "text": "Zwei offene Issues existieren seit dem 20.11.2026: #53 (Bug) und #52 (Enhancement)."
     }
    ],
    "naechste_schritte": [
     "Prüfen Sie den Status des Firebase Storage Buckets, da dieser laut `TODO.md` noch nicht aktiv ist.",
-    "Beobachten Sie den Abschluss der Workflows `Check (6Pack)` und `6Pack deploy` auf `dev` für Commit `a446ff3`.",
-    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`."
+    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`.",
+    "Untersuchen Sie Issue #53 'Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout'."
    ],
-   "veraendert": "Der `dev`-Branch wurde mit Commit `a446ff3` aktualisiert und der vorherige `dev`-Head `285bc9c` wurde erfolgreich nach `master` promotet, wodurch sich die Referenz-Commits verschoben haben.",
+   "veraendert": "Die `dev`- und `master`-Branches sind nun synchronisiert, und die zuvor laufenden Workflows wurden erfolgreich abgeschlossen.",
    "fragen": [
-    "Soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktionalität für eigene Übungsvideos zu ermöglichen?",
-    "Wann sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` geprüft und gesetzt werden, um den CI-Agenten vollständig zu aktivieren?"
+    "Wann soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktionalität für eigene Übungsvideos zu ermöglichen?",
+    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden, um den CI-Agenten vollständig zu aktivieren?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T20:04:12+00:00"
+  "ai_at": "2026-11-21T20:05:33+00:00"
  }
 }
