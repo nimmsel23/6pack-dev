@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-21T20:05:31+00:00",
+  "generated_at": "2026-11-21T20:13:14+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T20:04:24Z",
+   "pushed_at": "2026-11-21T20:12:54Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,18 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "a446ff3 2026-11-21T20:03:44Z",
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-21T20:12:51Z",
+   "dev_head": "4618e60 2026-11-21T20:12:51Z",
    "master_head": "a446ff3 2026-11-21T20:03:44Z"
   },
   "commits": [
+   {
+    "sha": "4618e60",
+    "date": "2026-11-21T20:12:51Z",
+    "author": "Cursor Agent",
+    "subject": "update: eindringliches Popup, sobald ein neuer Build live ist"
+   },
    {
     "sha": "a446ff3",
     "date": "2026-11-21T20:03:44Z",
@@ -138,12 +144,6 @@
     "date": "2026-11-14T19:43:16+01:00",
     "author": "Alpha",
     "subject": "feat(hosting): /6pack und /sixpack führen in derselben App zu 6Pack"
-   },
-   {
-    "sha": "0bb9be5",
-    "date": "2026-11-14T19:43:16+01:00",
-    "author": "Alpha",
-    "subject": "feat: expose setup deep links and reuse host Firestore"
    }
   ],
   "activity": [
@@ -229,10 +229,30 @@
    },
    {
     "day": "2026-11-21",
-    "n": 6
+    "n": 7
    }
   ],
   "workflows": [
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T20:12:55Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44945078288",
+    "sha": "4618e60"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T20:12:55Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44945078270",
+    "sha": "4618e60"
+   },
    {
     "name": "6Pack deploy (preview + standalone)",
     "branch": "master",
@@ -272,26 +292,6 @@
     "created_at": "2026-11-21T20:04:16Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944287736",
     "sha": "285bc9c"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T20:03:54Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254930",
-    "sha": "a446ff3"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T20:03:54Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44944254916",
-    "sha": "a446ff3"
    },
    {
     "name": "Merge-Agent",
@@ -387,34 +387,38 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev und Master synchronisiert; Workflows erfolgreich; Storage Bucket fehlt",
-   "lage": "Der `dev`-Branch ist nun mit `master` auf Commit `a446ff3` synchronisiert. Die Workflows `Check (6Pack)` und `6Pack deploy` für `a446ff3` auf `dev` sowie der anschließende Promote und Deploy auf `master` wurden erfolgreich abgeschlossen. Der Firebase Storage Bucket ist laut `TODO.md` weiterhin nicht angelegt, obwohl die Verantwortung für Storage-Regeln nach `vitalos` verschoben wurde.",
+   "headline": "Dev-Branch voraus; Workflows laufen; Storage Bucket weiterhin fehlend",
+   "lage": "Der `dev`-Branch ist mit Commit `4618e60` nun einen Commit vor `master` (`a446ff3`). Die zugehörigen Workflows `Check (6Pack)` und `6Pack deploy` für `4618e60` auf `dev` sind aktuell in Bearbeitung. Der Firebase Storage Bucket ist laut `TODO.md` weiterhin nicht angelegt, und die Storage-Regeln sind nicht deployed.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der Firebase Storage Bucket (`fitness-aos.firebasestorage.app`) ist laut `TODO.md` weiterhin nicht angelegt und antwortet mit 404."
+     "text": "Der Firebase Storage Bucket (`fitness-aos.firebasestorage.app`) fehlt weiterhin und die Storage-Regeln sind laut `TODO.md` nicht deployed, was die Funktion 'Eigene Übungsvideos' blockiert."
+    },
+    {
+     "level": "mittel",
+     "text": "Der `dev`-Branch ist mit Commit `4618e60` ('update: eindringliches Popup, sobald ein neuer Build live ist') einen Commit vor `master`, und die zugehörigen Workflows sind noch 'in_progress'."
     },
     {
      "level": "info",
-     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind gemäß `NEXT.md` noch zu prüfen/setzen."
+     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind gemäß `NEXT.md` noch zu prüfen und zu setzen."
     },
     {
      "level": "info",
-     "text": "Zwei offene Issues existieren seit dem 20.11.2026: #53 (Bug) und #52 (Enhancement)."
+     "text": "Issue #53 'Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout' ist weiterhin offen."
     }
    ],
    "naechste_schritte": [
-    "Prüfen Sie den Status des Firebase Storage Buckets, da dieser laut `TODO.md` noch nicht aktiv ist.",
-    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`.",
-    "Untersuchen Sie Issue #53 'Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout'."
+    "Überprüfen Sie den Fortschritt und Abschluss der `in_progress`-Workflows für Commit `4618e60` auf `dev`.",
+    "Prüfen Sie den Status des Firebase Storage Buckets und der Storage-Regeln, da diese laut `TODO.md` noch nicht aktiv sind.",
+    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`."
    ],
-   "veraendert": "Die `dev`- und `master`-Branches sind nun synchronisiert, und die zuvor laufenden Workflows wurden erfolgreich abgeschlossen.",
+   "veraendert": "Der `dev`-Branch ist nicht mehr mit `master` synchronisiert, sondern einen Commit voraus, und die Workflows für diesen neuen Commit laufen.",
    "fragen": [
-    "Wann soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt werden, um die Funktionalität für eigene Übungsvideos zu ermöglichen?",
-    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden, um den CI-Agenten vollständig zu aktivieren?"
+    "Soll der Firebase Storage Bucket `fitness-aos.firebasestorage.app` angelegt und die Storage-Regeln deployed werden, um die Funktion 'Eigene Übungsvideos' zu ermöglichen?",
+    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` jetzt geprüft und gesetzt werden, wie in `NEXT.md` beschrieben?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-21T20:05:33+00:00"
+  "ai_at": "2026-11-21T20:13:16+00:00"
  }
 }
