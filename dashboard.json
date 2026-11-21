@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-20T16:56:07+00:00",
+  "generated_at": "2026-11-21T07:55:52+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-20T16:55:57Z",
+   "pushed_at": "2026-11-21T07:55:28Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,18 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "30db809 2026-11-20T17:55:46+01:00",
+   "dev_ahead": 1,
+   "oldest_unpromoted": "2026-11-21T07:55:25Z",
+   "dev_head": "0018089 2026-11-21T07:55:25Z",
    "master_head": "30db809 2026-11-20T17:55:46+01:00"
   },
   "commits": [
+   {
+    "sha": "0018089",
+    "date": "2026-11-21T07:55:25Z",
+    "author": "Cursor Agent",
+    "subject": "Regeln: Übungsvideo nur vom Uploader ändern oder löschen"
+   },
    {
     "sha": "30db809",
     "date": "2026-11-20T17:55:46+01:00",
@@ -138,19 +144,9 @@
     "date": "2026-11-14T18:58:22+01:00",
     "author": "Alpha",
     "subject": "chore: AL-LOG.md entfernt"
-   },
-   {
-    "sha": "ad36d2b",
-    "date": "2026-11-13T05:41:42+01:00",
-    "author": "Alpha",
-    "subject": "docs(al): Pages-Quelle nach Living Dashboard verifiziert (build_type=workflow)"
    }
   ],
   "activity": [
-   {
-    "day": "2026-10-31",
-    "n": 0
-   },
    {
     "day": "2026-11-01",
     "n": 4
@@ -230,38 +226,72 @@
    {
     "day": "2026-11-20",
     "n": 2
+   },
+   {
+    "day": "2026-11-21",
+    "n": 1
    }
   ],
   "workflows": [
    {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
+    "name": "Check (6Pack)",
+    "branch": "dev",
     "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T07:55:30Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44882463881",
+    "sha": "0018089"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-21T07:55:30Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44882463869",
+    "sha": "0018089"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T16:55:49Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44778254750",
+    "created_at": "2026-11-21T07:42:10Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44881458114",
+    "sha": "30db809"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T04:01:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44864018585",
+    "sha": "30db809"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-21T02:33:00Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44856503877",
     "sha": "30db809"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
     "branch": "master",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-20T16:55:49Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44778254178",
     "sha": "30db809"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-20T16:22:05Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772664398",
-    "sha": "5ba5b41"
    },
    {
     "name": "Gemini CI Agent",
@@ -325,36 +355,6 @@
    },
    {
     "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T10:30:27Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44719803992",
-    "sha": "5ba5b41"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T06:45:20Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44690038955",
-    "sha": "5ba5b41"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T09:01:01Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43835994198",
-    "sha": "5284c1a"
-   },
-   {
-    "name": "Merge-Agent",
     "branch": "cursor/rejoin-dev-after-squash-7c26",
     "event": "pull_request",
     "status": "completed",
@@ -392,36 +392,6 @@
     "created_at": "2026-11-16T08:33:20Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43832166697",
     "sha": "1d4650b"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "codex/fix-promote-protected-master",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T08:05:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43828491991",
-    "sha": "a70a4de"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "codex/fix-promote-protected-master",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T08:05:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43828491941",
-    "sha": "a70a4de"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "codex/fix-promote-protected-master",
-    "event": "pull_request_target",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-16T08:05:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/43828491881",
-    "sha": "a70a4de"
    }
   ],
   "issues": [
@@ -457,34 +427,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev und Master synchron auf 30db809; neues Issue #52; Deploy läuft",
-   "lage": "Der `dev`-Branch ist mit `master` auf Commit `30db809` synchronisiert. Der Workflow \"Auto-Promote dev -> master (Check (6Pack))\" für `30db809` war erfolgreich, aber der \"6Pack deploy (preview + standalone)\"-Workflow läuft noch. Ein neues Issue #52 wurde erstellt, das die Verbesserung der Stimme und eigene Übungsvideos betrifft.",
+   "headline": "Dev ist vor Master; Deploy für 30db809 erfolgreich; neue Workflows laufen",
+   "lage": "Der `dev`-Branch ist mit Commit `0018089` einen Commit vor `master`. Der \"6Pack deploy (preview + standalone)\"-Workflow für `30db809` auf `master` wurde erfolgreich abgeschlossen. Aktuell laufen die Workflows \"Check (6Pack)\" und \"6Pack deploy (preview + standalone)\" für den `dev`-Branch auf Commit `0018089`.",
    "auffaelligkeiten": [
     {
-     "level": "hoch",
-     "text": "Der Workflow \"6Pack deploy (preview + standalone)\" für Commit 30db809 auf master ist noch \"in_progress\"."
+     "level": "mittel",
+     "text": "Der `dev`-Branch ist mit Commit `0018089` einen Commit vor `master`, was eine Abweichung vom synchronisierten Zustand darstellt."
     },
     {
      "level": "info",
-     "text": "Issue #52 \"ELD-35: Stimme verbessern (austauschbar, Auswahl durch Daniel) + eigene Übungsvideos statt Fremdclips\" wurde erstellt."
+     "text": "Issue #52 \"ELD-35: Stimme verbessern... + eigene Übungsvideos...\" ist offen, obwohl der Videoteil laut `TODO.md` als erledigt markiert ist."
     },
     {
      "level": "info",
-     "text": "Die Aufgabe \"Eigene Übungsvideos\" in TODO.md ist als erledigt markiert, passend zum Commit 30db809."
+     "text": "Die Prüfung der Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' ist laut `NEXT.md` noch ausstehend."
     }
    ],
    "naechste_schritte": [
-    "Überprüfen Sie den Status des Workflows \"6Pack deploy (preview + standalone)\" für Commit 30db809.",
-    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`.",
-    "Analysieren Sie Issue #53 \"Runner-Overlay überdeckt die VitalOS-Shell-Navigation im Workout\"."
+    "Überprüfen Sie den Status der Workflows \"Check (6Pack)\" und \"6Pack deploy (preview + standalone)\" für Commit `0018089` auf `dev`.",
+    "Klären Sie den aktuellen Status von Issue #52, insbesondere den verbleibenden Teil zur Stimmverbesserung.",
+    "Prüfen Sie die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' gemäß `NEXT.md`."
    ],
-   "veraendert": "Der `dev`-Branch und `master` sind auf Commit `30db809` aktualisiert, wobei der aktuelle `6Pack deploy`-Workflow noch läuft und ein neues Issue #52 erstellt wurde.",
+   "veraendert": "Gegenüber der letzten Einschätzung ist der `dev`-Branch nun einen Commit vor `master`, und der \"6Pack deploy (preview + standalone)\"-Workflow für `30db809` wurde erfolgreich abgeschlossen.",
    "fragen": [
-    "Soll die Umsetzung der Sprachausgabe für ELD-35 (Issue #52) beauftragt werden?",
-    "Sollen die eigenen Clips für Tag 1 direkt im Repo committed werden, wie in `NEXT.md` erwähnt?"
+    "Soll Issue #52 geschlossen oder der Titel angepasst werden, da der Videoteil als erledigt markiert ist?",
+    "Wann sollen die Repo-Secrets 'SYNC_TOKEN' und 'GEMINI_API_KEY' geprüft und gesetzt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-20T16:56:10+00:00"
+  "ai_at": "2026-11-21T07:55:54+00:00"
  }
 }
