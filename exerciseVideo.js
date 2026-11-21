@@ -7,7 +7,8 @@ export const EXERCISE_VIDEO_COLLECTION = 'exerciseVideos';
 export const VIDEO_STATUSES = ['pending', 'approved'];
 
 const EXERCISE_ID = /^[a-z][a-z0-9_]{0,63}$/;
-const FILE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$/;
+// Dateiname ist die UID des Uploaders (Firebase Auth: höchstens 128 Zeichen).
+const FILE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 const CONTENT_TYPE = /^video\/.+/;
 
 export function isExerciseId(value) {
@@ -17,13 +18,6 @@ export function isExerciseId(value) {
 export function exerciseVideoStoragePath(exerciseId, fileId) {
   if (!isExerciseId(exerciseId) || typeof fileId !== 'string' || !FILE_ID.test(fileId)) return null;
   return `${EXERCISE_VIDEO_COLLECTION}/${exerciseId}/${fileId}`;
-}
-
-export function newVideoFileId(random = Math.random, now = Date.now) {
-  const noise = Math.floor(Math.abs(Number(random())) * 1e9).toString(36);
-  const stamp = Math.floor(Math.abs(Number(now()))).toString(36);
-  const id = `${stamp}${noise}`.replace(/[^A-Za-z0-9]/g, '');
-  return id.slice(0, 40) || 'clip';
 }
 
 function roundSeconds(value) {
@@ -98,8 +92,11 @@ export function buildExerciseVideoRecord({
   if (typeof uploaderUid !== 'string' || !uploaderUid || uploaderUid.length > 128) {
     return { ok: false, error: 'Kein angemeldetes Konto.' };
   }
-  const expected = exerciseVideoStoragePath(exerciseId, String(storagePath || '').split('/').pop());
-  if (!expected || storagePath !== expected) return { ok: false, error: 'Ungültiger Speicherpfad.' };
+  const fileId = String(storagePath || '').split('/').pop();
+  const expected = exerciseVideoStoragePath(exerciseId, fileId);
+  if (!expected || storagePath !== expected || fileId !== uploaderUid) {
+    return { ok: false, error: 'Ungültiger Speicherpfad.' };
+  }
   const data = {
     exerciseId,
     storagePath,
@@ -120,7 +117,7 @@ export function parseExerciseVideoRecord(id, data) {
   if (!data || typeof data !== 'object' || data.exerciseId !== id || !isExerciseId(id)) return null;
   if (!VIDEO_STATUSES.includes(data.status)) return null;
   const fileId = typeof data.storagePath === 'string' ? data.storagePath.split('/').pop() : '';
-  if (data.storagePath !== exerciseVideoStoragePath(id, fileId)) return null;
+  if (data.storagePath !== exerciseVideoStoragePath(id, fileId) || fileId !== data.uploaderUid) return null;
   const record = {
     exerciseId: id,
     storagePath: data.storagePath,

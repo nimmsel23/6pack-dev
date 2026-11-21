@@ -1,14 +1,23 @@
 rules_version = '2';
 // FRAGMENT für die Zuordnung eigener Übungsvideos.
 // Nicht allein deployen. Die deploybare Firestore-SSOT bleibt
-// vitalos/firestore.rules und geht über VitalOS-CI. Dieses match muss
-// dorthin übernommen werden. Ein Deploy dieser Datei als komplettes
-// Ruleset würde alle anderen Regeln ersetzen.
+// vitalos/firestore.rules und geht über VitalOS-CI. Ein Deploy dieser
+// Datei als komplettes Ruleset würde alle anderen Regeln ersetzen.
 //
-// Lesen: jedes angemeldete Konto (die Übung zeigt dasselbe Demo-Video).
-// Schreiben: nur angemeldete Nutzer, nur die bekannten Felder, Status
-// pending oder approved, Dauer höchstens 60 Sekunden, Größe höchstens 100 MB.
-// Löschen ist aus.
+// 1:1 übernehmen: in vitalos/firestore.rules den bestehenden Block
+// „6Pack exercise videos“ inklusive exerciseVideoData/exerciseVideoOk
+// durch die Funktionen und das match unten ersetzen. isCoach() ist dort
+// schon definiert (Custom Claim coach, roles/{uid}.role == "coach",
+// Alpha-UID) und wird nur aufgerufen. Keine zweite isCoach()-Funktion
+// einfügen und keine neue Admin-Logik erfinden.
+//
+// Lesen: jedes angemeldete Konto (dieselbe Zuordnung für die Übung).
+// Anlegen: nur wenn noch kein Dokument existiert und uploaderUid das
+// eigene Konto ist.
+// Ändern: nur der bisherige Uploader oder isCoach(); uploaderUid bleibt.
+// Löschen: der bisherige Uploader oder isCoach().
+// Feldgrenzen bleiben: bekannte Felder, Status pending oder approved,
+// Dauer höchstens 60 Sekunden, Größe höchstens 100 MB.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
@@ -39,8 +48,8 @@ service cloud.firestore {
           'duration', 'status', 'contentType', 'sizeBytes', 'clipStart', 'clipEnd'
         ])
         && videoData().exerciseId == exerciseId
-        && videoData().uploaderUid == request.auth.uid
-        && videoData().storagePath.matches('^exerciseVideos/' + exerciseId + '/[A-Za-z0-9][A-Za-z0-9_-]{0,80}$')
+        && videoData().uploaderUid.matches('^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$')
+        && videoData().storagePath == 'exerciseVideos/' + exerciseId + '/' + videoData().uploaderUid
         && videoData().contentType.matches('video/.+')
         && videoData().sizeBytes is int
         && videoData().sizeBytes > 0
@@ -54,8 +63,16 @@ service cloud.firestore {
     }
     match /exerciseVideos/{exerciseId} {
       allow read: if signedIn();
-      allow create, update: if videoOk(exerciseId);
-      allow delete: if false;
+      allow create: if resource == null
+        && videoOk(exerciseId)
+        && videoData().uploaderUid == request.auth.uid;
+      allow update: if resource != null
+        && videoOk(exerciseId)
+        && request.resource.data.uploaderUid == resource.data.uploaderUid
+        && (resource.data.uploaderUid == request.auth.uid || isCoach());
+      allow delete: if resource != null
+        && signedIn()
+        && (resource.data.uploaderUid == request.auth.uid || isCoach());
     }
   }
 }

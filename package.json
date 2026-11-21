@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
+    "@firebase/rules-unit-testing": "6.0.0",
     "@tailwindcss/postcss": "^4.3.5",
     "@vitejs/plugin-react": "6.3.0",
     "autoprefixer": "10.6.2",

@@ -8,14 +8,13 @@ import {
   contentTypeForFile,
   exerciseVideoStoragePath,
   mapUploadError,
-  newVideoFileId,
   parseExerciseVideoRecord,
   resolveExercisePlayback,
   validateExerciseVideo,
 } from '../exerciseVideo.js';
 
-const fileId = newVideoFileId(() => 0.123456, () => 1_700_000_000_000);
-const path = exerciseVideoStoragePath('jackknifes', fileId);
+const uid = 'friend';
+const path = exerciseVideoStoragePath('jackknifes', uid);
 const base = {
   exerciseId: 'jackknifes',
   contentType: 'video/mp4',
@@ -48,8 +47,9 @@ assert.equal(contentTypeForFile({ type: '', name: 'take.MOV' }), 'video/quicktim
 assert.equal(contentTypeForFile({ type: 'video/webm', name: 'x.bin' }), 'video/webm');
 assert.equal(contentTypeForFile({ type: 'application/octet-stream', name: 'notes.txt' }), '');
 assert.equal(exerciseVideoStoragePath('jackknifes', '../secret'), null);
-assert.match(fileId, /^[A-Za-z0-9][A-Za-z0-9_-]{0,80}$/);
-assert.equal(path, `exerciseVideos/jackknifes/${fileId}`);
+assert.equal(exerciseVideoStoragePath('jackknifes', `${'a'.repeat(128)}`), `exerciseVideos/jackknifes/${'a'.repeat(128)}`);
+assert.equal(exerciseVideoStoragePath('jackknifes', 'a'.repeat(129)), null);
+assert.equal(path, `exerciseVideos/jackknifes/${uid}`);
 
 const built = buildExerciseVideoRecord({
   ...base,
@@ -63,6 +63,7 @@ assert.equal(built.data.status, 'pending');
 assert.equal(built.data.uploaderUid, 'friend');
 assert.equal(built.data.storagePath, path);
 assert.equal(buildExerciseVideoRecord({ ...base, storagePath: 'exerciseVideos/other/abc', uploaderUid: 'friend' }).ok, false);
+assert.equal(buildExerciseVideoRecord({ ...base, storagePath: exerciseVideoStoragePath('jackknifes', 'other'), uploaderUid: 'friend' }).ok, false);
 assert.equal(buildExerciseVideoRecord({ ...base, storagePath: path, uploaderUid: 'friend', status: 'draft' }).ok, false);
 
 const parsed = parseExerciseVideoRecord('jackknifes', built.data);
@@ -70,6 +71,7 @@ assert.equal(parsed.exerciseId, 'jackknifes');
 assert.equal(parsed.clipStart, 1.25);
 assert.equal(parseExerciseVideoRecord('other', built.data), null);
 assert.equal(parseExerciseVideoRecord('jackknifes', { ...built.data, status: 'rejected' }), null);
+assert.equal(parseExerciseVideoRecord('jackknifes', { ...built.data, uploaderUid: 'other' }), null);
 
 const ownUrl = 'https://firebasestorage.googleapis.com/v0/b/fitness-aos.firebasestorage.app/o/exerciseVideos%2Fjackknifes%2Fabc?alt=media';
 const fallback = 'https://www.youtube.com/watch?v=Z5Ry2pvbGag';
@@ -121,18 +123,39 @@ assert.equal(mapUploadError({ message: 'token leaked in the error' }), 'Upload f
 
 const storageRules = readFileSync(new URL('../storage.rules', import.meta.url), 'utf8');
 const firestoreRules = readFileSync(new URL('../firestore.exercise-videos.rules', import.meta.url), 'utf8');
+const cloud = readFileSync(new URL('../exerciseVideoCloud.js', import.meta.url), 'utf8');
 for (const rules of [storageRules, firestoreRules]) {
   assert.match(rules, /request\.auth != null/);
   assert.match(rules, /video\/\.\+/);
   assert.match(rules, /100 \* 1024 \* 1024/);
-  assert.match(rules, /delete: if false/);
   assert.doesNotMatch(rules, /allow read: if true/);
+  assert.doesNotMatch(rules, /delete: if false/);
 }
-assert.match(storageRules, /allow update, delete: if false/);
+assert.match(storageRules, /fileName == request\.auth\.uid/);
+assert.match(storageRules, /'uploaderUid' in request\.resource\.metadata/);
+assert.match(storageRules, /'uploaderUid' in resource\.metadata/);
+assert.match(storageRules, /request\.resource\.metadata\.uploaderUid == request\.auth\.uid/);
+assert.match(storageRules, /resource\.metadata\.uploaderUid == request\.auth\.uid/);
+assert.match(storageRules, /allow create: if videoUpload\(exerciseId, fileName\)/);
+assert.match(storageRules, /allow update: if videoUpload\(exerciseId, fileName\)/);
+assert.match(storageRules, /allow delete: if request\.auth != null/);
+assert.doesNotMatch(storageRules, /allow update, delete: if false/);
+assert.match(firestoreRules, /allow create: if resource == null/);
+assert.match(firestoreRules, /allow update: if resource != null/);
+assert.match(firestoreRules, /allow delete: if resource != null/);
+assert.match(firestoreRules, /videoData\(\)\.uploaderUid == request\.auth\.uid/);
+assert.match(firestoreRules, /resource\.data\.uploaderUid == request\.auth\.uid/);
+assert.match(firestoreRules, /request\.resource\.data\.uploaderUid == resource\.data\.uploaderUid/);
+assert.match(firestoreRules, /isCoach\(\)/);
+assert.doesNotMatch(firestoreRules, /function isCoach\(/);
+assert.match(firestoreRules, /exerciseVideos\/' \+ exerciseId \+ '\/' \+ videoData\(\)\.uploaderUid/);
 assert.match(firestoreRules, /'pending', 'approved'/);
 assert.match(firestoreRules, /duration <= 60/);
 assert.equal(MAX_VIDEO_SECONDS, 60);
 assert.equal(MAX_VIDEO_BYTES, 100 * 1024 * 1024);
 assert.match(firestoreRules, /Nicht allein deployen/);
+assert.match(cloud, /exerciseVideoStoragePath\(exerciseId,\s*uid\)/);
+assert.match(cloud, /customMetadata:\s*\{\s*uploaderUid:\s*uid\s*\}/);
+assert.doesNotMatch(cloud, /newVideoFileId/);
 
 console.log('Exercise video mapping: validation, path, clip, fallback preference and rules limits passed.');

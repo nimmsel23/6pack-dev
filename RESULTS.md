@@ -1,3 +1,10 @@
+## 2026-11-21 — Security: Übungsvideo-Zuordnung nur vom Uploader
+
+- Freeze-Wartung, kein Feature. Befunde aus dem Review zu #54 (`30db809`): jedes angemeldete Konto konnte `exerciseVideos/{exerciseId}` überschreiben, weil nur die neue `uploaderUid` geprüft wurde; Storage-Objekte waren nicht löschbar und pro Nutzer unbegrenzt.
+- Firestore-Fragment: Anlegen nur bei `resource == null` und `uploaderUid == auth.uid`. Ändern nur durch den bisherigen Uploader oder die vorhandene `isCoach()`-Prüfung, `uploaderUid` unverändert. Löschen durch denselben Kreis. Feldgrenzen (video/*, 100 MB, 60 s, pending/approved) bleiben. Lesen bleibt für jedes angemeldete Konto.
+- Storage: Dateiname ist `request.auth.uid` (ein Objekt pro Konto und Übung), `customMetadata.uploaderUid` muss die eigene UID sein, Größe und `video/*` unverändert. Überschreiben und Löschen nur, wenn `resource.metadata.uploaderUid` die eigene UID ist. Kein Lösch-Button in der Übungsansicht, deshalb nur die Regel.
+- Nicht deployed. Der Block aus `firestore.exercise-videos.rules` ersetzt in `vitalos/firestore.rules` den Abschnitt „6Pack exercise videos“; `isCoach()` dort nicht doppelt einfügen.
+
 ## 2026-11-20 — Eigene Übungsvideos (ELD-35, nur Video)
 
 - Auftrag von Daniel, Freeze-Ausnahme: pro Übung ein eigenes Video, Kamera oder Galerie, Upload nach Firebase Storage, Zuordnung in Firestore. Stimme bleibt offen.

@@ -12,7 +12,6 @@ import {
   contentTypeForFile,
   exerciseVideoStoragePath,
   mapUploadError,
-  newVideoFileId,
   parseExerciseVideoRecord,
 } from './exerciseVideo.js';
 
@@ -69,8 +68,9 @@ function waitForTask(task, onProgress) {
   });
 }
 
-// Resumable Upload. `cancel` bricht den laufenden Task ab; ein erneuter Aufruf
-// startet einen neuen Upload mit neuem Pfad (alte Objekte werden nicht gelöscht).
+// Resumable Upload. `cancel` bricht den laufenden Task ab.
+// Pfad ist exerciseVideos/{exerciseId}/{uid}: höchstens ein Objekt pro Konto
+// und Übung. Ein erneuter Upload überschreibt dieses Objekt.
 export function uploadExerciseVideo({
   exerciseId, file, durationSeconds, clipStart, clipEnd, onProgress,
 } = {}) {
@@ -97,7 +97,7 @@ export function uploadExerciseVideo({
       error.code = 'storage/unauthenticated';
       throw error;
     }
-    const storagePath = exerciseVideoStoragePath(exerciseId, newVideoFileId());
+    const storagePath = exerciseVideoStoragePath(exerciseId, uid);
     const built = buildExerciseVideoRecord({
       exerciseId,
       storagePath,
@@ -114,7 +114,10 @@ export function uploadExerciseVideo({
       error.code = 'exercise-video/invalid';
       throw error;
     }
-    task = uploadBytesResumable(ref(live.storage, storagePath), file, { contentType });
+    task = uploadBytesResumable(ref(live.storage, storagePath), file, {
+      contentType,
+      customMetadata: { uploaderUid: uid },
+    });
     await waitForTask(task, onProgress);
     const payload = { ...built.data, createdAt: serverTimestamp() };
     await setDoc(doc(live.db, EXERCISE_VIDEO_COLLECTION, exerciseId), payload);

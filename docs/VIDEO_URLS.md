@@ -52,12 +52,24 @@ oder „Aus Galerie“. Die Datei muss `video/*` sein, höchstens 100 MB und 60 
 Start und Ende sind optional und gelten nur für die Wiedergabe.
 
 Die Datei geht per resumable Upload nach Firebase Storage
-`exerciseVideos/{exerciseId}/{fileId}` im Projekt `fitness-aos`
+`exerciseVideos/{exerciseId}/{uid}` im Projekt `fitness-aos`
 (Bucket `fitness-aos.firebasestorage.app`, Region vor dem Anlegen `europe-west3`).
+Der Dateiname ist die UID des angemeldeten Kontos, deshalb liegt höchstens ein
+Objekt pro Konto und Übung. `customMetadata.uploaderUid` muss dieselbe UID sein.
+Ein erneuter Upload überschreibt dieses Objekt; löschen darf dasselbe Konto.
 Firestore `exerciseVideos/{exerciseId}` hält nur die Zuordnung: `exerciseId`,
 `storagePath`, `uploaderUid`, `createdAt`, `duration`, `status` (`pending` oder
 `approved`), `contentType`, `sizeBytes`, optional `clipStart` und `clipEnd`.
-Keine Videodatei liegt im Git.
+Anlegen nur, solange noch kein Dokument existiert und `uploaderUid` das eigene
+Konto ist. Ändern und Löschen nur durch diesen Uploader oder die vorhandene
+`isCoach()`-Prüfung im VitalOS-Ruleset. `uploaderUid` bleibt beim Ändern gleich,
+`storagePath` ist `exerciseVideos/{exerciseId}/{uploaderUid}`.
+Keine Videodatei liegt im Git. Die Regeln sind Stand 2026-11-21 noch nicht
+deployed; das Fragment `firestore.exercise-videos.rules` wird 1:1 in
+`vitalos/firestore.rules` übernommen. `node scripts/test-exercise-video-rules.mjs`
+prüft am lokalen Emulator (Projekt `demo-sixpack`), dass ein fremdes Konto
+nicht überschreibt oder löscht, der Uploader das darf, und ohne Anmeldung
+nichts geht.
 
 Sobald so eine Zuordnung lesbar ist, spielen Detailansicht und Runner sie statt
 Katalog, localStorage-Override und Bundle-Clip. Ohne Anmeldung oder ohne
