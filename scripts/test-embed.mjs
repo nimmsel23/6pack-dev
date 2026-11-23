@@ -266,14 +266,12 @@ test('embed leaves document, theme-color and hash alone; Eat calls onNavigate(fu
   });
   flushEffects();
   const home = homeTree(tree);
-  assert.equal(home.props.className, 'sixpack-home');
-  assert.equal(typeof nodes(home, node => node.props?.className === 'sixpack-today')[0].props.onClick, 'function');
-  const eat = clickLabel(home, 'Ernährung');
+  const eat = clickLabel(home, 'Eat');
   assert.equal(eat.props.href, undefined);
   assert.equal(eat.type, 'button');
   eat.props.onClick();
   assert.deepEqual(targets, ['fuel']);
-  clickLabel(home, 'Lernen').props.onClick();
+  clickLabel(home, 'Learn').props.onClick();
   tree = renderEmbed({
     uid: 'user-1',
     route: '',
@@ -331,10 +329,10 @@ test('legacy onSubNav host still writes the skill hash and links Eat to Fuel', (
   let tree = renderCard({ uid: 'user-1', onSubNav: id => subs.push(id) });
   flushEffects();
   const home = homeTree(tree);
-  const eat = clickLabel(home, 'Ernährung');
+  const eat = clickLabel(home, 'Eat');
   assert.equal(eat.type, 'a');
   assert.equal(eat.props.href, 'https://fuel-vos.web.app/');
-  clickLabel(home, 'Lernen').props.onClick();
+  clickLabel(home, 'Learn').props.onClick();
   tree = renderCard({ uid: 'user-1', onSubNav: id => subs.push(id) });
   const learn = nodes(tree, node => node.type?.name === 'LearnScreen')[0];
   learn.props.onOpenSkill('planche');
@@ -478,7 +476,7 @@ test('firebaseApp registers push through the shared module', async () => {
     const appHandle = { name: 'shell-app' };
     const tree = renderEmbed({ uid: 'user-1', firebaseApp: appHandle, route: '' });
     const home = homeTree(tree);
-    const settingsButton = nodes(home, node => node.props?.['aria-label'] === '6Pack-Einstellungen')[0];
+    const settingsButton = nodes(home, node => node.props?.['aria-label'] === 'Einstellungen')[0];
     assert(settingsButton, 'settings button');
     settingsButton.props.onClick();
     const settingsTree = renderEmbed({ uid: 'user-1', firebaseApp: appHandle, route: '' });

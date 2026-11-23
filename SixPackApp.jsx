@@ -265,27 +265,6 @@ function HomeScreen({ program, onOpenToday, onNav, eatInApp, hasSettings = true 
   ].filter(({ id }) => !(IS_STORE_BUILD && (id === 'eat' || id === 'selfies')));
   const menuColumns = menuButtons.length % 3 === 0 ? 3 : 2;
 
-  if (embedded) return (
-    <div className="sixpack-home">
-      <div className="sixpack-home-heading">
-        <h2>6Pack</h2>
-        {hasSettings && <button type="button" className="sixpack-home-settings" onClick={() => onNav('settings')} aria-label="6Pack-Einstellungen"><Settings size={20} /></button>}
-      </div>
-      <button type="button" onClick={onOpenToday} className="sixpack-today">
-        <span className="sixpack-today-meta">Woche {weekOf(trainedToday ? lastDone : program.currentDay)} · Tag {dayInWeek(trainedToday ? lastDone : program.currentDay)}</span>
-        <span className="sixpack-today-title">{trainedToday ? 'Workout abgeschlossen' : restDayToday ? 'Heute ist Ruhetag' : 'Dein Workout für heute'}</span>
-        <span className="sixpack-today-action">{trainedToday || restDayToday ? 'Programm ansehen' : 'Workout ansehen'} <ChevronRight size={18} /></span>
-      </button>
-      <nav aria-label="6Pack-Bereiche" className="sixpack-home-menu">
-        {menuButtons.map(({ id, label, Icon, href }) => {
-          const Element = href ? 'a' : 'button';
-          const labels = { eat: 'Ernährung', track: 'Verlauf', learn: 'Lernen', shuffle: 'Zufall', favorites: 'Favoriten', selfies: 'Fortschrittsfotos' };
-          return <Element key={id} href={href} onClick={href ? undefined : () => onNav(id)} className="sixpack-home-link"><Icon size={20} /><span>{labels[id] || label}</span><ChevronRight size={16} /></Element>;
-        })}
-      </nav>
-    </div>
-  );
-
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col" style={{ width: '100%', maxWidth: 'none' }}>
       <div className="flex min-h-0 flex-1 basis-0 flex-col">
