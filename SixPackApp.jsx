@@ -837,6 +837,28 @@ function needsTransition(items, index) {
 
 // Text der Wechsel-Ansage. Pause: "45 seconds rest". Übung: Name plus Dauer.
 // "begin in" nur im Start-Intro (countdown).
+// Ohne onend/onerror (keine Stimme, iOS lässt das Ereignis aus) bliebe das
+// Intro stehen und der Timer startet nie. Die Grenze ist länger als der Satz;
+// ein echtes Ende räumt sie ab.
+export function speechEndBudget(text, rate = 1) {
+  const words = String(text || '').trim().split(/\s+/).filter(Boolean).length || 1;
+  return Math.min(12000, Math.max(1200, Math.round((words / 2.2) * 1000 / Math.max(0.5, rate)) + 600));
+}
+
+export function armSpeechEnd(utterance, onend, text, rate = 1) {
+  let finished = false;
+  const done = () => {
+    if (finished) return;
+    finished = true;
+    window.clearTimeout(timer);
+    onend?.();
+  };
+  utterance.onend = done;
+  utterance.onerror = done;
+  const timer = window.setTimeout(done, speechEndBudget(text, rate));
+  return done;
+}
+
 function blockSpeech(item, { sideSwitch = false, countdown = false, side = '', spoken = item?.name || '' } = {}) {
   const secondsLabel = `${item.seconds} ${item.seconds === 1 ? 'second' : 'seconds'}`;
   const text = item.type === 'rest'
@@ -875,7 +897,7 @@ function advanceRunnerState(state, workout) {
   return { ...state, itemIndex: nextIndex, transition: false, remaining: workout.items[nextIndex].seconds };
 }
 
-function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, ownVideos = {} }) {
+function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, ownVideos = {}, contained = false }) {
   const [state, setState] = useState(() => createRunnerState(workout));
   const [abortConfirmationOpen, setAbortConfirmationOpen] = useState(false);
   const completionReported = useRef(false);
@@ -960,10 +982,7 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
     utterance.pitch = pitch;
     utterance.rate = rate;
     if (onstart) utterance.onstart = onstart;
-    if (onend) {
-      utterance.onend = onend;
-      utterance.onerror = onend;
-    }
+    if (onend) armSpeechEnd(utterance, onend, text, rate);
     const voice = bestVoice(lang);
     if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
@@ -1049,7 +1068,7 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
   }
 
   const abortDialog = abortConfirmationOpen && (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,0.78)' }}>
+    <div className="absolute inset-0 z-20 flex items-center justify-center p-6" style={{ background: 'rgba(0,0,0,0.78)' }}>
       <div role="alertdialog" aria-modal="true" aria-labelledby="runner-abort-title" aria-describedby="runner-abort-description" className="w-full max-w-sm rounded-2xl p-5" style={{ background: 'var(--bg2)', border: '1px solid var(--line)' }}>
         <h2 id="runner-abort-title" className="text-lg font-black text-fit-ink">Workout abbrechen?</h2>
         <p id="runner-abort-description" className="text-sm mt-2" style={{ color: 'var(--dim)' }}>Der bisherige Fortschritt dieses Workouts wird nicht gespeichert.</p>
@@ -1234,7 +1253,11 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
 
   useEffect(() => () => {
     introToken.current += 1;
+    // StrictMode spielt den Start-Effekt ein zweites Mal. Das abgebrochene
+    // Intro muss neu beginnen, sonst bleibt der Timer auf der ersten Übung stehen.
+    introDone.current = false;
     introTimers.current.forEach(window.clearTimeout);
+    introTimers.current = [];
     window.speechSynthesis?.cancel();
     // Der vorab freigeschaltete AudioContext gehört dem Modul (primeAudio) und wird beim nächsten Workout
     // wiederverwendet — schließen würde dort alle Töne stumm machen.
@@ -1433,11 +1456,10 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
   }
 
   // Der Tap auf "Start Workout" hat das Workout schon gewollt: Intro + Zeit starten ohne zweiten Tap.
-  const autoStarted = useRef(false);
   useEffect(() => {
-    if (!autoStart || autoStarted.current) return;
-    autoStarted.current = true;
+    if (!autoStart || introDone.current) return undefined;
     toggleRunning();
+    return undefined;
   }, []);
 
   function repeatCurrent() {
@@ -1493,8 +1515,8 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
   );
 
   if (state.transition) {
-    return createPortal(
-      <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+    return placeRunner(
+      <div {...runnerFrameProps(contained)} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
         <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-6 self-start">
           <ChevronLeft size={18} /> Abbrechen
         </button>
@@ -1510,12 +1532,12 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
         </div>
         {abortDialog}
       </div>,
-      document.body
+      contained
     );
   }
 
-  return createPortal(
-    <div className={RUNNER_FRAME} style={RUNNER_FRAME_STYLE} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+  return placeRunner(
+    <div {...runnerFrameProps(contained)} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       <button onClick={() => setAbortConfirmationOpen(true)} className="text-[#e2001a] flex items-center gap-1 text-sm font-bold mb-3 self-start">
         <ChevronLeft size={18} /> Abbrechen
       </button>
@@ -1559,13 +1581,14 @@ function RunnerScreen({ workout, onFinish, onBack, onCamera, autoStart = false, 
       </div>
       {abortDialog}
     </div>,
-    document.body
+    contained
   );
 }
 
 // Runner füllt den ganzen sichtbaren Bildschirm (kein Scrollen): Video nimmt den Restplatz.
 // Per Portal an document.body, damit er auch in der Fitness-Einbettung (transformierte Eltern) wirklich
-// den ganzen Bildschirm belegt.
+// den ganzen Bildschirm belegt. In der VitalOS-Shell (contained) bleibt er im Baum, damit
+// --sixpack-top/--sixpack-nav gelten, und unter der Shell-Navigation (Tab-Leiste z-60, Sidebar z-50).
 // Volle Viewport-Fläche, Safe Area nur als Innenabstand (border-box, Hintergrund läuft darunter).
 const SCREEN_FRAME = {
   boxSizing: 'border-box',
@@ -1592,6 +1615,30 @@ const RUNNER_FRAME_STYLE = {
   paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)',
   paddingLeft: 'calc(env(safe-area-inset-left, 0px) + 20px)',
 };
+
+// Shell-Tab-Leiste ist z-60, ihr Sheet z-56, die Desktop-Sidebar z-50.
+// 40 bleibt darunter, füllt aber die Breite zwischen Rahmenoberkante und Tab-Leiste.
+function runnerFrameProps(contained) {
+  if (!contained) return { className: RUNNER_FRAME, style: RUNNER_FRAME_STYLE };
+  return {
+    className: 'fixed inset-x-0 flex w-full max-w-none flex-col overflow-hidden',
+    style: {
+      ...RUNNER_FRAME_STYLE,
+      top: 'var(--sixpack-top, 0px)',
+      bottom: 'var(--sixpack-nav, 0px)',
+      left: 0,
+      right: 0,
+      zIndex: 40,
+      width: '100%',
+      maxWidth: 'none',
+    },
+  };
+}
+
+function placeRunner(node, contained) {
+  if (contained) return node;
+  return createPortal(node, document.body);
+}
 
 // Fitness bekommt ein HIIT-ABS-Element; die einzelnen Moves bleiben dessen Detaildaten.
 function coreHiitActivity(items, runId) {
@@ -2009,7 +2056,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (
-          <RunnerScreen autoStart ownVideos={ownVideos} workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={IS_STORE_BUILD ? undefined : () => showScreen('selfies')} />
+          <RunnerScreen contained={embedded} autoStart ownVideos={ownVideos} workout={activeWorkout} onBack={() => showScreen(adhocWorkout ? adhocReturnScreen : 'day')} onFinish={finishWorkout} onCamera={IS_STORE_BUILD ? undefined : () => showScreen('selfies')} />
 
         )}
     </section>

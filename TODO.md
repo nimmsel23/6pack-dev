@@ -6,7 +6,8 @@
 - [x] 2026-11-20: Eigene Übungsvideos (ELD-35, Freeze-Ausnahme, nur der Videoteil): In der Übung Kamera (`capture=environment`) oder Galerie, Prüfung (100 MB, 60 s, optionaler Ausschnitt), resumable Upload nach Firebase Storage, Zuordnung in Firestore `exerciseVideos/{exerciseId}`. Die Übungsansicht spielt das eigene Video, sonst den bisherigen Fallback. Rules liegen im Repo (`storage.rules`, `firestore.exercise-videos.rules`) und sind nicht deployed. Der Bucket `fitness-aos.firebasestorage.app` und `fitness-aos.appspot.com` antworten mit 404; Storage ist nicht angelegt.
 - [x] 2026-11-14: Abgeschlossene Runs als `HIIT ABS`-Activity mit eingeklappten Übungsdetails protokollieren; Gast-Outbox beim Login übernehmen und Konten trennen (`f491f5cb`); fehlgeschlagenes Session-Logging stoppt den Track-Fortschritt (`e6fd6cd3`). Fitness-Session-UI als Folge-Ticket in `fitness-dev/TODO.md`.
 
-- [x] 2026-11-12: Shell-Embed `embed.jsx` (`SixPackEmbed`) plus `push.js`. Standalone (`main.jsx`) unverändert. Runner-Overlay `z-[100]` nicht angefasst.
+- [x] 2026-11-23: Runner in der Shell unter der Tab-Leiste (`z-index: 40`, `--sixpack-top`/`--sixpack-nav`), Issue #53.
+- [x] 2026-11-12: Shell-Embed `embed.jsx` (`SixPackEmbed`) plus `push.js`. Standalone (`main.jsx`) unverändert. Runner-Overlay `z-[100]` damals nicht angefasst.
 - [x] Selfies mit bestehendem Firebase-Login über Firestore geräteübergreifend synchronisieren; Offline-Queue beibehalten.
 
 - [x] Bestehende Photo-Auth/Galerie, Fitness-API und Cloud-Sync zu einem Ablauf zusammenführen; geschützten Altbestand importieren.

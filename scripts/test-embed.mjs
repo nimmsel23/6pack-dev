@@ -153,6 +153,7 @@ function resetHarness() {
   effectSlots.length = 0;
   cursor = refCursor = effectCursor = 0;
   mutations.length = 0;
+  portals.length = 0;
   replaceStateCount = 0;
   location._hash = '#sixpack';
   themeMeta._content = '#112233';
@@ -186,6 +187,11 @@ function textOf(node) {
   return '';
 }
 const pushes = [];
+const portals = [];
+function createPortal(node, container) {
+  portals.push(container);
+  return { type: 'portal', props: { container }, children: [node] };
+}
 const pushModule = {
   enableSixpackPush(uid, options) {
     pushes.push({ uid, options });
@@ -206,7 +212,7 @@ async function compile(file, requireExtra = {}) {
   const module = { exports: {} };
   const sandbox = {
     module, exports: module.exports, h, Fragment: 'fragment', window, document, history, location, URL, URLSearchParams, console, Notification: { permission: 'default' },
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './exerciseMedia.js' ? exerciseMedia : name === './exerciseVideo.js' ? exerciseVideo : name === './programSync.js' ? programSync : name === './reminder.js' ? reminder : name === './push.js' ? pushModule : name === './videoCache.js' ? { cacheVideos: () => Promise.resolve(), getCachedVideoBlobUrl: async () => null, isCacheableVideo: () => false } : moduleStub()),
+    require: name => requireExtra[name] || (name === 'react' ? React : name === 'react-dom' ? { createPortal } : name === './sixpackData.js' ? data : name === './exerciseMedia.js' ? exerciseMedia : name === './exerciseVideo.js' ? exerciseVideo : name === './programSync.js' ? programSync : name === './reminder.js' ? reminder : name === './push.js' ? pushModule : name === './videoCache.js' ? { cacheVideos: () => Promise.resolve(), getCachedVideoBlobUrl: async () => null, isCacheableVideo: () => false } : moduleStub()),
   };
   vm.runInNewContext(code, sandbox);
   return module.exports;
@@ -350,6 +356,116 @@ test('standalone keeps the document theme and in-app Eat', () => {
   flushEffects();
   assert.equal(nodes(tree, node => node.type?.name === 'EatScreen').length, 1);
   assert.equal(location.hash, '#sixpack');
+});
+
+function invokeChild(node) {
+  const stateMark = states.length;
+  const refMark = refs.length;
+  const effectMark = effectSlots.length;
+  const cursorMark = cursor;
+  const refCursorMark = refCursor;
+  const effectCursorMark = effectCursor;
+  const tree = node.type(node.props);
+  states.splice(stateMark);
+  refs.splice(refMark);
+  effectSlots.splice(effectMark);
+  cursor = cursorMark;
+  refCursor = refCursorMark;
+  effectCursor = effectCursorMark;
+  return tree;
+}
+function startShuffle(render, props) {
+  let tree = render(props);
+  flushEffects();
+  clickLabel(homeTree(tree), 'Shuffle').props.onClick();
+  tree = render(props);
+  const shuffle = nodes(tree, node => node.type?.name === 'ShuffleScreen')[0];
+  assert(shuffle, 'shuffle screen');
+  clickLabel(invokeChild(shuffle), 'Start Workout').props.onClick();
+  tree = render(props);
+  const runnerEl = nodes(tree, node => node.type?.name === 'RunnerScreen')[0];
+  assert(runnerEl, 'runner');
+  const hookStart = cursor;
+  const refStart = refCursor;
+  const effectStart = effectCursor;
+  const view = () => {
+    cursor = hookStart;
+    refCursor = refStart;
+    effectCursor = effectStart;
+    return runnerEl.type(runnerEl.props);
+  };
+  return view;
+}
+function runnerFrame(tree) {
+  const root = tree?.type === 'portal' ? tree.children[0] : tree;
+  assert.equal(root?.type, 'div');
+  return root;
+}
+
+test('silent speech still releases the intro instead of hanging', () => {
+  const calls = [];
+  const timers = [];
+  const previousSet = window.setTimeout;
+  const previousClear = window.clearTimeout;
+  window.setTimeout = (fn, ms) => {
+    timers.push({ fn, ms });
+    return timers.length;
+  };
+  window.clearTimeout = id => { if (timers[id - 1]) timers[id - 1].fn = null; };
+  try {
+    const utterance = {};
+    const budget = app.speechEndBudget('Welcome to Six Pack Promise.', 1.06);
+    assert.ok(budget >= 1200 && budget <= 12000);
+    app.armSpeechEnd(utterance, () => calls.push('end'), 'Welcome to Six Pack Promise.', 1.06);
+    assert.equal(calls.length, 0);
+    assert.equal(timers.length, 1);
+    assert.equal(timers[0].ms, budget);
+    timers[0].fn();
+    utterance.onend();
+    assert.deepEqual(calls, ['end']);
+  } finally {
+    window.setTimeout = previousSet;
+    window.clearTimeout = previousClear;
+  }
+});
+
+test('embedded runner stays under the shell navigation and keeps full width', () => {
+  resetHarness();
+  const props = { uid: 'user-1', route: '', onRouteChange() {}, onNavigate() {} };
+  const view = startShuffle(renderEmbed, props);
+  const first = view();
+  assert.notEqual(first.type, 'portal');
+  assert.equal(portals.length, 0);
+  const frame = runnerFrame(first);
+  assert.equal(frame.props.style.zIndex, 40);
+  assert.equal(frame.props.style.top, 'var(--sixpack-top, 0px)');
+  assert.equal(frame.props.style.bottom, 'var(--sixpack-nav, 0px)');
+  assert.equal(frame.props.style.left, 0);
+  assert.equal(frame.props.style.right, 0);
+  assert.equal(frame.props.style.width, '100%');
+  assert.equal(frame.props.style.maxWidth, 'none');
+  assert.doesNotMatch(frame.props.className, /z-\[100\]|inset-0/);
+  const abort = nodes(frame, node => node.type === 'button' && textOf(node).includes('Abbrechen'))[0];
+  assert(abort, 'Abbrechen');
+  abort.props.onClick();
+  const overlay = nodes(view(), node => typeof node.props?.className === 'string' && node.props.className.includes('z-20'))[0];
+  assert(overlay, 'abort overlay');
+  assert.match(overlay.props.className, /^absolute /);
+  assert.doesNotMatch(overlay.props.className, /fixed|z-\[120\]/);
+  assert.equal(nodes(overlay, node => node.props?.role === 'alertdialog').length, 1);
+});
+
+test('legacy host still portals the runner over the viewport', () => {
+  resetHarness();
+  const view = startShuffle(renderCard, { uid: 'local' });
+  const tree = view();
+  assert.equal(tree.type, 'portal');
+  assert.equal(portals.length, 1);
+  assert.equal(portals[0], document.body);
+  const frame = runnerFrame(tree);
+  assert.match(frame.props.className, /fixed inset-0 z-\[100\]/);
+  assert.equal(frame.props.style.width, '100%');
+  assert.equal(frame.props.style.maxWidth, 'none');
 });
 
 test('firebaseApp registers push through the shared module', async () => {

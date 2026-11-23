@@ -61,5 +61,7 @@ export default defineConfig({
     fixRolldownPreloadMarker(),
     sixpackVersionJson(APP_BUILD),
   ],
-  server: { proxy: { '/sixpack': `http://127.0.0.1:${process.env.FITNESS_NODE_PORT || 9100}` } },
+  // Nur Backend-Pfade unter /sixpack/… an den Fitness-Node. Ohne den
+  // Schrägstrich fängt der Proxy /sixpackCloud.js ab (502, leere App).
+  server: { proxy: { '/sixpack/': `http://127.0.0.1:${process.env.FITNESS_NODE_PORT || 9100}` } },
 });

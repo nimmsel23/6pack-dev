@@ -1,3 +1,11 @@
+## 2026-11-23 — Runner überdeckt die Shell-Navigation nicht mehr
+
+- Bug #53: Der Runner ging als Portal auf `document.body` mit `z-index: 100` und lag über der VitalOS-Tab-Leiste (`z-index: 60`).
+- In `embedded` (Standalone-Einstieg und Shell) bleibt er im Baum, `z-index: 40`, von `--sixpack-top` bis `--sixpack-nav`, Breite 100 %. Die Leiste bleibt bedienbar. Abbruch-Dialog liegt im Runner. Ohne `embedded` bleibt das Vollbild-Portal für die Fitness-Einbettung.
+- Intro-Hänger: `speechSynthesis` ohne `onend` (keine Stimme) hat den Timer nie gestartet. Jede Ansage mit Folgeaktion hat eine Ablaufgrenze und läuft dann weiter. Im Dev-StrictMode hat das Aufräumen des Start-Effekts das Intro abgebrochen und nicht neu gestartet; der Timer blieb auf der ersten Übung. Das abgebrochene Intro startet neu.
+- Dev-Server: Der Vite-Proxy `/sixpack` hat `/sixpackCloud.js` an Port 9100 geschickt (502, leere App). Der Proxy gilt jetzt nur für `/sixpack/`.
+- Test: `node --test scripts/test-embed.mjs`.
+
 ## 2026-11-21 — Clip-Editor vor dem Übungsvideo-Upload
 
 - Nach Kamera oder Galerie öffnet ein Vollbild-Editor: stumme Vorschau, zwei Griffe für Anfang und Ende, „Clip abspielen“, „Hochladen“ und „Abbrechen“. Hochgeladen wird erst nach der Bestätigung.

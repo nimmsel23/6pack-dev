@@ -109,9 +109,12 @@ import SixPackEmbed from '../../6pack-app/embed.jsx';
 den Hash und verlinkt Eat über `getFuelUrl()`. `publish-fitness.mjs` kopiert
 nur drei alte Dateien und ist kein Einbettungsweg.
 
-Der Runner liegt als Portal auf `document.body` mit `fixed inset-0 z-[100]`
-(Abbruch-Dialog `z-[120]`) und überdeckt damit die Shell-Navigation. Das ist
-bewusst so belassen.
+In der Shell (`embedded`) bleibt der Runner im Baum: `position: fixed` zwischen
+`--sixpack-top` und `--sixpack-nav`, `z-index: 40`, volle Breite. Damit bleibt
+die Shell-Navigation darüber (Tab-Leiste 60, Sidebar 50). Der Abbruch-Dialog
+liegt im Runner (`absolute`), nicht über der Leiste. Ohne `embedded` (Fitness
+mit transformierten Eltern) bleibt das Portal `fixed inset-0 z-[100]` auf
+`document.body`.
 
 ## Firebase Hosting
 
