@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-23T15:16:12+00:00",
+  "generated_at": "2026-11-23T18:03:55+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-23T10:59:07Z",
+   "pushed_at": "2026-11-23T15:16:35Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -476,20 +476,20 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev und Master synchron; Storage-Regeln unklar; iPhone-Prüfung offen",
-   "lage": "Der `dev`-Branch ist nun mit `master` synchron auf Commit `f3c3fa0`. Alle zugehörigen Workflows auf `dev` und `master` sind erfolgreich abgeschlossen. Der Status der Firebase Storage-Regeln und des Buckets bleibt laut `TODO.md` unklar und widersprüchlich zu den Commits `285bc9c` und `6bd0a9c`.",
+   "headline": "Dev/Master synchron; Runner-Fix integriert; Storage-Regeln unklar",
+   "lage": "Der `dev`-Branch ist weiterhin mit `master` auf Commit `f3c3fa0` synchron, und alle CI-Workflows laufen erfolgreich. Der Runner-Fix `f3c3fa0` ist integriert, jedoch bleiben die Geräteprüfung des Video-Clip-Features (`6766e2e`) auf dem iPhone sowie der Status der Firebase Storage-Regeln und des Buckets offen und widersprüchlich.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der `TODO.md` Eintrag für 'Eigene Übungsvideos' ist als erledigt markiert, beschreibt aber gleichzeitig, dass Storage-Regeln nicht deployed sind und der Bucket mit 404 antwortet."
+     "text": "Der Status der Firebase Storage-Regeln und des Buckets ist unklar: `TODO.md` vermerkt, dass Regeln nicht deployed sind und der Bucket mit 404 antwortet, was den Commits `285bc9c` und `6bd0a9c` widerspricht."
     },
     {
      "level": "mittel",
-     "text": "Die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) ist laut `TODO.md` noch offen und nur mit einem synthetischen MP4 geprüft."
+     "text": "Die Geräteprüfung des Video-Clip-Features (Commit `6766e2e`) auf dem iPhone steht noch aus."
     },
     {
      "level": "info",
-     "text": "Commit `f3c3fa0` behebt das Runner-Layout-Problem unter der Tab-Leiste (Issue #53)."
+     "text": "Die vierte Woche des 6 Pack Promise-Programms ist laut `TODO.md` noch nicht ergänzt."
     }
    ],
    "naechste_schritte": [
@@ -497,13 +497,13 @@
     "Prüfen Sie das Video-Clip-Feature (Commit `6766e2e`) auf dem iPhone.",
     "Ergänzen Sie die vierte Woche des 6 Pack Promise-Programms."
    ],
-   "veraendert": "Der `dev`-Branch ist nicht mehr einen Commit vor `master`, sondern beide Branches sind auf Commit `f3c3fa0` synchronisiert.",
+   "veraendert": "Gegenüber der letzten Einschätzung wurden der Runner-Fix (`f3c3fa0`) und die Vollbild-Video-Schnittfunktion (`6766e2e`) erfolgreich integriert und in `TODO.md` als erledigt markiert.",
    "fragen": [
-    "Wie soll mit dem widersprüchlichen Status der Firebase Storage-Regeln und des Buckets verfahren werden?",
-    "Soll die Priorität für die Ergänzung weiterer Workout-Wochen erhöht werden?"
+    "Sollen die Firebase Storage-Regeln und der Bucket für 6pack-dev aktiv genutzt und deployed werden, oder liegt die SSOT ausschließlich bei vitalos, wie in Commit `285bc9c` angedeutet?",
+    "Soll die vierte Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzt werden, wie in `TODO.md` vermerkt?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-23T15:16:17+00:00"
+  "ai_at": "2026-11-23T18:03:57+00:00"
  }
 }
