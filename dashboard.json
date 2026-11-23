@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-23T07:01:33+00:00",
+  "generated_at": "2026-11-23T07:02:40+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-23T07:01:20Z",
+   "pushed_at": "2026-11-23T07:01:58Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,10 +19,10 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 2,
-   "oldest_unpromoted": "2026-11-23T08:01:12+01:00",
+   "dev_ahead": 0,
+   "oldest_unpromoted": null,
    "dev_head": "105b577 2026-11-23T08:01:18+01:00",
-   "master_head": "5fa733d 2026-11-23T06:43:35Z"
+   "master_head": "105b577 2026-11-23T08:01:18+01:00"
   },
   "commits": [
    {
@@ -234,23 +234,33 @@
   ],
   "workflows": [
    {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-23T07:02:00Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128198200",
+    "sha": "105b577"
+   },
+   {
     "name": "PR-AutoMerge (Dependabot -> dev)",
     "branch": "master",
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "skipped",
-    "created_at": "2026-11-23T07:01:29Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138472",
+    "created_at": "2026-11-23T07:01:51Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128182405",
     "sha": "5fa733d"
    },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
     "event": "workflow_run",
-    "status": "in_progress",
-    "conclusion": null,
-    "created_at": "2026-11-23T07:01:29Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138461",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T07:01:51Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128182390",
     "sha": "5fa733d"
    },
    {
@@ -258,17 +268,17 @@
     "branch": "master",
     "event": "workflow_run",
     "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-23T07:01:29Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138436",
+    "conclusion": "success",
+    "created_at": "2026-11-23T07:01:51Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128182384",
     "sha": "5fa733d"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
     "branch": "dev",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-23T07:01:21Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128124358",
     "sha": "105b577"
@@ -277,8 +287,8 @@
     "name": "Check (6Pack)",
     "branch": "dev",
     "event": "push",
-    "status": "in_progress",
-    "conclusion": null,
+    "status": "completed",
+    "conclusion": "success",
     "created_at": "2026-11-23T07:01:21Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128124347",
     "sha": "105b577"
@@ -332,16 +342,6 @@
     "created_at": "2026-11-23T06:48:14Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126593306",
     "sha": "3a00471"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-23T06:44:35Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126161096",
-    "sha": "5fa733d"
    },
    {
     "name": "Org-Bot (PR anlegen & mergen)",
@@ -487,42 +487,34 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev-Branch 2 Commits voraus; Promotion und Deploy aktiv; Storage-Regel-Status unklar",
-   "lage": "Der `dev`-Branch ist mit Commit `105b577` zwei Commits vor dem `master`-Branch (`5fa733d`). Aktuell laufen Workflows für `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev`, sowie ein `Auto-Promote dev -> master` auf `master`. Die Diskrepanz bezüglich der Firebase Storage-Regeln zwischen `TODO.md` und Commit `285bc9c` besteht weiterhin.",
+   "headline": "Dev/Master synchron; Deploy auf Master aktiv; Storage-Regeln/Bucket unklar",
+   "lage": "Der `dev`-Branch ist mit Commit `105b577` nun synchron mit dem `master`-Branch. Aktuell läuft ein `6Pack deploy (preview + standalone)` Workflow auf `master`. Die Firebase Storage-Regeln sind laut `TODO.md` nicht deployed und der Storage-Bucket `fitness-aos.firebasestorage.app` ist nicht angelegt, was im Widerspruch zu Commit `285bc9c` steht.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Der `dev`-Branch ist 2 Commits vor `master`. Ein `Auto-Promote dev -> master` Workflow ist für `master` (`5fa733d`) `in_progress`, was auf einen aktiven, aber noch nicht abgeschlossenen Synchronisationsversuch hindeutet."
+     "text": "Die Firebase Storage-Regeln sind laut `TODO.md` nicht deployed und der Storage-Bucket `fitness-aos.firebasestorage.app` ist nicht angelegt, was die Funktionalität eigener Übungsvideos beeinträchtigt und im Widerspruch zu Commit `285bc9c` steht."
     },
     {
      "level": "mittel",
-     "text": "Die Workflows `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev` für Commit `105b577` sind `in_progress` und ihr Abschluss ist abzuwarten."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Unklarheit bezüglich der Firebase Storage-Regeln und des Bucket-Status bleibt bestehen, da `TODO.md` fehlende Deployment und 404-Antworten meldet, während Commit `285bc9c` angibt, dass `6pack` keine Regeln mehr deployt."
+     "text": "Die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) ist noch ausstehend und wurde nur mit einem synthetischen MP4 geprüft."
     },
     {
      "level": "info",
-     "text": "Die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) ist laut `TODO.md` noch ausstehend."
-    },
-    {
-     "level": "info",
-     "text": "Die Prüfung der Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` ist gemäß `NEXT.md` noch offen."
+     "text": "Der `6Pack deploy (preview + standalone)` Workflow auf `master` (SHA `105b577`) ist noch `in_progress`."
     }
    ],
    "naechste_schritte": [
-    "Überwachen Sie den Abschluss der `in_progress` Workflows auf `dev` und `master`.",
-    "Klären Sie die Diskrepanz der Firebase Storage-Regeln zwischen `TODO.md` und Commit `285bc9c`.",
+    "Überprüfen Sie den Abschluss des `6Pack deploy` Workflows auf `master`.",
+    "Klären Sie den Status des Firebase Storage-Buckets und der Storage-Regeln.",
     "Führen Sie die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) durch."
    ],
-   "veraendert": "Der `dev`-Branch ist nun mit zwei neuen Commits (`105b577`, `56538e5`) vor dem `master`-Branch, und es laufen aktive Promotion- und Deploy-Workflows, im Gegensatz zur vorherigen Synchronisation.",
+   "veraendert": "Der `dev`-Branch ist nun mit dem `master`-Branch synchronisiert, und die zuvor laufenden Workflows auf `dev` und `master` sind abgeschlossen, mit Ausnahme eines aktiven `6Pack deploy` auf `master`.",
    "fragen": [
-    "Soll die Diskrepanz der Firebase Storage-Regeln (Deploy durch `6pack` vs. SSOT in `vitalos`) priorisiert und geklärt werden?",
-    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden?"
+    "Soll der Firebase Storage-Bucket für `fitness-aos.firebasestorage.app` angelegt und die Storage-Regeln aktiviert werden, um eigene Übungsvideos zu ermöglichen?",
+    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden, um den CI-Agentenbetriebspunkt zu klären?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-23T07:01:35+00:00"
+  "ai_at": "2026-11-23T07:02:42+00:00"
  }
 }
