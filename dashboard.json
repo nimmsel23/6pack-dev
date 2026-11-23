@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-22T12:51:12+00:00",
+  "generated_at": "2026-11-23T07:01:33+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-21T20:57:40Z",
+   "pushed_at": "2026-11-23T07:01:20Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -19,12 +19,30 @@
    "main": "master",
    "has_dev": true,
    "dev_behind": 0,
-   "dev_ahead": 0,
-   "oldest_unpromoted": null,
-   "dev_head": "6766e2e 2026-11-21T20:57:01Z",
-   "master_head": "6766e2e 2026-11-21T20:57:01Z"
+   "dev_ahead": 2,
+   "oldest_unpromoted": "2026-11-23T08:01:12+01:00",
+   "dev_head": "105b577 2026-11-23T08:01:18+01:00",
+   "master_head": "5fa733d 2026-11-23T06:43:35Z"
   },
   "commits": [
+   {
+    "sha": "105b577",
+    "date": "2026-11-23T08:01:18+01:00",
+    "author": "dependabot[bot]",
+    "subject": "deps: bump the minor-and-patch group in /android with 2 updates (#55)"
+   },
+   {
+    "sha": "56538e5",
+    "date": "2026-11-23T08:01:12+01:00",
+    "author": "dependabot[bot]",
+    "subject": "deps: bump the minor-and-patch group across 2 directories with 9 updates (#57)"
+   },
+   {
+    "sha": "5fa733d",
+    "date": "2026-11-23T06:43:35Z",
+    "author": "dependabot[bot]",
+    "subject": "ci: bump actions/create-github-app-token"
+   },
    {
     "sha": "6766e2e",
     "date": "2026-11-21T20:57:01Z",
@@ -126,31 +144,9 @@
     "date": "2026-11-16T08:32:38Z",
     "author": "Cursor Agent",
     "subject": "merge(master): Squash von #50 wieder mit dev verbinden"
-   },
-   {
-    "sha": "935cf63",
-    "date": "2026-11-16T09:30:24+01:00",
-    "author": "nimmsel23",
-    "subject": "fix(ci): Promote nur mit qualifizierendem Check (#50)"
-   },
-   {
-    "sha": "6d27686",
-    "date": "2026-11-16T06:43:38Z",
-    "author": "dependabot[bot]",
-    "subject": "deps: bump firebase-admin from 12.7.0 to 14.5.0 in /functions (#49)"
-   },
-   {
-    "sha": "3b9565a",
-    "date": "2026-11-16T06:43:26Z",
-    "author": "dependabot[bot]",
-    "subject": "deps: bump gradle-wrapper in /android in the minor-and-patch group (#48)"
    }
   ],
   "activity": [
-   {
-    "day": "2026-11-02",
-    "n": 3
-   },
    {
     "day": "2026-11-03",
     "n": 0
@@ -230,38 +226,112 @@
    {
     "day": "2026-11-22",
     "n": 0
+   },
+   {
+    "day": "2026-11-23",
+    "n": 3
    }
   ],
   "workflows": [
    {
-    "name": "Merge-Agent",
+    "name": "PR-AutoMerge (Dependabot -> dev)",
     "branch": "master",
-    "event": "schedule",
+    "event": "workflow_run",
     "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-22T08:28:25Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45002971122",
-    "sha": "6766e2e"
+    "conclusion": "skipped",
+    "created_at": "2026-11-23T07:01:29Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138472",
+    "sha": "5fa733d"
    },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
     "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-22T07:31:41Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44998636711",
-    "sha": "6766e2e"
+    "event": "workflow_run",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-23T07:01:29Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138461",
+    "sha": "5fa733d"
    },
    {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "name": "Gemini CI Agent",
     "branch": "master",
-    "event": "schedule",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-23T07:01:29Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128138436",
+    "sha": "5fa733d"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-23T07:01:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128124358",
+    "sha": "105b577"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "in_progress",
+    "conclusion": null,
+    "created_at": "2026-11-23T07:01:21Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45128124347",
+    "sha": "105b577"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-2b28ac6842",
+    "event": "pull_request_target",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-22T07:07:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44996803334",
-    "sha": "6766e2e"
+    "created_at": "2026-11-23T06:48:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126596537",
+    "sha": "3a00471"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-2b28ac6842",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:48:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126596351",
+    "sha": "3a00471"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-2b28ac6842",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:48:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126596305",
+    "sha": "3a00471"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-2b28ac6842",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:48:16Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126596204",
+    "sha": "3a00471"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "dependabot/npm_and_yarn/dev/minor-and-patch-2b28ac6842",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:48:14Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126593306",
+    "sha": "3a00471"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -269,89 +339,119 @@
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-21T20:57:42Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44948998237",
-    "sha": "6766e2e"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T20:57:33Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44948987502",
-    "sha": "cc36874"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T20:57:04Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44948951986",
-    "sha": "6766e2e"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-21T20:57:04Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44948951961",
-    "sha": "6766e2e"
+    "created_at": "2026-11-23T06:44:35Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126161096",
+    "sha": "5fa733d"
    },
    {
     "name": "Org-Bot (PR anlegen & mergen)",
-    "branch": "codex/exercise-video-upload",
+    "branch": "dependabot/github_actions/dev/actions-1730de5550",
     "event": "pull_request_target",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T16:21:45Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772609416",
-    "sha": "d5a9e27"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "codex/exercise-video-upload",
-    "event": "pull_request",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-20T16:21:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772571038",
-    "sha": "d5a9e27"
+    "created_at": "2026-11-23T06:43:54Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126084862",
+    "sha": "5fa733d"
    },
    {
     "name": "Merge-Agent",
-    "branch": "codex/exercise-video-upload",
+    "branch": "dependabot/github_actions/dev/actions-1730de5550",
     "event": "pull_request",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T16:21:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772571007",
-    "sha": "d5a9e27"
+    "created_at": "2026-11-23T06:43:46Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126069332",
+    "sha": "5fa733d"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dependabot/github_actions/dev/actions-1730de5550",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:46Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126069266",
+    "sha": "5fa733d"
    },
    {
     "name": "Check (6Pack)",
-    "branch": "codex/exercise-video-upload",
+    "branch": "dependabot/github_actions/dev/actions-1730de5550",
     "event": "pull_request",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T16:21:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772570995",
-    "sha": "d5a9e27"
+    "created_at": "2026-11-23T06:43:46Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126069188",
+    "sha": "5fa733d"
    },
    {
     "name": "Gemini CI Agent",
-    "branch": "codex/exercise-video-upload",
+    "branch": "dependabot/github_actions/dev/actions-1730de5550",
     "event": "pull_request_target",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-20T16:21:31Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/44772570417",
-    "sha": "d5a9e27"
+    "created_at": "2026-11-23T06:43:44Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126066990",
+    "sha": "5fa733d"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "dependabot/gradle/android/dev/minor-and-patch-59c3d912c5",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:42Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126061724",
+    "sha": "c239631"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dependabot/gradle/android/dev/minor-and-patch-59c3d912c5",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:42Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126061678",
+    "sha": "c239631"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dependabot/gradle/android/dev/minor-and-patch-59c3d912c5",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:42Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126061611",
+    "sha": "c239631"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "dependabot/gradle/android/dev/minor-and-patch-59c3d912c5",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:40Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126059085",
+    "sha": "c239631"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "dependabot/gradle/android/dev/minor-and-patch-59c3d912c5",
+    "event": "pull_request_target",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T06:43:39Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45126056721",
+    "sha": "c239631"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-23T02:43:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45101831481",
+    "sha": "6766e2e"
    }
   ],
   "issues": [
@@ -387,34 +487,42 @@
   "status": "green",
   "signals": [],
   "ai": {
-   "headline": "Dev- und Master-Branches synchronisiert; Workflows erfolgreich; Storage-Regel-Status unklar",
-   "lage": "Die Branches `dev` und `master` sind nun mit Commit `6766e2e` synchronisiert. Alle zugehörigen Workflows, einschließlich `Check (6Pack)` und `6Pack deploy (preview + standalone)`, wurden erfolgreich abgeschlossen. Die Situation bezüglich der Firebase Storage-Regeln und des zugehörigen Buckets bleibt unklar, da `TODO.md` fehlende Deployment und 404-Antworten für den Bucket meldet, während Commit `285bc9c` angibt, dass `6pack` keine Regeln mehr deployt.",
+   "headline": "Dev-Branch 2 Commits voraus; Promotion und Deploy aktiv; Storage-Regel-Status unklar",
+   "lage": "Der `dev`-Branch ist mit Commit `105b577` zwei Commits vor dem `master`-Branch (`5fa733d`). Aktuell laufen Workflows für `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev`, sowie ein `Auto-Promote dev -> master` auf `master`. Die Diskrepanz bezüglich der Firebase Storage-Regeln zwischen `TODO.md` und Commit `285bc9c` besteht weiterhin.",
    "auffaelligkeiten": [
     {
      "level": "hoch",
-     "text": "Die Verantwortung für das Deployment der Firebase Storage-Regeln und der Status des Buckets sind widersprüchlich: `TODO.md` listet Regeln als nicht deployed und Bucket als 404, während Commit `285bc9c` angibt, dass `6pack` keine Regeln mehr deployt und die SSOT in `vitalos` liegt."
+     "text": "Der `dev`-Branch ist 2 Commits vor `master`. Ein `Auto-Promote dev -> master` Workflow ist für `master` (`5fa733d`) `in_progress`, was auf einen aktiven, aber noch nicht abgeschlossenen Synchronisationsversuch hindeutet."
     },
     {
      "level": "mittel",
-     "text": "Die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) ist gemäß `TODO.md` noch offen und nur mit einem synthetischen MP4 geprüft."
+     "text": "Die Workflows `Check (6Pack)` und `6Pack deploy (preview + standalone)` auf `dev` für Commit `105b577` sind `in_progress` und ihr Abschluss ist abzuwarten."
     },
     {
      "level": "mittel",
-     "text": "Die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` sind laut `NEXT.md` weiterhin zu prüfen/setzen, um den CI-Agenten vollständig in Betrieb zu nehmen."
+     "text": "Die Unklarheit bezüglich der Firebase Storage-Regeln und des Bucket-Status bleibt bestehen, da `TODO.md` fehlende Deployment und 404-Antworten meldet, während Commit `285bc9c` angibt, dass `6pack` keine Regeln mehr deployt."
+    },
+    {
+     "level": "info",
+     "text": "Die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) ist laut `TODO.md` noch ausstehend."
+    },
+    {
+     "level": "info",
+     "text": "Die Prüfung der Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` ist gemäß `NEXT.md` noch offen."
     }
    ],
    "naechste_schritte": [
-    "Klären Sie die Diskrepanz zwischen `TODO.md` und Commit `285bc9c` bezüglich der Firebase Storage-Regeln und des Bucket-Status.",
-    "Führen Sie die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) durch, wie in `TODO.md` beschrieben.",
-    "Prüfen Sie die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md`."
+    "Überwachen Sie den Abschluss der `in_progress` Workflows auf `dev` und `master`.",
+    "Klären Sie die Diskrepanz der Firebase Storage-Regeln zwischen `TODO.md` und Commit `285bc9c`.",
+    "Führen Sie die Geräteprüfung auf dem iPhone für das Video-Clip-Feature (Commit `6766e2e`) durch."
    ],
-   "veraendert": "Gegenüber der letzten Einschätzung sind die `dev`- und `master`-Branches nun synchronisiert, und alle zuvor `in_progress` befindlichen Workflows für Commit `6766e2e` wurden erfolgreich abgeschlossen.",
+   "veraendert": "Der `dev`-Branch ist nun mit zwei neuen Commits (`105b577`, `56538e5`) vor dem `master`-Branch, und es laufen aktive Promotion- und Deploy-Workflows, im Gegensatz zur vorherigen Synchronisation.",
    "fragen": [
-    "Soll die Verantwortung für das Deployment der Firebase Storage-Regeln und die Einrichtung des Buckets für `6pack-dev` geklärt und umgesetzt werden, oder liegt die alleinige Verantwortung bei `vitalos`?",
-    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden, um den CI-Agenten vollständig in Betrieb zu nehmen?"
+    "Soll die Diskrepanz der Firebase Storage-Regeln (Deploy durch `6pack` vs. SSOT in `vitalos`) priorisiert und geklärt werden?",
+    "Sollen die Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` gemäß `NEXT.md` geprüft und gesetzt werden?"
    ],
    "model": "gemini-2.5-flash"
   },
-  "ai_at": "2026-11-22T12:51:14+00:00"
+  "ai_at": "2026-11-23T07:01:35+00:00"
  }
 }
