@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-24T15:16:07+00:00",
+  "generated_at": "2026-11-25T14:56:00+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-24T09:40:34Z",
+   "pushed_at": "2026-11-24T15:16:31Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -152,12 +152,8 @@
   ],
   "activity": [
    {
-    "day": "2026-11-04",
-    "n": 0
-   },
-   {
     "day": "2026-11-05",
-    "n": 28
+    "n": 12
    },
    {
     "day": "2026-11-06",
@@ -234,6 +230,10 @@
    {
     "day": "2026-11-24",
     "n": 8
+   },
+   {
+    "day": "2026-11-25",
+    "n": 0
    }
   ],
   "workflows": [
@@ -243,8 +243,48 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-24T11:08:15Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45381375029",
+    "created_at": "2026-11-25T14:38:38Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45636309686",
+    "sha": "77ca96b"
+   },
+   {
+    "name": "CI-Heilung (rote Läufe wiederholen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T13:27:08Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45623716559",
+    "sha": "77ca96b"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T13:09:59Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45620801457",
+    "sha": "77ca96b"
+   },
+   {
+    "name": "Org-Bot (PR anlegen & mergen)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T12:48:25Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45617305264",
+    "sha": "77ca96b"
+   },
+   {
+    "name": "Merge-Agent",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-25T11:45:07Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45607329590",
     "sha": "77ca96b"
    },
    {
@@ -256,16 +296,6 @@
     "created_at": "2026-11-24T09:40:36Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367446004",
     "sha": "77ca96b"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:40:10Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367374958",
-    "sha": "2241ce5"
    },
    {
     "name": "Gemini CI Agent",
@@ -296,16 +326,6 @@
     "created_at": "2026-11-24T09:39:30Z",
     "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367274112",
     "sha": "77ca96b"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T06:42:57Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45342507399",
-    "sha": "9e99618"
    }
   ],
   "issues": [
@@ -329,51 +349,7 @@
  "assessment": {
   "status": "green",
   "signals": [],
-  "ai": {
-   "headline": "Branches synchronisiert, Deploy-Workflows erfolgreich; Storage-Bucket und iPhone-Tests offen",
-   "lage": "Die Branches `dev` und `master` sind auf Commit `77ca96b` synchronisiert. Alle `6Pack deploy`-Workflows für `dev` und `master` wurden erfolgreich abgeschlossen. Die Geräteprüfung des Video-Clip-Features auf dem iPhone sowie die Live-Abnahme von Commit `aa6006dc` sind weiterhin offen, und der Firebase Storage-Bucket ist nicht angelegt.",
-   "auffaelligkeiten": [
-    {
-     "level": "hoch",
-     "text": "Der Firebase Storage-Bucket ist nicht angelegt und antwortet mit 404, was die Funktionalität eigener Übungsvideos blockiert."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Geräteprüfung des Video-Clip-Features auf dem iPhone (Safari, PWA, VitalOS-iframe) steht noch aus, der Schnitt wurde nur synthetisch geprüft."
-    },
-    {
-     "level": "mittel",
-     "text": "Die Live-Abnahme von Commit `aa6006dc` (Tailwind-4-Themes, lucide-react 1.64, js-yaml-Datenbuild) auf Handy/Browser wurde bisher nicht durchgeführt."
-    },
-    {
-     "level": "info",
-     "text": "CI-Agent: Repo-Secrets `SYNC_TOKEN` und `GEMINI_API_KEY` müssen geprüft/gesetzt werden, und der Gmail-Agentenkanal ist zu konkretisieren."
-    },
-    {
-     "level": "info",
-     "text": "Der `deploy-shell`-Trigger hat bei einem Meta-`master`-Push keinen automatischen Lauf ausgelöst, Ursache ist ungeklärt."
-    },
-    {
-     "level": "info",
-     "text": "Die Implementierung der austauschbaren Sprachausgabe (ELD-35, Issue #52) ist bis zur Beauftragung durch Daniel pausiert."
-    },
-    {
-     "level": "info",
-     "text": "Runner-Fixes (Autostart, Gym-Timer-Töne, Sprachansagen, Video-Cache) auf dem Handy sind ungeprüft, Sprachansagen fehlen möglicherweise weiterhin."
-    }
-   ],
-   "naechste_schritte": [
-    "Prüfen Sie das Video-Clip-Feature auf dem iPhone (Safari, PWA, VitalOS-iframe).",
-    "Klären Sie die Einrichtung des Firebase Storage-Buckets.",
-    "Führen Sie die Live-Abnahme von Commit `aa6006dc` auf dem Handy/Browser durch."
-   ],
-   "veraendert": "Die Branches `dev` und `master` sind nun auf Commit `77ca96b` synchronisiert, und der Firebase Storage-Bucket ist als nicht angelegt und mit 404 antwortend konkretisiert.",
-   "fragen": [
-    "Soll die Implementierung der austauschbaren Sprachausgabe (ELD-35, Issue #52) beauftragt werden?",
-    "Soll der ältere Fitness-Tab-Runner nachgezogen werden, um `videoCache.js`, Autostart und Gym-Timer-Töne zu integrieren?"
-   ],
-   "model": "gemini-2.5-flash"
-  },
-  "ai_at": "2026-11-24T15:16:10+00:00"
+  "ai": null,
+  "ai_at": null
  }
 }
