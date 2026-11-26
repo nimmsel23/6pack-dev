@@ -145,12 +145,9 @@ assert.equal(formatTrimSeconds(12.5), '12,5 s');
 assert.equal(formatTrimSeconds(-2), '0,0 s');
 
 const whole = planExerciseClipUpload({ durationSeconds: 12.2, start: 0, end: 12.2 });
-assert.equal(whole.mode, 'file');
-assert.equal(whole.clipStart, null);
-assert.equal(whole.durationSeconds, 12.2);
+assert.equal(whole.ok, false, 'kein Original-Upload bei fehlgeschlagener Tonentfernung');
 const ranged = planExerciseClipUpload({ durationSeconds: 12.2, start: 1.25, end: 9.2 });
-assert.equal(ranged.mode, 'range');
-assert.deepEqual([ranged.clipStart, ranged.clipEnd], [1.25, 9.2]);
+assert.equal(ranged.ok, false, 'kein vollständiges Original für einen Ausschnitt hochladen');
 assert.match(planExerciseClipUpload({ durationSeconds: 12, start: 1, end: 1.2 }).error, /kurz/);
 assert.match(planExerciseClipUpload({ durationSeconds: 90, start: 10, end: 40 }).error, /nicht geschnitten/);
 const cutPlan = planExerciseClipUpload({

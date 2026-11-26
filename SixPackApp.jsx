@@ -1663,6 +1663,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   const [program, setProgram] = useState(() => loadProgram());
   const [favorites, setFavorites] = useState(loadFavorites);
   const [ownVideos, setOwnVideos] = useState({});
+  const [videoSource, setVideoSource] = useState(null);
+  useEffect(() => { setVideoSource(null); }, [uid]);
   const [adhocReturnScreen, setAdhocReturnScreen] = useState('shuffle');
 
   useEffect(() => {
@@ -2029,6 +2031,8 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
             ownVideos={ownVideos}
             signedIn={Boolean(uid && uid !== 'local')}
             uid={uid && uid !== 'local' ? uid : ''}
+            videoSource={videoSource?.uid === uid ? videoSource : null}
+            onVideoSourceChange={source => setVideoSource(source ? { ...source, uid } : null)}
             onUploadExerciseVideo={uploadExerciseVideo}
             onDeleteExerciseVideo={deleteExerciseVideo}
             backLabel={exerciseReturnScreen === 'learn' ? storeText('Learn', 'Lernen') : 'Workout'}

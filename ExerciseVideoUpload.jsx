@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ExerciseClipEditor from './ExerciseClipEditor.jsx';
 import {
+  MAX_SOURCE_VIDEO_BYTES,
   contentTypeForFile,
   initialTrim,
   normalizeClip,
@@ -76,9 +77,10 @@ function useWakeLock(active) {
   }, [active]);
 }
 
-export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload, ownership = 'none', onDelete }) {
+export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload, ownership = 'none', onDelete, videoSource, onVideoSourceChange }) {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
+  const filesRef = useRef(null);
   const previewRef = useRef('');
   const uploadRef = useRef(null);
   const requestRef = useRef(0);
@@ -89,14 +91,14 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   const [previewUrl, setPreviewUrl] = useState('');
   const [phase, setPhase] = useState('idle');
   const [progress, setProgress] = useState(0);
-  const [rangeNote, setRangeNote] = useState(false);
   const [error, setError] = useState('');
   const [prepNote, setPrepNote] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
-  useWakeLock(phase === 'cutting' || phase === 'uploading' || phase === 'deleting');
+  useWakeLock(phase === 'editing' || phase === 'cutting' || phase === 'uploading' || phase === 'deleting');
 
   useEffect(() => () => {
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    requestRef.current += 1;
     uploadRef.current?.cancel?.();
   }, []);
 
@@ -116,7 +118,6 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     setTrimStart(0);
     setTrimEnd(0);
     setProgress(0);
-    setRangeNote(false);
     setError('');
     setPhase('idle');
   }
@@ -133,7 +134,12 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   async function onPick(event) {
     const next = event.target.files?.[0];
     event.target.value = '';
-    requestRef.current += 1;
+    if (!next) return;
+    await selectSource(next);
+  }
+
+  async function selectSource(next) {
+    const request = ++requestRef.current;
     uploadRef.current?.cancel?.();
     uploadRef.current = null;
     clearPreview();
@@ -142,7 +148,6 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     setTrimStart(0);
     setTrimEnd(0);
     setProgress(0);
-    setRangeNote(false);
     setError('');
     setPhase('idle');
     if (!next) return;
@@ -155,13 +160,15 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       setError('Nur Videodateien können hochgeladen werden.');
       return;
     }
-    if (!Number.isInteger(next.size) || next.size <= 0 || next.size > 100 * 1024 * 1024) {
-      setError('Das Video ist größer als 100 MB.');
+    if (!Number.isInteger(next.size) || next.size <= 0 || next.size > MAX_SOURCE_VIDEO_BYTES) {
+      setError('Bitte eine Videodatei bis 1 GiB wählen.');
       return;
     }
     setPhase('checking');
     try {
       const seconds = await readDuration(next);
+      if (request !== requestRef.current) return;
+      onVideoSourceChange?.({ file: next });
       const url = URL.createObjectURL(next);
       const trim = initialTrim(seconds);
       previewRef.current = url;
@@ -172,6 +179,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       setTrimEnd(trim.end);
       setPhase('editing');
     } catch (err) {
+      if (request !== requestRef.current) return;
       setError(err.message || 'Die Videodatei konnte nicht gelesen werden.');
       setPhase('idle');
     }
@@ -193,8 +201,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     }
     const request = ++requestRef.current;
     setError('');
-    // Immer neu verpacken (ohne Ton, Index vorn). Klappt das nicht, geht beim
-    // ganzen Video die Originaldatei hoch, beim Ausschnitt clipStart/clipEnd.
+    // Nur die stumme MP4 hochladen; bei fehlgeschlagenem Schnitt abbrechen.
     let cut = null;
     setProgress(0);
     setPrepNote(wholeFile ? 'Video wird vorbereitet …' : 'Clip wird geschnitten …');
@@ -214,7 +221,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       setError(plan.error);
       return;
     }
-    const uploadFile = plan.mode === 'cut' ? plan.file : file;
+    const uploadFile = plan.file;
     const check = validateExerciseVideo({
       exerciseId,
       contentType: contentTypeForFile(uploadFile),
@@ -228,21 +235,20 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       setError(check.error);
       return;
     }
-    setRangeNote(plan.mode === 'range');
     setProgress(0);
     setPhase('uploading');
-    const handle = onUpload({
-      exerciseId,
-      file: uploadFile,
-      durationSeconds: check.duration,
-      clipStart: check.clipStart,
-      clipEnd: check.clipEnd,
-      onProgress: (update) => {
-        if (request === requestRef.current) setProgress(Math.round((update?.ratio || 0) * 100));
-      },
-    });
-    uploadRef.current = handle;
     try {
+      const handle = onUpload({
+        exerciseId,
+        file: uploadFile,
+        durationSeconds: check.duration,
+        clipStart: check.clipStart,
+        clipEnd: check.clipEnd,
+        onProgress: (update) => {
+          if (request === requestRef.current) setProgress(Math.round((update?.ratio || 0) * 100));
+        },
+      });
+      uploadRef.current = handle;
       const result = await handle?.done;
       if (request !== requestRef.current) return;
       if (!result?.exerciseId) throw new Error('Upload fehlgeschlagen. Erneut versuchen.');
@@ -306,8 +312,8 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   return (
     <div className="mt-3" aria-label={`Eigenes Video für ${exerciseName || 'diese Übung'}`}>
       <p className="text-xs mb-2" style={{ color: 'var(--dim)' }}>
-        {mine ? `Dein Video für ${exerciseName}. Neu aufnehmen oder eine andere Datei wählen ersetzt es.` : `Eigenes Video für ${exerciseName}. Kamera oder Galerie, höchstens 100 MB.`}
-        {' '}Danach Anfang und Ende wählen. Der Clip darf höchstens 60 Sekunden lang sein, der Ton wird entfernt.
+        {mine ? `Dein Video für ${exerciseName}. Neu aufnehmen oder eine andere Datei wählen ersetzt es.` : `Eigenes Video für ${exerciseName}. Kamera, Galerie oder Dateien, Quelle bis 1 GiB.`}
+        {' '}Danach Anfang und Ende wählen. Der Clip darf höchstens 60 Sekunden lang sein, höchstens 100 MB haben und wird ohne Ton hochgeladen.
         {!signedIn && ' Dafür anmelden.'}
       </p>
       <div className="flex gap-2">
@@ -318,6 +324,16 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
           {mine ? 'Andere Datei' : 'Aus Galerie'}
         </button>
       </div>
+      <button type="button" className="mt-2 min-h-12 w-full rounded-xl text-sm font-bold" onClick={() => openPicker(filesRef)} disabled={phase === 'deleting'}>Aus Dateien wählen</button>
+      <input ref={filesRef} type="file" accept="video/*,.mp4,.mov" aria-label="Video aus Dateien wählen" style={FILE_INPUT_STYLE} onChange={onPick} />
+      {videoSource?.file && (
+        <div className="mt-2">
+          <p className="text-xs break-all">{videoSource.file.name}</p>
+          <button type="button" className="min-h-12 w-full rounded-xl text-sm font-bold" onClick={() => selectSource(videoSource.file)}>Weiteren Clip schneiden</button>
+          <button type="button" className="min-h-11 w-full text-sm" onClick={() => { discard(); onVideoSourceChange?.(null); }}>Quelldatei freigeben</button>
+          <p className="text-xs" style={{ color: 'var(--dim)' }}>Öffne für den nächsten Clip die gewünschte Übung. Die Quelle bleibt bis zum Kontowechsel oder Schließen der App verfügbar.</p>
+        </div>
+      )}
       <input ref={cameraRef} type="file" accept="video/*" capture="environment" aria-label="Video mit der Kamera aufnehmen" style={FILE_INPUT_STYLE} onChange={onPick} />
       <input ref={galleryRef} type="file" accept="video/*" aria-label="Video aus der Galerie wählen" style={FILE_INPUT_STYLE} onChange={onPick} />
       {mine && typeof onDelete === 'function' && phase !== 'deleted' && (
@@ -341,7 +357,8 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
           end={trimEnd}
           busy={phase === 'cutting' || phase === 'uploading'}
           progress={phase === 'editing' ? null : percent}
-          status={phase === 'cutting' ? prepNote : (rangeNote ? 'Der Ausschnitt wird beim Abspielen verwendet.' : '')}
+          status={phase === 'cutting' ? prepNote : ''}
+          exerciseName={exerciseName}
           error={error}
           onChange={({ start, end }) => { setTrimStart(start); setTrimEnd(end); }}
           onCancel={cancelEditor}

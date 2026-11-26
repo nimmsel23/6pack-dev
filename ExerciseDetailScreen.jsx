@@ -5,7 +5,7 @@ import ExerciseVideoUpload from './ExerciseVideoUpload.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { clipLoopHandlers, exerciseVideoOwnership, resolveExercisePlayback } from './exerciseVideo.js';
 
-export default function ExerciseDetailScreen({ exercise, coaching, item, onBack, backLabel = 'Learn', ownVideos = {}, signedIn = false, uid = '', onUploadExerciseVideo, onDeleteExerciseVideo }) {
+export default function ExerciseDetailScreen({ exercise, coaching, item, onBack, backLabel = 'Learn', ownVideos = {}, signedIn = false, uid = '', videoSource, onVideoSourceChange, onUploadExerciseVideo, onDeleteExerciseVideo }) {
   const heading = useRef(null);
   useEffect(() => { heading.current?.scrollIntoView({ block: 'start' }); heading.current?.focus({ preventScroll: true }); }, []);
   const [overrides] = useState(loadVideoUrls);
@@ -34,7 +34,7 @@ export default function ExerciseDetailScreen({ exercise, coaching, item, onBack,
         {videoUrl && !videoError ? video.kind === 'embed' ? <iframe key={videoUrl} src={videoUrl} title={`Übungsvideo: ${exercise.name}`} className="w-full aspect-video rounded-xl border-0 bg-black" loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture" allowFullScreen /> : <video key={`${videoUrl}:${videoClip?.start ?? ''}:${videoClip?.end ?? ''}`} src={videoUrl} controls muted playsInline loop={!videoClip} preload="metadata" className="w-full aspect-video rounded-xl bg-black object-contain" onError={() => setVideoError(true)} {...clipLoopHandlers(videoClip)} /> : <p className="rounded-xl p-4 text-sm" style={{ background: '#1a1a1a', color: 'var(--dim)' }}>{videoError ? 'Das Video konnte nicht geladen werden.' : 'Für diese Übung ist noch kein Video hinterlegt.'}</p>}
         {playback.source !== 'own' && exercise.videoSource && selectedVideo === exercise.videoUrl && <a className="block mt-2 text-xs underline" style={{ color: 'var(--dim)' }} href={exercise.videoSource} target="_blank" rel="noopener noreferrer">Videoquelle: {exercise.videoAuthor || 'Original ansehen'}</a>}
         {(!videoUrl || videoError) && <a className="block mt-2 text-sm underline" href={`https://www.youtube.com/results?search_query=${encodeURIComponent(`${exercise.name} exercise demonstration ATHLEAN-X`)}`} target="_blank" rel="noopener noreferrer">Übungsvideo suchen</a>}
-        {exercise.id && <ExerciseVideoUpload exerciseId={exercise.id} exerciseName={exercise.name} signedIn={signedIn} ownership={signedIn ? ownership : 'none'} onUpload={onUploadExerciseVideo} onDelete={onDeleteExerciseVideo} />}
+        {exercise.id && <ExerciseVideoUpload key={`${uid}:${exercise.id}`} videoSource={videoSource} onVideoSourceChange={onVideoSourceChange} exerciseId={exercise.id} exerciseName={exercise.name} signedIn={signedIn} ownership={signedIn ? ownership : 'none'} onUpload={onUploadExerciseVideo} onDelete={onDeleteExerciseVideo} />}
       </section>
       <section className="px-4 py-3" aria-label="Ausführung">
         <h2 className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: '#e2001a' }}>Ausführung</h2>

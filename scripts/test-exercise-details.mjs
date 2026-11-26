@@ -143,7 +143,7 @@ states.length = 0;
 cursor = 0;
 const uploadTree = uploadModule.default({ exerciseId: 'jackknifes', exerciseName: 'Jackknifes', signedIn: false, onUpload() { return { done: Promise.resolve() }; } });
 const fileInputs = nodes(uploadTree, node => node.type === 'input' && node.props.type === 'file');
-assert.equal(fileInputs.length, 2);
+assert.equal(fileInputs.length, 3);
 assert.equal(fileInputs.filter(node => node.props.capture === 'environment' && node.props.accept === 'video/*').length, 1);
 assert.equal(fileInputs.filter(node => node.props.accept === 'video/*' && !node.props.capture).length, 1);
 assert(nodes(uploadTree, node => node.type === 'button').some(node => String(node.children).includes('Mit Kamera aufnehmen')));
@@ -152,7 +152,20 @@ nodes(uploadTree, node => node.type === 'button').find(node => String(node.child
 cursor = 0;
 const blocked = uploadModule.default({ exerciseId: 'jackknifes', exerciseName: 'Jackknifes', signedIn: false, onUpload() { return { done: Promise.resolve() }; } });
 assert(nodes(blocked, node => node.props.role === 'alert').some(node => String(node.children).includes('anmelden')));
-console.log('Exercise video upload: camera capture and gallery inputs are on the exercise.');
+
+assert(fileInputs.some(node => node.props['aria-label'] === 'Video aus Dateien wählen'));
+states.length = 0; cursor = 0;
+let released = false;
+const reuseTree = uploadModule.default({
+  exerciseId: 'jackknifes', exerciseName: 'Jackknifes', signedIn: true,
+  videoSource: { file: { name: 'training.mov' } },
+  onVideoSourceChange(value) { released = value === null; },
+});
+assert(nodes(reuseTree, node => node.type === 'button').some(node => String(node.children).includes('Weiteren Clip schneiden')));
+nodes(reuseTree, node => node.type === 'button').find(node => String(node.children).includes('Quelldatei freigeben')).props.onClick();
+assert.equal(released, true);
+console.log('Exercise video upload: camera, gallery, files and reusable source controls passed.');
+
 
 const editorModule = await compile('../ExerciseClipEditor.jsx');
 const trimChanges = [];
@@ -169,6 +182,10 @@ const editor = editorModule.default({
   onCancel() {},
   onUpload() {},
 });
+const timeFields = nodes(editor, node => node.type === 'input' && node.props.type === 'number');
+assert.equal(timeFields.length, 2);
+timeFields[0].props.onChange({ target: { value: '8' } });
+assert.deepEqual(trimChanges.pop(), { start: 8, end: 8.5 });
 const editorButtons = nodes(editor, node => node.type === 'button');
 assert(editorButtons.some(node => String(node.children).includes('Hochladen')));
 assert(editorButtons.some(node => String(node.children).includes('Abbrechen')));

@@ -4,7 +4,7 @@
 // MediaRecorder und captureStream liefern dort oft ein Standbild,
 // WebCodecs-Neukodierung von HEVC ist auf dem Gerät nicht verlässlich.
 // Stattdessen werden die vorhandenen Pakete kopiert (H.264 oder HEVC, auch MOV).
-// Geht das nicht, wirft diese Funktion und der Aufrufer speichert clipStart/clipEnd.
+// Geht das nicht, bricht der Upload ab. Das Original bleibt lokal.
 // Die Tonspur fällt weg: Übungsvideos laufen immer stumm, Gespräche im Studio
 // sollen nicht mit hochgehen, und die Datei wird kleiner.
 
@@ -42,13 +42,14 @@ export async function cutExerciseClip(file, start, end, onProgress) {
     await conversion.execute();
     const buffer = target.buffer;
     if (!buffer || buffer.byteLength <= 0 || buffer.byteLength > MAX_VIDEO_BYTES) throw unavailable();
-    let durationSeconds = Math.max(0, end - start);
+    let durationSeconds;
     const check = new Input({ source: new BufferSource(buffer), formats: [MP4, QTFF] });
     try {
+      const tracks = await check.getTracks();
+      if (tracks.some(track => track.isAudioTrack())) throw unavailable();
       const measured = await check.computeDuration();
       if (Number.isFinite(measured) && measured > 0) durationSeconds = measured;
-    } catch {
-      // Die Auswahl bleibt die Länge, wenn die neue Datei sie nicht nennt.
+      if (!durationSeconds) throw unavailable();
     } finally {
       check.dispose();
     }

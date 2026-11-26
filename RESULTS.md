@@ -1,3 +1,12 @@
+## 2026-11-26 — Mehrere Übungsclips aus einer Quelle
+
+- Kamera, Galerie und Dateien: Quellvideo bis 1 GiB. Die Quelle bleibt als File im App-Sitzungsspeicher für weitere Übungen verfügbar, ohne Cloud-Upload des Originals. „Weiteren Clip schneiden“ und „Quelldatei freigeben“; Kontowechsel verwirft die Quelle und beendet den alten Editor.
+- Genaue Sekundenfelder zusätzlich zu den Griffen, Zielübung im Editor. Jeder Upload bleibt einzeln bestätigt; Clip höchstens 60 s / 100 MiB.
+- Kein Fallback mehr auf Original oder reine Abspielgrenzen. Schnitt/MP4-Verpackung und Tonentfernung müssen erfolgreich sein; die Ausgabe wird auf fehlende Audiospuren geprüft. Paketkopie ohne Neukodierung, Schnittgrenzen abhängig von Schlüsselbildern.
+- Metadaten-Abfrage gegen veraltete Ergebnisse/unmount abgesichert. Wake Lock auch beim Bearbeiten; synchrone Upload-Fehler werden im Editor angezeigt.
+- Video-, Übungsdetail-, Selfie-Cloud-, Embed-/Update-Tests und Build bestanden. Vendor-Check meldet bestehende Abweichung in unverändertem sw-template.js; vendored Dateien nicht angefasst.
+- Kein iPhone-/Drive-/angemeldeter Cloud-Test. Keine direkte Drive-API: Dateizugang über den Systemdialog, sofern das Gerät den Anbieter anbietet. Fitness-Integration und Meta-Pointer nicht geändert.
+
 ## 2026-11-26 — Übungsvideo-Upload: Ersetzen, Entfernen, ohne Ton, Besitzprüfung
 
 - Jede Datei wird vor dem Upload neu verpackt (MP4, Index vorn, Tonspur verworfen), auch das ganze Video. Fallback: Originaldatei bzw. `clipStart`/`clipEnd`.

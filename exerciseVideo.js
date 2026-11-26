@@ -1,6 +1,7 @@
 // Zuordnung und Prüfung eigener Übungsvideos. Kein Firebase, keine Dateien:
 // der Upload und die Rules verwenden dieselben Grenzen.
 
+export const MAX_SOURCE_VIDEO_BYTES = 1024 * 1024 * 1024;
 export const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 export const MAX_VIDEO_SECONDS = 60;
 export const MIN_CLIP_SECONDS = 0.5;
@@ -109,8 +110,7 @@ export function formatTrimSeconds(seconds) {
   return `${roundSeconds(safe).toFixed(1).replace('.', ',')} s`;
 }
 
-// `cut` ist der geschnittene Clip. Ohne ihn bleibt bei einem Video bis 60 Sekunden
-// der Ausschnitt in clipStart/clipEnd. Längere Dateien brauchen den echten Schnitt.
+// Nur die erzeugte stumme Datei darf hochgeladen werden.
 export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}) {
   const duration = asSeconds(durationSeconds);
   const roundedDuration = duration == null ? null : roundSeconds(duration);
@@ -128,7 +128,7 @@ export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}
     clip = normalizeClip(duration, rangeStart, rangeEnd);
     if (clip.error) return { ok: false, error: clip.error };
   }
-  // Auch das ganze Video geht als neu verpackte MP4 hoch, wenn das gelingt:
+  // Auch das ganze Video muss als neu verpackte MP4 vorliegen:
   // ohne Tonspur, Index vorn, damit es sofort abspielt.
   if (cut?.file) {
     const cutDuration = asSeconds(cut.durationSeconds);
@@ -145,18 +145,7 @@ export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}
       durationSeconds: Math.min(roundedCut, MAX_VIDEO_SECONDS),
     };
   }
-  if (duration > MAX_VIDEO_SECONDS) {
-    if (whole) return { ok: false, error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
-    return { ok: false, error: 'Der Clip konnte auf diesem Gerät nicht geschnitten werden. Bitte ein Video bis 60 Sekunden wählen.' };
-  }
-  if (whole) return { ok: true, mode: 'file', clipStart: null, clipEnd: null, durationSeconds: roundedDuration };
-  return {
-    ok: true,
-    mode: 'range',
-    clipStart: clip.start,
-    clipEnd: clip.end,
-    durationSeconds: roundedDuration,
-  };
+  return { ok: false, error: 'Der Clip konnte auf diesem Gerät nicht geschnitten werden. Es wurde nichts hochgeladen. Bitte eine MP4-/MOV-Datei oder einen kürzeren Ausschnitt versuchen.' };
 }
 
 // Wem gehört die Zuordnung der Übung? 'none', 'mine' oder 'other'.

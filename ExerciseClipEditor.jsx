@@ -43,7 +43,7 @@ function TrimHandle({ label, edge, seconds, percent, duration, onDrag, onKey }) 
 
 export default function ExerciseClipEditor({
   url, duration, start, end, busy = false, progress = null, status = '', error = '',
-  onChange, onCancel, onUpload,
+  onChange, onCancel, onUpload, exerciseName,
 }) {
   const videoRef = useRef(null);
   const trackRef = useRef(null);
@@ -137,8 +137,24 @@ export default function ExerciseClipEditor({
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      <video ref={videoRef} src={url} muted playsInline preload="auto" className="min-h-0 w-full flex-1 bg-black object-contain" />
-      <div className="px-4 pt-3 pb-4" style={{ background: '#111' }}>
+      <video ref={videoRef} src={url} muted playsInline preload="metadata" className="min-h-0 w-full flex-1 bg-black object-contain" />
+      <div className="px-4 pt-3 pb-4" style={{ background: '#111', overflowY: 'auto', touchAction: 'pan-y' }}>
+        <p className="text-center text-sm font-bold" style={{ color: '#fff' }}>{exerciseName}</p>
+        <div className="flex gap-2 mt-2">
+          {[['start', 'Anfang', start], ['end', 'Ende', end]].map(([edge, label, value]) => (
+            <label key={edge} className="flex-1 text-xs" style={{ color: '#aaa' }}>{label} (Sekunden)
+              <input type="number" min="0" max={duration} step="0.1" value={value} disabled={busy}
+                className="block min-h-11 w-full rounded-lg px-2" style={{ background: '#222', color: '#fff' }}
+                onChange={event => { if (event.target.value !== '') {
+                  const next = moveTrimHandle(duration, start, end, edge, Number(event.target.value));
+                  onChange(next);
+                  playingRef.current = false;
+                  videoRef.current?.pause?.();
+                  try { if (videoRef.current) videoRef.current.currentTime = next.start; } catch {}
+                } }} />
+            </label>
+          ))}
+        </div>
         <p className="text-center text-sm font-bold" style={{ color: '#fff' }}>
           {formatTrimSeconds(start)} bis {formatTrimSeconds(end)}
           <span style={{ color: '#aaa' }}> · Länge {formatTrimSeconds(Math.max(0, end - start))}</span>

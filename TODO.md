@@ -1,7 +1,10 @@
 # TODO — 6pack-dev
 
+- [x] 2026-11-26: Trainingsvideo bis 1 GiB einmal wählen, in mehreren Übungen wiederverwenden, Zeitfelder und Dateiauswahl; kein Original-Upload-Fallback. Quelle nur im Sitzungsspeicher, beim Kontowechsel verworfen.
+- [ ] iPhone: große MOV-/HEVC-Quelle, mehrere Clips für verschiedene Übungen und Drive über den System-Dateidialog prüfen. 1 GiB ist eine Auswahlgrenze, keine Gerätegarantie.
+
 - [ ] **ELD-35 Stimme:** austauschbare Sprachausgabe, Auswahl und Budget durch Daniel. Keine Umsetzung, bis der Auftrag die Stimme einschließt. Quelle: [ELD-35](https://linear.app/eldanioo/issue/ELD-35). Sichtbar über [Issue #52](https://github.com/nimmsel23/6pack-dev/issues/52).
-- [x] 2026-11-21: Vor dem Upload eines Übungsvideos den Clip im Vollbild wählen (Anfang, Ende, abspielen). Hochgeladen wird der geschnittene Clip; ohne Schnitt auf dem Gerät bleiben `clipStart`/`clipEnd`.
+- [x] 2026-11-21: Vor dem Upload eines Übungsvideos den Clip im Vollbild wählen (Anfang, Ende, abspielen). Hochgeladen wird ausschließlich der geschnittene, stumme Clip; ohne erfolgreichen Schnitt wird abgebrochen.
 - [ ] Coach-Freigabe eigener Übungsvideos (`status: approved`) braucht eine UI; Rules erlauben sie über `isCoach()`.
 - [ ] Geräteprüfung iPhone (Safari, PWA, VitalOS-iframe): Neuverpacken ohne Ton bei ganzer HEVC-MOV, Ersetzen und Entfernen.
 - [ ] Geräteprüfung iPhone (Safari, PWA, VitalOS-iframe): Griff ziehen, Clip abspielen, hochgeladenes Video startet am gewählten Anfang. Der Schnitt ist hier nur mit einem synthetischen MP4 geprüft.
