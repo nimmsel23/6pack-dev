@@ -90,3 +90,5 @@
 
 ## 2026-11-07 — Router (cli)
 - [ ] 6pack: Router-Testeintrag (bitte ignorieren)
+
+- [ ] Gemeinsame Skills-Quelle: VitalOS/Fitness-Hosts umstellen, Skills-Stufen an gemeinsamen Video-Upload anschließen, Browser/iPhone prüfen (skills/MIGRATION.md).

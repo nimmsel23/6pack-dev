@@ -29,3 +29,5 @@ functions/.env*
 functions/.secret*
 .claude/hooks/.fill-docs.lock
 .idea/
+
+dist-skills/

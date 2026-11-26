@@ -164,3 +164,7 @@ Stand 2026-11-09. Ausführlich: `~/vitalos/docs/DEPLOYMENT.md`.
 - Parallel-Branches/Worktrees nur mit Owner-Ausnahme.
 - Default-Branch des Repos ist `master`; die Workflows auf `master` bestimmen das Live-Verhalten.
 <!-- release-weg:end -->
+
+## Gemeinsame Skills-Quelle (2026-11-26)
+
+Skills-Produktcode wird unter skills/ in diesem Repo gepflegt. Root CoreSkills.jsx ist der gemeinsame Host-Einstieg; embed.jsx bleibt SixPackEmbed. `pnpm run build:skills` erzeugt dist-skills/, `pnpm run test:skills` prüft Skills. Datenverträge unverändert; Migration und verbleibende Host-Umstellungen: skills/MIGRATION.md.

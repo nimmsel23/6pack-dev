@@ -1,0 +1,24 @@
+{
+  "apps": {
+    "skills": {
+      "name": "Core Skills",
+      "short": "Core Skills",
+      "description": "Skills-Progression und vollständiges 6Pack-Training mit gemeinsamem Setup",
+      "accent": "#6ec4aa",
+      "register": true,
+      "sw": {
+        "shell": [
+          "./",
+          "./index.html",
+          "./manifest.webmanifest",
+          "./icon-192.png",
+          "./skills-catalog.v1.json",
+          "./datenschutz",
+          "./konto-loeschen"
+        ],
+        "precacheAssets": true,
+        "extraFile": "public/skills-sw.js"
+      }
+    }
+  }
+}

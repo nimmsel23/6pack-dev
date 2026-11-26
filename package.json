@@ -23,7 +23,10 @@
     "test:reminders": "TZ=Europe/Vienna node scripts/test-reminders.mjs",
     "test:calendar": "node scripts/test-calendar-reminders.mjs",
     "test:exercise-video": "node scripts/test-exercise-video.mjs",
-    "test:update": "node --test scripts/test-app-update.mjs"
+    "test:update": "node --test scripts/test-app-update.mjs",
+    "dev:skills": "pnpm run build:data && vite --mode skills",
+    "build:skills": "pnpm run build:data && vite build --mode skills && cd skills && node ../scripts/mini-app-shell/cli.mjs stamp ../dist-skills --app skills",
+    "test:skills": "node scripts/test-skills.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.2",
@@ -36,7 +39,8 @@
     "lucide-react": "^1.73.0",
     "mediabunny": "^1.66.2",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.2",
@@ -47,7 +51,9 @@
     "esbuild": "^0.28.2",
     "postcss": "8.5.33",
     "tailwindcss": "^4.3.5",
-    "vite": "8.3.8"
+    "vite": "8.3.8",
+    "fake-indexeddb": "^6.2.8",
+    "jsdom": "^31.0.0"
   },
   "packageManager": "pnpm@11.3.0",
   "engines": {

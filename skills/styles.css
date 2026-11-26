@@ -1,0 +1,17 @@
+@import "../sixpack.css";
+@import './skills.css';
+
+@import "tailwindcss";
+@config "./tailwind.config.cjs";
+
+html {
+  background: var(--bg, #141413);
+  color: var(--ink, #f4f2ec);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+@source "../*.{js,jsx}";

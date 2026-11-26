@@ -51,3 +51,9 @@ jobs:
 
       - name: In-app update prompt
         run: node --test scripts/test-app-update.mjs
+
+      - name: Shared Skills regressions
+        run: pnpm run test:skills
+
+      - name: Core Skills build
+        run: pnpm run build:skills

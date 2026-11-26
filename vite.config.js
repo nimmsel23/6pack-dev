@@ -50,18 +50,22 @@ function fixRolldownPreloadMarker() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  root: mode === 'skills' ? 'skills' : '.',
+  build: { outDir: mode === 'skills' ? '../dist-skills' : 'dist', emptyOutDir: true },
+  resolve: { dedupe: ['react', 'react-dom', 'firebase'] },
   base: './',
   define: {
     'globalThis.__SIXPACK_BUILD__': JSON.stringify(APP_BUILD),
   },
   plugins: [
     react(),
-    vosChangelog({ appId: 'sixpack', appName: '6Pack', accent: '#f87171' }),
+    vosChangelog(mode === 'skills' ? { appId: 'skills', appName: 'Core Skills', accent: '#6ec4aa' } : { appId: 'sixpack', appName: '6Pack', accent: '#f87171' }),
     fixRolldownPreloadMarker(),
     sixpackVersionJson(APP_BUILD),
+    { name: 'skills-push-worker', generateBundle() { if (mode === 'skills') this.emitFile({ type: 'asset', fileName: 'sixpack-messaging-sw.js', source: readFileSync(new URL('./public/sixpack-messaging-sw.js', import.meta.url), 'utf8') }); } },
   ],
   // Nur Backend-Pfade unter /sixpack/… an den Fitness-Node. Ohne den
   // Schrägstrich fängt der Proxy /sixpackCloud.js ab (502, leere App).
   server: { proxy: { '/sixpack/': `http://127.0.0.1:${process.env.FITNESS_NODE_PORT || 9100}` } },
-});
+}));
