@@ -59,3 +59,11 @@ Builds ersetzen keine angemeldete Browser-/iPhone-Abnahme. Die zusätzliche,
 bisher nicht im Skills-Standardtest enthaltene embed.test.mjs hängt lokal nach
 dem ersten Test; sie wurde deshalb nicht neu zum Standardtest hinzugefügt.
 Die bestehenden CoreSkills-Callback-Tests sind Bestandteil des Standardtests.
+
+## Fitness-Host-Vertrag (2026-11-26)
+
+CoreSkills akzeptiert optional uid, onWorkoutComplete und onClose vom Host.
+Die Host-UID hat Vorrang vor der Standalone-Anzeige; beide Trainingsbereiche
+melden Abschlüsse über denselben Host-Callback. Fehler werden unverändert an
+den Runner weitergegeben. Ohne Host-Callback bleibt der Standalone-Speicherweg.
+Ein übergebenes onClose zeigt die Rückkehr zu Fitness an.

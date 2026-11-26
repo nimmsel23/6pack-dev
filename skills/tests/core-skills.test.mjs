@@ -13,11 +13,11 @@ test('Core Skills keeps all 6Pack callbacks and isolates account controls to Set
   const dom = new JSDOM('<div id="root"></div>', { url: 'https://skills.test/' });
   const previous = Object.fromEntries(['window', 'document', 'location', 'IS_REACT_ACT_ENVIRONMENT'].map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
   for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, location: dom.window.location, IS_REACT_ACT_ENVIRONMENT: true })) Object.defineProperty(globalThis, key, { configurable: true, writable: true, value });
-  let sixpackProps;
+  let sixpackProps, skillsProps;
   const submitWorkout = () => {}, loadProgram = () => {}, saveProgram = () => {}, enableSixpackPush = () => {};
   const deps = {
     react: React,
-    './embed.jsx': { SkillsEmbed: props => React.createElement('div', { 'data-skills': props.route }, 'Skills training') },
+    './embed.jsx': { SkillsEmbed: props => { skillsProps = props; return React.createElement('div', { 'data-skills': props.route }, 'Skills training'); } },
     './PersistenceStatus.jsx': { __esModule: true, default: () => React.createElement('div', { 'data-account': '' }, 'Mit Firestore verbunden') },
     './designs/DesignSwitcher.jsx': { __esModule: true, default: () => null },
     './designs/index.js': { readDesign: () => 'classic', saveDesign() {} },
@@ -54,6 +54,21 @@ test('Core Skills keeps all 6Pack callbacks and isolates account controls to Set
     await go('#front-lever');
     assert.equal(document.querySelector('[data-skills]').dataset.skills, 'front-lever');
     assert.equal(document.querySelectorAll('[data-account]').length, 0);
+    const workouts = [];
+    const complete = async workout => { workouts.push(workout); return { id: workout.runId }; };
+    let closed = 0;
+    const host = { uid: 'fitness-user', onWorkoutComplete: complete, onClose: () => closed++ };
+    await act(async () => root.render(React.createElement(module.exports.default, { ...host, route: 'sixpack/track' })));
+    assert.equal(sixpackProps.uid, 'fitness-user', 'host account wins over standalone subscription');
+    assert.equal(sixpackProps.onWorkoutComplete, complete);
+    assert.deepEqual(await sixpackProps.onWorkoutComplete({ runId: 'sixpack-host' }), { id: 'sixpack-host' });
+    await act(async () => root.render(React.createElement(module.exports.default, { ...host, route: 'front-lever' })));
+    assert.equal(skillsProps.uid, 'fitness-user');
+    assert.equal(skillsProps.onWorkoutComplete, complete);
+    await skillsProps.onWorkoutComplete({ runId: 'skills-host' });
+    assert.deepEqual(workouts.map(w => w.runId), ['sixpack-host', 'skills-host']);
+    await act(async () => document.querySelector('[aria-label="Zurück zu Fitness"]').click());
+    assert.equal(closed, 1);
   } finally {
     await act(async () => root.unmount()); dom.window.close();
     for (const [key, descriptor] of Object.entries(previous)) { if (descriptor) Object.defineProperty(globalThis, key, descriptor); else delete globalThis[key]; }

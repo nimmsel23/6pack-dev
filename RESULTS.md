@@ -587,3 +587,5 @@ Die vendorte Mini-App-Shell mit der aktuellen VitalOS-Quelle synchronisiert. Ein
 ## 2026-11-26 — Skills und 6Pack gemeinsam
 
 - Skills-Quellen aus 72649c10 nach skills/ übernommen, ohne fremden Portal-Diff; Datenverträge erhalten. Root CoreSkills.jsx als direkter Host-Einstieg, separate 6Pack-/Skills-Builds und gemeinsame CI-Prüfung. Details und Downstream-Grenzen in skills/MIGRATION.md.
+
+- 2026-11-26: CoreSkills-Host-Vertrag für Fitness ergänzt: explizite UID, gemeinsamer Abschluss-Callback für Skills/6Pack und Rückkehr zum Host. Regression prüft beide Abschlüsse und Vorrang der Host-UID.
