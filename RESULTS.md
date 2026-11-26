@@ -1,3 +1,7 @@
+## 2026-11-26 — Video-Upload dokumentiert
+
+- `VIDEOUPLOAD.md`: Bedienung mehrerer Clips, Quell-/Upload-Grenzen, Dateizugang/Drive, Verarbeitung ohne Ton und Original-Fallback, Konten, Speicher, Fehlergrenzen und offene iPhone-Prüfung.
+
 ## 2026-11-26 — Mehrere Übungsclips aus einer Quelle
 
 - Kamera, Galerie und Dateien: Quellvideo bis 1 GiB. Die Quelle bleibt als File im App-Sitzungsspeicher für weitere Übungen verfügbar, ohne Cloud-Upload des Originals. „Weiteren Clip schneiden“ und „Quelldatei freigeben“; Kontowechsel verwirft die Quelle und beendet den alten Editor.
