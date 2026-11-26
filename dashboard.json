@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-25T14:56:00+00:00",
+  "generated_at": "2026-11-26T14:25:50+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-24T15:16:31Z",
+   "pushed_at": "2026-11-26T14:19:46Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -21,14 +21,44 @@
    "dev_behind": 0,
    "dev_ahead": 0,
    "oldest_unpromoted": null,
-   "dev_head": "77ca96b 2026-11-24T10:39:27+01:00",
-   "master_head": "77ca96b 2026-11-24T10:39:27+01:00"
+   "dev_head": "66de367 2026-11-26T15:18:49+01:00",
+   "master_head": "66de367 2026-11-26T15:18:49+01:00"
   },
   "work": {
    "branch": "master",
-   "sha": "77ca96b16aed82bcf76b677c08c8da8bb7ba151a"
+   "sha": "66de367cf52ebe2e3ae8e3a655350541d01ed801"
   },
   "commits": [
+   {
+    "sha": "66de367",
+    "date": "2026-11-26T15:18:49+01:00",
+    "author": "Alpha",
+    "subject": "feat: expose Core Skills workout completion to Fitness host"
+   },
+   {
+    "sha": "8337484",
+    "date": "2026-11-26T15:11:31+01:00",
+    "author": "Alpha",
+    "subject": "feat: consolidate Skills source and builds in 6Pack"
+   },
+   {
+    "sha": "a2fb373",
+    "date": "2026-11-26T13:14:08+01:00",
+    "author": "Alpha",
+    "subject": "docs: document exercise video upload workflow and limits"
+   },
+   {
+    "sha": "cd6ed99",
+    "date": "2026-11-26T13:09:59+01:00",
+    "author": "Alpha",
+    "subject": "video: reuse training source for silent exercise clips"
+   },
+   {
+    "sha": "844a3d4",
+    "date": "2026-11-26T12:49:02+01:00",
+    "author": "Alpha",
+    "subject": "video: Ersetzen, Entfernen, ohne Ton, Besitzprüfung vor dem Upload"
+   },
    {
     "sha": "77ca96b",
     "date": "2026-11-24T10:39:27+01:00",
@@ -118,46 +148,12 @@
     "date": "2026-11-23T06:43:35Z",
     "author": "dependabot[bot]",
     "subject": "ci: bump actions/create-github-app-token"
-   },
-   {
-    "sha": "6766e2e",
-    "date": "2026-11-21T20:57:01Z",
-    "author": "Cursor Agent",
-    "subject": "video: Clip vor dem Upload im Vollbild schneiden"
-   },
-   {
-    "sha": "cc36874",
-    "date": "2026-11-21T20:25:56Z",
-    "author": "Cursor Agent",
-    "subject": "layout: volle Viewport-Fläche, keine sichtbare Versionszeile"
-   },
-   {
-    "sha": "4618e60",
-    "date": "2026-11-21T20:12:51Z",
-    "author": "Cursor Agent",
-    "subject": "update: eindringliches Popup, sobald ein neuer Build live ist"
-   },
-   {
-    "sha": "a446ff3",
-    "date": "2026-11-21T20:03:44Z",
-    "author": "Cursor Agent",
-    "subject": "runner: 5s-Pause auch vor und nach 30-/45-s-Blöcken"
-   },
-   {
-    "sha": "285bc9c",
-    "date": "2026-11-21T20:04:52+01:00",
-    "author": "Alpha",
-    "subject": "rules: 6pack deployt keine Rules mehr, Storage-SSOT liegt in vitalos"
    }
   ],
   "activity": [
    {
-    "day": "2026-11-05",
-    "n": 12
-   },
-   {
     "day": "2026-11-06",
-    "n": 12
+    "n": 7
    },
    {
     "day": "2026-11-07",
@@ -234,18 +230,82 @@
    {
     "day": "2026-11-25",
     "n": 0
+   },
+   {
+    "day": "2026-11-26",
+    "n": 5
    }
   ],
   "workflows": [
    {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "master",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:19:48Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837893698",
+    "sha": "66de367"
+   },
+   {
+    "name": "Auto-Promote dev -> master (Check (6Pack))",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:19:36Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837862574",
+    "sha": "8337484"
+   },
+   {
     "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "skipped",
+    "created_at": "2026-11-26T14:19:36Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837862447",
+    "sha": "8337484"
+   },
+   {
+    "name": "Gemini CI Agent",
+    "branch": "master",
+    "event": "workflow_run",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:19:36Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837862429",
+    "sha": "8337484"
+   },
+   {
+    "name": "6Pack deploy (preview + standalone)",
+    "branch": "dev",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:18:54Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837747084",
+    "sha": "66de367"
+   },
+   {
+    "name": "Check (6Pack)",
+    "branch": "dev",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-26T14:18:54Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45837746969",
+    "sha": "66de367"
+   },
+   {
+    "name": "Merge-Agent",
     "branch": "master",
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-25T14:38:38Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45636309686",
-    "sha": "77ca96b"
+    "created_at": "2026-11-26T13:10:23Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45826555450",
+    "sha": "a2fb373"
    },
    {
     "name": "CI-Heilung (rote Läufe wiederholen)",
@@ -253,18 +313,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-25T13:27:08Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45623716559",
-    "sha": "77ca96b"
-   },
-   {
-    "name": "Auto-Promote dev -> master (Check (6Pack))",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T13:09:59Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45620801457",
+    "created_at": "2026-11-26T04:57:43Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45758471186",
     "sha": "77ca96b"
    },
    {
@@ -273,58 +323,8 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-25T12:48:25Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45617305264",
-    "sha": "77ca96b"
-   },
-   {
-    "name": "Merge-Agent",
-    "branch": "master",
-    "event": "schedule",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-25T11:45:07Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45607329590",
-    "sha": "77ca96b"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "master",
-    "event": "workflow_dispatch",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:40:36Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367446004",
-    "sha": "77ca96b"
-   },
-   {
-    "name": "Gemini CI Agent",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:40:10Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367374737",
-    "sha": "2241ce5"
-   },
-   {
-    "name": "Check (6Pack)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:39:30Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367274246",
-    "sha": "77ca96b"
-   },
-   {
-    "name": "6Pack deploy (preview + standalone)",
-    "branch": "dev",
-    "event": "push",
-    "status": "completed",
-    "conclusion": "success",
-    "created_at": "2026-11-24T09:39:30Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45367274112",
+    "created_at": "2026-11-26T04:24:04Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45754962535",
     "sha": "77ca96b"
    }
   ],
