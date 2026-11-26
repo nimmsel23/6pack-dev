@@ -1,3 +1,11 @@
+## 2026-11-26 — Übungsvideo-Upload: Ersetzen, Entfernen, ohne Ton, Besitzprüfung
+
+- Jede Datei wird vor dem Upload neu verpackt (MP4, Index vorn, Tonspur verworfen), auch das ganze Video. Fallback: Originaldatei bzw. `clipStart`/`clipEnd`.
+- Fremde Zuordnung: Client prüft `exerciseVideos/{id}` vor dem Upload und bricht ab; die Übungsansicht blendet den Upload aus. Abgelehntes Dokument nach Erstupload → Datei wird wieder gelöscht (keine Waisen im Bucket).
+- Eigenes Video: „Neu aufnehmen“/„Andere Datei“ ersetzt, „Mein Video entfernen“ mit Bestätigung (Dokument, dann Datei).
+- Screen Wake Lock während Schnitt/Upload/Entfernen. Lernliste markiert und zählt Übungen mit eigenem Video.
+- Tests: `pnpm test:exercise-video` (u. a. Ausgabe hat nur noch die Videospur), `test:embed`, `test:update`, `pnpm build` grün. Nicht auf dem iPhone geprüft; Rules unverändert.
+
 ## 2026-11-23 — Runner überdeckt die Shell-Navigation nicht mehr
 
 - Bug #53: Der Runner ging als Portal auf `document.body` mit `z-index: 100` und lag über der VitalOS-Tab-Leiste (`z-index: 60`).

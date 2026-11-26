@@ -5,7 +5,7 @@ import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { clipLoopHandlers, resolveExercisePlayback } from './exerciseVideo.js';
-import { uploadExerciseVideo, watchExerciseVideos } from './exerciseVideoCloud.js';
+import { deleteExerciseVideo, uploadExerciseVideo, watchExerciseVideos } from './exerciseVideoCloud.js';
 import { cacheVideos, getCachedVideoBlobUrl, isCacheableVideo } from './videoCache.js';
 import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -340,7 +340,7 @@ function EatScreen({ onBack }) {
   );
 }
 
-function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coachingNotes }) {
+function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coachingNotes, ownVideos = {} }) {
   const [query, setQuery] = useState('');
 
   const visibleCore = useMemo(() => {
@@ -379,7 +379,7 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
       </div>
 
       <div className="px-4 pt-2 pb-1 text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: '#e2001a' }}>
-        Core ({visibleCore.length})
+        Core ({visibleCore.length}){CORE_EXERCISES_SORTED.some(ex => ownVideos[ex.id]?.url) && <span style={{ color: 'var(--dim)' }}> · {CORE_EXERCISES_SORTED.filter(ex => ownVideos[ex.id]?.url).length} mit eigenem Video</span>}
       </div>
       <div>
         {visibleCore.map((exercise) => (
@@ -397,6 +397,7 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
                 </div>
               </div>
               <div className="flex items-center gap-1.5 text-[10px] font-bold shrink-0" style={{ color: 'var(--dim)' }}>
+                {ownVideos[exercise.id]?.url && <Video size={13} aria-label="Eigenes Video" style={{ color: '#e2001a' }} />}
                 <BookOpen size={13} />
                 {exercise.verifiedDays.length > 0 ? `Tag ${exercise.verifiedDays.join(', ')}` : 'Pool'}
               </div>
@@ -2019,7 +2020,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} reminderAvailable={reminderAvailable} />}
 
         {screen === 'track' && <TrackScreen program={program} onBack={goHome} onOpenDay={openTrackDay} />}
-        {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={embedded || onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} />}
+        {screen === 'learn' && <LearnScreen onBack={goHome} onOpenSkill={embedded || onSubNav ? openSkill : null} onOpenExercise={openExercise} onOpenNote={openNote} coachingNotes={coachingNotes} ownVideos={ownVideos} />}
         {screen === 'exercise' && (
           <ExerciseDetailScreen
             exercise={SIXPACK_EXERCISE_DETAILS[viewExerciseId] || (viewExerciseItem?.name ? { name: viewExerciseItem.name, focusLabel: 'Core' } : null)}
@@ -2027,7 +2028,9 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
             item={viewExerciseItem}
             ownVideos={ownVideos}
             signedIn={Boolean(uid && uid !== 'local')}
+            uid={uid && uid !== 'local' ? uid : ''}
             onUploadExerciseVideo={uploadExerciseVideo}
+            onDeleteExerciseVideo={deleteExerciseVideo}
             backLabel={exerciseReturnScreen === 'learn' ? storeText('Learn', 'Lernen') : 'Workout'}
             onBack={closeExercise}
           />

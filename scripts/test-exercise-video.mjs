@@ -6,9 +6,11 @@ import {
   buildExerciseVideoRecord,
   clipLoopHandlers,
   contentTypeForFile,
+  exerciseVideoOwnership,
   exerciseVideoStoragePath,
   formatTrimSeconds,
   initialTrim,
+  mapDeleteError,
   mapUploadError,
   moveTrimHandle,
   parseExerciseVideoRecord,
@@ -163,6 +165,28 @@ assert.equal(cutPlan.clipEnd, null);
 assert.equal(cutPlan.durationSeconds, 30);
 assert.equal(cutPlan.file.type, 'video/mp4');
 
+const wholeCut = planExerciseClipUpload({
+  durationSeconds: 12.2,
+  start: 0,
+  end: 12.2,
+  cut: { file: { size: 20, type: 'video/mp4' }, durationSeconds: 12.1 },
+});
+assert.equal(wholeCut.mode, 'cut', 'ganzes Video geht als neu verpackte MP4 hoch');
+assert.equal(wholeCut.durationSeconds, 12.1);
+assert.match(planExerciseClipUpload({ durationSeconds: 12, start: 1, end: 1.2, cut: { file: {}, durationSeconds: 0.2 } }).error, /kurz/);
+
+const videos = { jackknifes: { uploaderUid: 'friend', url: ownUrl } };
+assert.equal(exerciseVideoOwnership({ exerciseId: 'jackknifes', ownVideos: videos, uid: 'friend' }), 'mine');
+assert.equal(exerciseVideoOwnership({ exerciseId: 'jackknifes', ownVideos: videos, uid: 'stranger' }), 'other');
+assert.equal(exerciseVideoOwnership({ exerciseId: 'jackknifes', ownVideos: videos, uid: '' }), 'other');
+assert.equal(exerciseVideoOwnership({ exerciseId: 'plank', ownVideos: videos, uid: 'friend' }), 'none');
+assert.equal(exerciseVideoOwnership({}), 'none');
+
+assert.match(mapUploadError({ code: 'permission-denied' }), /anderen Kontos/);
+assert.match(mapDeleteError({ code: 'exercise-video/taken' }), /anderen Konto/);
+assert.match(mapDeleteError({ code: 'storage/unauthorized' }), /anmelden/);
+assert.equal(mapDeleteError({ message: 'secret token' }), 'Entfernen fehlgeschlagen. Erneut versuchen.');
+
 const storageRules = readFileSync(new URL('../storage.exercise-videos.rules', import.meta.url), 'utf8');
 const firestoreRules = readFileSync(new URL('../firestore.exercise-videos.rules', import.meta.url), 'utf8');
 const cloud = readFileSync(new URL('../exerciseVideoCloud.js', import.meta.url), 'utf8');
@@ -199,6 +223,9 @@ assert.match(firestoreRules, /Nicht allein deployen/);
 assert.match(cloud, /exerciseVideoStoragePath\(exerciseId,\s*uid\)/);
 assert.match(cloud, /customMetadata:\s*\{\s*uploaderUid:\s*uid\s*\}/);
 assert.doesNotMatch(cloud, /newVideoFileId/);
+assert.match(cloud, /exercise-video\/taken/, 'fremde Zuordnung wird vor dem Upload erkannt');
+assert.match(cloud, /if \(!previousUid\) await deleteObject/, 'verwaiste Datei wird nach abgelehntem Dokument entfernt');
+assert.match(cloud, /export async function deleteExerciseVideo/);
 
 const sample = new File(
   [readFileSync(new URL('./fixtures/trim-sample.mp4', import.meta.url))],
@@ -210,6 +237,16 @@ assert.equal(cut.file.type, 'video/mp4');
 assert.equal(cut.file.name, 'clip.mp4');
 assert.ok(cut.file.size > 500 && cut.file.size < sample.size, `cut size ${cut.file.size}`);
 assert.ok(cut.durationSeconds > 1.1 && cut.durationSeconds < 1.8, `cut duration ${cut.durationSeconds}`);
+{
+  const { Input, BufferSource, MP4, QTFF } = await import('mediabunny');
+  const probe = new Input({ source: new BufferSource(await cut.file.arrayBuffer()), formats: [MP4, QTFF] });
+  const tracks = await probe.getTracks();
+  probe.dispose();
+  assert.deepEqual(tracks.map((track) => track.type), ['video'], 'Tonspur wird verworfen');
+}
+const wholeRemux = await cutExerciseClip(sample, 0, 3);
+assert.equal(wholeRemux.file.type, 'video/mp4');
+assert.ok(wholeRemux.durationSeconds > 2.5 && wholeRemux.durationSeconds <= 3.05, `whole duration ${wholeRemux.durationSeconds}`);
 await assert.rejects(cutExerciseClip(new File(['kein video'], 'notes.txt', { type: 'text/plain' }), 0, 1));
 
 console.log('Exercise video mapping: validation, path, clip, trim and rules limits passed.');

@@ -52,7 +52,31 @@ function readDuration(file) {
   });
 }
 
-export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload }) {
+// Bildschirm bleibt an, solange geschnitten, hochgeladen oder entfernt wird:
+// geht er aus, pausiert iOS die Seite und der Upload hängt.
+function useWakeLock(active) {
+  useEffect(() => {
+    if (!active || typeof navigator === 'undefined' || !navigator.wakeLock?.request) return undefined;
+    let lock = null;
+    let stopped = false;
+    const acquire = () => {
+      if (stopped || document.visibilityState !== 'visible') return;
+      navigator.wakeLock.request('screen').then((next) => {
+        if (stopped) next.release?.().catch(() => {});
+        else lock = next;
+      }).catch(() => {});
+    };
+    acquire();
+    document.addEventListener('visibilitychange', acquire);
+    return () => {
+      stopped = true;
+      document.removeEventListener('visibilitychange', acquire);
+      lock?.release?.().catch(() => {});
+    };
+  }, [active]);
+}
+
+export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload, ownership = 'none', onDelete }) {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const previewRef = useRef('');
@@ -67,6 +91,9 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   const [progress, setProgress] = useState(0);
   const [rangeNote, setRangeNote] = useState(false);
   const [error, setError] = useState('');
+  const [prepNote, setPrepNote] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  useWakeLock(phase === 'cutting' || phase === 'uploading' || phase === 'deleting');
 
   useEffect(() => () => {
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
@@ -99,6 +126,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       setError('Bitte anmelden, um ein Übungsvideo hochzuladen.');
       return;
     }
+    setConfirmDelete(false);
     input.current?.click();
   }
 
@@ -165,18 +193,19 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     }
     const request = ++requestRef.current;
     setError('');
+    // Immer neu verpacken (ohne Ton, Index vorn). Klappt das nicht, geht beim
+    // ganzen Video die Originaldatei hoch, beim Ausschnitt clipStart/clipEnd.
     let cut = null;
-    if (!wholeFile) {
-      setProgress(0);
-      setPhase('cutting');
-      try {
-        const { cutExerciseClip } = await import('./exerciseClipCut.js');
-        cut = await cutExerciseClip(file, trimStart, trimEnd, (ratio) => {
-          if (request === requestRef.current) setProgress(Math.round((ratio || 0) * 100));
-        });
-      } catch {
-        cut = null;
-      }
+    setProgress(0);
+    setPrepNote(wholeFile ? 'Video wird vorbereitet …' : 'Clip wird geschnitten …');
+    setPhase('cutting');
+    try {
+      const { cutExerciseClip } = await import('./exerciseClipCut.js');
+      cut = await cutExerciseClip(file, wholeFile ? 0 : trimStart, wholeFile ? duration : trimEnd, (ratio) => {
+        if (request === requestRef.current) setProgress(Math.round((ratio || 0) * 100));
+      });
+    } catch {
+      cut = null;
     }
     if (request !== requestRef.current) return;
     const plan = planExerciseClipUpload({ durationSeconds: duration, start: trimStart, end: trimEnd, cut });
@@ -235,6 +264,26 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     }
   }
 
+  async function removeVideo() {
+    if (typeof onDelete !== 'function') return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      return;
+    }
+    const request = ++requestRef.current;
+    setConfirmDelete(false);
+    setError('');
+    setPhase('deleting');
+    try {
+      await onDelete(exerciseId);
+      if (request === requestRef.current) setPhase('deleted');
+    } catch (err) {
+      if (request !== requestRef.current) return;
+      setPhase('idle');
+      setError(err?.message || 'Entfernen fehlgeschlagen. Erneut versuchen.');
+    }
+  }
+
   function cancelEditor() {
     if (phase === 'uploading') {
       uploadRef.current?.cancel?.();
@@ -243,25 +292,46 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     discard();
   }
 
+  if (ownership === 'other') {
+    return (
+      <p className="text-xs mt-3" style={{ color: 'var(--dim)' }}>
+        Für {exerciseName || 'diese Übung'} hat schon ein anderes Konto ein Video hinterlegt.
+      </p>
+    );
+  }
+
+  const mine = ownership === 'mine';
   const editing = file && duration != null && (phase === 'editing' || phase === 'cutting' || phase === 'uploading');
   const percent = Math.max(0, Math.min(100, progress));
   return (
     <div className="mt-3" aria-label={`Eigenes Video für ${exerciseName || 'diese Übung'}`}>
       <p className="text-xs mb-2" style={{ color: 'var(--dim)' }}>
-        Eigenes Video für {exerciseName}. Kamera oder Galerie, höchstens 100 MB.
-        Danach Anfang und Ende wählen. Der Clip darf höchstens 60 Sekunden lang sein.
+        {mine ? `Dein Video für ${exerciseName}. Neu aufnehmen oder eine andere Datei wählen ersetzt es.` : `Eigenes Video für ${exerciseName}. Kamera oder Galerie, höchstens 100 MB.`}
+        {' '}Danach Anfang und Ende wählen. Der Clip darf höchstens 60 Sekunden lang sein, der Ton wird entfernt.
         {!signedIn && ' Dafür anmelden.'}
       </p>
       <div className="flex gap-2">
-        <button type="button" className="min-h-12 flex-1 rounded-xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }} onClick={() => openPicker(cameraRef)}>
-          Mit Kamera aufnehmen
+        <button type="button" className="min-h-12 flex-1 rounded-xl text-sm font-black" style={{ background: '#e2001a', color: '#fff' }} onClick={() => openPicker(cameraRef)} disabled={phase === 'deleting'}>
+          {mine ? 'Neu aufnehmen' : 'Mit Kamera aufnehmen'}
         </button>
-        <button type="button" className="min-h-12 flex-1 rounded-xl text-sm font-black" style={{ background: 'var(--bg2, #1a1a1a)', color: 'var(--text, #fff)', border: '1px solid var(--line, #333)' }} onClick={() => openPicker(galleryRef)}>
-          Aus Galerie
+        <button type="button" className="min-h-12 flex-1 rounded-xl text-sm font-black" style={{ background: 'var(--bg2, #1a1a1a)', color: 'var(--text, #fff)', border: '1px solid var(--line, #333)' }} onClick={() => openPicker(galleryRef)} disabled={phase === 'deleting'}>
+          {mine ? 'Andere Datei' : 'Aus Galerie'}
         </button>
       </div>
       <input ref={cameraRef} type="file" accept="video/*" capture="environment" aria-label="Video mit der Kamera aufnehmen" style={FILE_INPUT_STYLE} onChange={onPick} />
       <input ref={galleryRef} type="file" accept="video/*" aria-label="Video aus der Galerie wählen" style={FILE_INPUT_STYLE} onChange={onPick} />
+      {mine && typeof onDelete === 'function' && phase !== 'deleted' && (
+        <div className="mt-2 flex gap-2">
+          <button type="button" className="min-h-11 flex-1 rounded-xl text-sm font-bold" style={{ background: 'transparent', color: confirmDelete ? '#e2001a' : 'var(--dim)', border: `1px solid ${confirmDelete ? '#e2001a' : 'var(--line, #333)'}` }} onClick={removeVideo} disabled={phase === 'deleting'}>
+            {phase === 'deleting' ? 'Wird entfernt …' : confirmDelete ? 'Wirklich entfernen' : 'Mein Video entfernen'}
+          </button>
+          {confirmDelete && (
+            <button type="button" className="min-h-11 flex-1 rounded-xl text-sm font-bold" style={{ background: 'transparent', color: 'var(--text, #fff)', border: '1px solid var(--line, #333)' }} onClick={() => setConfirmDelete(false)}>
+              Behalten
+            </button>
+          )}
+        </div>
+      )}
       {phase === 'checking' && <p className="text-xs mt-2" style={{ color: 'var(--dim)' }}>Video wird geprüft …</p>}
       {editing && (
         <ExerciseClipEditor
@@ -271,7 +341,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
           end={trimEnd}
           busy={phase === 'cutting' || phase === 'uploading'}
           progress={phase === 'editing' ? null : percent}
-          status={phase === 'cutting' ? 'Clip wird geschnitten …' : (rangeNote ? 'Der Ausschnitt wird beim Abspielen verwendet.' : '')}
+          status={phase === 'cutting' ? prepNote : (rangeNote ? 'Der Ausschnitt wird beim Abspielen verwendet.' : '')}
           error={error}
           onChange={({ start, end }) => { setTrimStart(start); setTrimEnd(end); }}
           onCancel={cancelEditor}
@@ -279,6 +349,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
         />
       )}
       {phase === 'done' && <p className="text-sm mt-3" role="status">Video ist dieser Übung zugeordnet.</p>}
+      {phase === 'deleted' && <p className="text-sm mt-3" role="status">Dein Video ist entfernt. Es läuft wieder das Standardvideo.</p>}
       {error && phase !== 'editing' && phase !== 'cutting' && phase !== 'uploading' && (
         <p className="text-sm mt-2" role="alert" style={{ color: '#e2001a' }}>{error}</p>
       )}

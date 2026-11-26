@@ -122,14 +122,14 @@ export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}
   if (rangeStart == null || rangeEnd == null) {
     return { ok: false, error: 'Start und Ende müssen Sekunden sein.' };
   }
-  if (trimCoversFile(duration, rangeStart, rangeEnd)) {
-    if (duration > MAX_VIDEO_SECONDS) {
-      return { ok: false, error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
-    }
-    return { ok: true, mode: 'file', clipStart: null, clipEnd: null, durationSeconds: roundedDuration };
+  const whole = trimCoversFile(duration, rangeStart, rangeEnd);
+  let clip = { start: null, end: null };
+  if (!whole) {
+    clip = normalizeClip(duration, rangeStart, rangeEnd);
+    if (clip.error) return { ok: false, error: clip.error };
   }
-  const clip = normalizeClip(duration, rangeStart, rangeEnd);
-  if (clip.error) return { ok: false, error: clip.error };
+  // Auch das ganze Video geht als neu verpackte MP4 hoch, wenn das gelingt:
+  // ohne Tonspur, Index vorn, damit es sofort abspielt.
   if (cut?.file) {
     const cutDuration = asSeconds(cut.durationSeconds);
     const roundedCut = cutDuration == null ? null : roundSeconds(cutDuration);
@@ -146,8 +146,10 @@ export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}
     };
   }
   if (duration > MAX_VIDEO_SECONDS) {
+    if (whole) return { ok: false, error: 'Der Ausschnitt darf höchstens 60 Sekunden lang sein.' };
     return { ok: false, error: 'Der Clip konnte auf diesem Gerät nicht geschnitten werden. Bitte ein Video bis 60 Sekunden wählen.' };
   }
+  if (whole) return { ok: true, mode: 'file', clipStart: null, clipEnd: null, durationSeconds: roundedDuration };
   return {
     ok: true,
     mode: 'range',
@@ -155,6 +157,14 @@ export function planExerciseClipUpload({ durationSeconds, start, end, cut } = {}
     clipEnd: clip.end,
     durationSeconds: roundedDuration,
   };
+}
+
+// Wem gehört die Zuordnung der Übung? 'none', 'mine' oder 'other'.
+// Ein fremdes Konto kann sie laut Rules weder anlegen noch ändern.
+export function exerciseVideoOwnership({ exerciseId, ownVideos, uid } = {}) {
+  const record = exerciseId && ownVideos ? ownVideos[exerciseId] : null;
+  if (!record) return 'none';
+  return typeof uid === 'string' && uid && record.uploaderUid === uid ? 'mine' : 'other';
 }
 
 export function contentTypeForFile(file) {
@@ -282,6 +292,9 @@ export function mapUploadError(error) {
     return 'Bitte anmelden und erneut versuchen.';
   }
   if (code === 'storage/quota-exceeded') return 'Der Speicher ist voll.';
+  if (code === 'permission-denied' || code === 'firestore/permission-denied') {
+    return 'Keine Berechtigung: Für diese Übung ist schon ein Video eines anderen Kontos hinterlegt.';
+  }
   if (code === 'storage/retry-limit-exceeded') return 'Das Netz hat den Upload unterbrochen. Erneut versuchen.';
   const message = String(error?.message || '');
   if (code === 'storage/bucket-not-found' || /bucket|not found/i.test(message)) {
@@ -289,4 +302,18 @@ export function mapUploadError(error) {
   }
   if (message && message.length < 180 && !/key|token|secret/i.test(message)) return message;
   return 'Upload fehlgeschlagen. Erneut versuchen.';
+}
+
+export function mapDeleteError(error) {
+  const code = error?.code || '';
+  if (code === 'storage/unauthenticated' || code === 'storage/unauthorized' || code === 'unauthenticated') {
+    return 'Bitte anmelden und erneut versuchen.';
+  }
+  if (code === 'exercise-video/taken' || code === 'permission-denied' || code === 'firestore/permission-denied') {
+    return 'Dieses Video gehört einem anderen Konto.';
+  }
+  if (code === 'unavailable' || code === 'storage/retry-limit-exceeded') {
+    return 'Kein Netz. Entfernen später erneut versuchen.';
+  }
+  return 'Entfernen fehlgeschlagen. Erneut versuchen.';
 }

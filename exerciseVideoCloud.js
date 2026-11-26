@@ -3,14 +3,15 @@
 
 import { getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getFirestore, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { collection, deleteDoc, doc, getDoc, getFirestore, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { config } from './firebaseConfig.js';
 import {
   EXERCISE_VIDEO_COLLECTION,
   buildExerciseVideoRecord,
   contentTypeForFile,
   exerciseVideoStoragePath,
+  mapDeleteError,
   mapUploadError,
   parseExerciseVideoRecord,
 } from './exerciseVideo.js';
@@ -44,7 +45,8 @@ export function watchExerciseVideos(onChange) {
         const url = await getDownloadURL(ref(live.storage, record.storagePath));
         return [record.exerciseId, { ...record, url }];
       } catch {
-        return null;
+        // Ohne URL spielt der Fallback; die Zuordnung bleibt für die Besitzprüfung.
+        return [record.exerciseId, { ...record, url: '' }];
       }
     })).then((entries) => {
       if (mine !== ticket) return;
@@ -97,6 +99,16 @@ export function uploadExerciseVideo({
       error.code = 'storage/unauthenticated';
       throw error;
     }
+    // Vor dem Upload: gehört die Zuordnung schon einem anderen Konto, lehnen
+    // die Rules das Dokument ab. Dann gar nicht erst hochladen.
+    const docRef = doc(live.db, EXERCISE_VIDEO_COLLECTION, exerciseId);
+    const existing = await getDoc(docRef).catch(() => null);
+    const previousUid = existing?.exists?.() ? existing.data()?.uploaderUid : null;
+    if (previousUid && previousUid !== uid) {
+      const error = new Error('Für diese Übung hat schon ein anderes Konto ein Video hinterlegt.');
+      error.code = 'exercise-video/taken';
+      throw error;
+    }
     const storagePath = exerciseVideoStoragePath(exerciseId, uid);
     const built = buildExerciseVideoRecord({
       exerciseId,
@@ -120,7 +132,14 @@ export function uploadExerciseVideo({
     });
     await waitForTask(task, onProgress);
     const payload = { ...built.data, createdAt: serverTimestamp() };
-    await setDoc(doc(live.db, EXERCISE_VIDEO_COLLECTION, exerciseId), payload);
+    try {
+      await setDoc(docRef, payload);
+    } catch (error) {
+      // Neue Datei ohne Zuordnung nicht liegen lassen. Eine ersetzte Datei
+      // bleibt, die bisherige Zuordnung zeigt weiter auf denselben Pfad.
+      if (!previousUid) await deleteObject(task.snapshot.ref).catch(() => {});
+      throw error;
+    }
     const url = await getDownloadURL(task.snapshot.ref);
     return { exerciseId, url, status: 'pending', storagePath };
   })().catch((error) => {
@@ -135,4 +154,43 @@ export function uploadExerciseVideo({
       try { task?.cancel(); } catch { /* Der Task ist schon fertig. */ }
     },
   };
+}
+
+// Entfernt die eigene Zuordnung und die Datei. Erst das Dokument, damit
+// Detailansicht und Runner sofort zum Fallback zurückkehren.
+export async function deleteExerciseVideo(exerciseId) {
+  try {
+    const live = services();
+    if (!live) {
+      const error = new Error('Firebase ist in dieser Ansicht nicht bereit.');
+      error.code = 'storage/unauthenticated';
+      throw error;
+    }
+    if (live.auth.authStateReady) await live.auth.authStateReady();
+    const uid = live.auth.currentUser?.uid;
+    const storagePath = uid ? exerciseVideoStoragePath(exerciseId, uid) : null;
+    if (!storagePath) {
+      const error = new Error('Bitte anmelden und erneut versuchen.');
+      error.code = 'storage/unauthenticated';
+      throw error;
+    }
+    const docRef = doc(live.db, EXERCISE_VIDEO_COLLECTION, exerciseId);
+    const existing = await getDoc(docRef);
+    if (existing.exists()) {
+      if (existing.data()?.uploaderUid !== uid) {
+        const error = new Error('Dieses Video gehört einem anderen Konto.');
+        error.code = 'exercise-video/taken';
+        throw error;
+      }
+      await deleteDoc(docRef);
+    }
+    await deleteObject(ref(live.storage, storagePath)).catch((error) => {
+      if (error?.code !== 'storage/object-not-found') throw error;
+    });
+    return { exerciseId };
+  } catch (error) {
+    const wrapped = new Error(mapDeleteError(error));
+    wrapped.code = error?.code || 'exercise-video/failed';
+    throw wrapped;
+  }
 }

@@ -90,6 +90,25 @@ Zuordnung bleibt der bisherige Fallback. Storage- und Firestore-Rules sind
 seit 2026-11-21 live. Der Bucket
 `fitness-aos.firebasestorage.app` existiert (Stand 2026-11-21).
 
+### Ersetzen, Entfernen, Besitz (2026-11-26)
+
+- Jede Datei wird vor dem Upload mit mediabunny neu verpackt (MP4, Index vorn,
+  **ohne Tonspur**), auch wenn das ganze Video gewählt ist. Gelingt das nicht,
+  geht beim ganzen Video die Originaldatei hoch, beim Ausschnitt
+  `clipStart`/`clipEnd`.
+- Vor dem Upload liest der Client `exerciseVideos/{exerciseId}`. Gehört die
+  Zuordnung einem anderen Konto, bricht er ab (`exercise-video/taken`), statt
+  eine Datei hochzuladen, die die Rules danach ablehnen. Die Übungsansicht
+  blendet den Upload dann aus und nennt das andere Konto als Quelle.
+- Lehnen die Rules das neue Dokument trotzdem ab, löscht der Client die eben
+  hochgeladene Datei wieder (nur bei Erstanlage).
+- Das eigene Video zeigt „Neu aufnehmen“ / „Andere Datei“ (ersetzt es) und
+  „Mein Video entfernen“ mit Bestätigung: erst das Dokument, dann die Datei.
+- Während Schnitt, Upload und Entfernen hält ein Screen Wake Lock den
+  Bildschirm an.
+- Die Lernliste markiert Übungen mit eigenem Video und zählt sie.
+- Rules unverändert; Freigabe (`approved`) durch den Coach hat noch keine UI.
+
 ## Prüfung
 
 Regressionstests prüfen Listen-Navigation, Rückkehr, unveränderten Shuffle,

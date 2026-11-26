@@ -5,6 +5,8 @@
 // WebCodecs-Neukodierung von HEVC ist auf dem Gerät nicht verlässlich.
 // Stattdessen werden die vorhandenen Pakete kopiert (H.264 oder HEVC, auch MOV).
 // Geht das nicht, wirft diese Funktion und der Aufrufer speichert clipStart/clipEnd.
+// Die Tonspur fällt weg: Übungsvideos laufen immer stumm, Gespräche im Studio
+// sollen nicht mit hochgehen, und die Datei wird kleiner.
 
 import { MAX_VIDEO_BYTES } from './exerciseVideo.js';
 
@@ -29,6 +31,7 @@ export async function cutExerciseClip(file, start, end, onProgress) {
       input,
       output,
       tracks: 'primary',
+      audio: { discard: true },
       trim: { start, end },
       copy: { mode: 'forced', boundaryPolicy: 'expand', shiftTolerance: 0 },
       showWarnings: false,
