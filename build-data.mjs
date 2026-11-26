@@ -85,12 +85,20 @@ function buildExercises() {
       ...(ex.video_url ? { videoUrl: ex.video_url } : {}),
     };
     coaching[ex.id] = {
-      coachingNotes: ex.coaching_notes || [],
-      commonErrors: ex.common_errors || [],
+      coachingNotes: textList(ex, 'coaching_notes'),
+      commonErrors: textList(ex, 'common_errors'),
       equipment: ex.equipment || [],
     };
   }
   return { exercises, coaching };
+}
+
+// Ein unquotierter YAML-Text mit ": " wird zum Objekt und lässt React abstürzen.
+function textList(ex, key) {
+  const list = ex[key] || [];
+  const bad = list.find(item => typeof item !== 'string');
+  if (bad !== undefined) throw new Error(`${ex.id}.${key}: Eintrag ist kein Text (YAML-Text mit ": " in Anführungszeichen setzen): ${JSON.stringify(bad)}`);
+  return list;
 }
 
 function buildWorkouts(exercises) {
