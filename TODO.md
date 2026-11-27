@@ -101,3 +101,10 @@
 - [ ] Gemeinsame Skills-Quelle: VitalOS/Fitness-Hosts umstellen, Skills-Stufen an gemeinsamen Video-Upload anschließen, Browser/iPhone prüfen (skills/MIGRATION.md).
 
 - [x] Video-Control auf Coach :9150/videos/ ausliefern; vorhandene Clips über Start/Ende nachbearbeiten.
+
+## 2026-11-27 — Video-Control: Workout-One-Take und Clip-Produktion
+
+- [ ] Ganzes Workout als langes One-Take-Quellvideo hochladen und im lokalen Coach-/Fitness-Video-Control auf :9150 verwalten. Quellvideo separat von den kurzen Übungsvideos speichern und erhalten; das bisherige 60-Sekunden-Limit gilt für Übungsclips, nicht für das Workout-Original. Größenlimits, Upload-Fortschritt und Wiederaufnahme für lange Dateien berücksichtigen.
+- [ ] Aus einem Quellvideo mehrere Clips anlegen: Start/Ende auf der Timeline markieren, Vorschau abspielen, Zielübung auswählen und echte eigenständige Videodateien extrahieren. Mehrere Bereiche derselben Aufnahme unterschiedlichen Exercises zuordnen; Herkunft und Zeitbereiche erhalten, bestehende Übungsvideos nur bewusst ersetzen. Gemeinsame Upload-/Medienauflösung für Standalone und eingebettete App weiterverwenden.
+- [ ] Optional KI-gestützte Clip-Vorschläge evaluieren: Übungen und Wiederholungen erkennen, brauchbare Ausschnitte mit Start/Ende und Übungszuordnung vorschlagen. Manuell prüfen/korrigieren und erst ausdrücklich als Übungsvideos übernehmen; Anbieter, Kosten und Umgang mit privaten Aufnahmen vor Umsetzung klären.
+- [ ] Forschungs-/Ideenpunkt: Aus eigenen Videos Bewegungsanimationen erstellen (z. B. Pose/Skelett oder Avatar). Machbarkeit, Bewegungstreue und Aufwand prüfen; zunächst ein bewusst ausgewählter Beispielclip, kein automatisches Ersetzen der Originalvideos.
