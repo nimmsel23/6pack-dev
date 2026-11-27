@@ -6,7 +6,8 @@ const uploads = [];
 const originalTimestamp = { seconds: 12345 };
 let existing = { exists: () => true, data: () => ({ uploaderUid: 'owner', createdAt: originalTimestamp }) };
 globalThis.__videoControlCloudTest = {
-  getApps: () => [{ name: '[DEFAULT]' }],
+  getApps: () => [{ name: '[DEFAULT]' }], getApp: () => ({}),
+  updateDoc: async (_, data) => writes.push(data),
   getAuth: () => ({ currentUser: { uid: 'owner' }, authStateReady: async () => {} }),
   getFirestore: () => ({}), getStorage: () => ({}), doc: (...parts) => parts, ref: (...parts) => parts,
   getDoc: async () => existing,
@@ -22,8 +23,8 @@ const compiled = await build({ entryPoints: ['exerciseVideoCloud.js'], bundle: t
   builder.onResolve({ filter: /^firebase\// }, args => ({ path: args.path, namespace: 'fake' }));
   builder.onLoad({ filter: /.*/, namespace: 'fake' }, args => {
     const names = {
-      'firebase/app': ['getApps'], 'firebase/auth': ['getAuth'],
-      'firebase/firestore': ['collection', 'deleteDoc', 'doc', 'getDoc', 'getFirestore', 'onSnapshot', 'serverTimestamp', 'setDoc'],
+      'firebase/app': ['getApps', 'getApp'], 'firebase/auth': ['getAuth'],
+      'firebase/firestore': ['collection', 'deleteDoc', 'doc', 'getDoc', 'getFirestore', 'onSnapshot', 'serverTimestamp', 'setDoc', 'updateDoc'],
       'firebase/storage': ['deleteObject', 'getDownloadURL', 'getStorage', 'ref', 'uploadBytesResumable'],
     }[args.path];
     return { contents: names.map(name => `export const ${name} = (...args) => globalThis.__videoControlCloudTest.${name}(...args);`).join('\n') };
@@ -48,3 +49,24 @@ await assert.rejects(cancelled.done, { code: 'storage/canceled' });
 assert.equal(uploads.length, 2, 'Cancel during ownership check must not start a transfer');
 assert.equal(writes.length, 2);
 console.log('Video-Control cloud: replacement timestamp, new upload timestamp and pre-transfer cancellation passed.');
+
+// Exercise the actual panel write adapter: range validation, ownership, narrow update.
+const panelBuild = await build({ entryPoints: ['video-control/cloud.js'], bundle: true, write: false, format: 'cjs', platform: 'node', plugins: [{ name: 'fake-panel-firebase', setup(builder) {
+  builder.onResolve({ filter: /^firebase\// }, args => ({ path: args.path, namespace: 'fake' }));
+  builder.onLoad({ filter: /.*/, namespace: 'fake' }, args => {
+    const names = { 'firebase/app': ['getApp'], 'firebase/auth': ['getAuth'],
+      'firebase/firestore': ['collection', 'doc', 'getDoc', 'getFirestore', 'onSnapshot', 'updateDoc'],
+      'firebase/storage': ['getDownloadURL', 'getStorage', 'ref'] }[args.path];
+    return { contents: names.map(name => `export const ${name} = (...args) => globalThis.__videoControlCloudTest.${name}(...args);`).join('\n') };
+  });
+} }] });
+const panel = { exports: {} };
+vm.runInThisContext(`(function(module, exports) { ${panelBuild.outputFiles[0].text}\n})`)(panel, panel.exports);
+const own = { id: 'jackknifes', uploaderUid: 'owner', duration: 20 };
+await panel.exports.setVideoClip(own, 2, 12);
+assert.deepEqual(writes.at(-1), { clipStart: 2, clipEnd: 12 });
+const count = writes.length;
+await assert.rejects(panel.exports.setVideoClip(own, 2, 25), /außerhalb/);
+await assert.rejects(panel.exports.setVideoClip({ ...own, uploaderUid: 'other' }, 2, 12), /eigene/);
+assert.equal(writes.length, count);
+console.log('Video-Control trim: range validation, ownership and metadata-only write passed.');

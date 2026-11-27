@@ -43,7 +43,7 @@ function TrimHandle({ label, edge, seconds, percent, duration, onDrag, onKey }) 
 
 export default function ExerciseClipEditor({
   url, duration, start, end, busy = false, progress = null, status = '', error = '',
-  onChange, onCancel, onUpload, exerciseName,
+  onChange, onCancel, onUpload, exerciseName, submitLabel = 'Hochladen',
 }) {
   const videoRef = useRef(null);
   const trackRef = useRef(null);
@@ -202,7 +202,7 @@ export default function ExerciseClipEditor({
             Abbrechen
           </button>
           <button type="button" className="min-h-12 flex-1 rounded-xl text-base font-black" style={{ background: '#e2001a', color: '#fff' }} onClick={onUpload} disabled={busy}>
-            {busy ? 'Wird verarbeitet …' : 'Hochladen'}
+            {busy ? 'Wird verarbeitet …' : submitLabel}
           </button>
         </div>
       </div>

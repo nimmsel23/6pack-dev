@@ -4,8 +4,9 @@ import { RefreshCw, Video, ExternalLink, Check, Trash2 } from 'lucide-react';
 import { loginEmail, loginGoogle, logoutPhotos, watchPhotoUser } from '../photoAuth.js';
 import { deleteExerciseVideo, uploadExerciseVideo } from '../exerciseVideoCloud.js';
 import ExerciseVideoUpload from '../ExerciseVideoUpload.jsx';
+import ExerciseClipEditor from '../ExerciseClipEditor.jsx';
 import { SIXPACK_EXERCISE_DETAILS } from '../sixpackData.generated.js';
-import { canManageTeam, setVideoStatus, videoUrl, watchVideos } from './cloud.js';
+import { canManageTeam, setVideoStatus, setVideoClip, videoUrl, watchVideos } from './cloud.js';
 import '../styles.css';
 import './style.css';
 
@@ -14,7 +15,7 @@ const formatDate = value => value ? new Date(value).toLocaleString('de-AT') : 'Z
 function problem(error) {
   if (error?.code?.includes('permission-denied') || error?.code === 'storage/unauthorized') return 'Zugriff verweigert. Anmeldung und Kontorechte prüfen.';
   if (error?.code === 'storage/object-not-found') return 'Die Zuordnung existiert, aber die Videodatei fehlt im Storage.';
-  if (error?.code === 'auth/unauthorized-domain') return 'Diese Adresse ist für die Anmeldung nicht freigeschaltet. Bitte http://localhost:5173/video-control.html öffnen.';
+  if (error?.code === 'auth/unauthorized-domain') return 'Diese Adresse ist für die Anmeldung nicht freigeschaltet. Bitte http://localhost:9150/videos/ öffnen.';
   return error?.message || 'Laden fehlgeschlagen. Bitte erneut versuchen.';
 }
 
@@ -47,6 +48,8 @@ function Inspector({ record, user, teamManager }) {
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [trim, setTrim] = useState(null);
+  const [trimError, setTrimError] = useState('');
   const mine = user.uid === record.uploaderUid;
   useEffect(() => {
     let active = true;
@@ -69,7 +72,7 @@ function Inspector({ record, user, teamManager }) {
     <h2>{nameOf(record.id)}</h2>
     <p className="muted">{record.id}</p>
     {media.phase === 'loading' && <div className="preview-placeholder" role="status">Videodatei wird geprüft …</div>}
-    {media.url && <video key={media.url} src={media.url} controls muted playsInline preload="metadata"
+    {media.url && <video key={`${media.url}:${record.clipStart}:${record.clipEnd}`} src={media.url} controls muted playsInline preload="metadata"
       onLoadedMetadata={event => {
         const video = event.currentTarget;
         if (Number.isFinite(record.clipStart)) video.currentTime = record.clipStart;
@@ -99,8 +102,19 @@ function Inspector({ record, user, teamManager }) {
       <button disabled={busy} className="primary" onClick={() => change(() => setVideoStatus(record.id, record.status === 'approved' ? 'pending' : 'approved'), 'Status gespeichert.')}>
         <Check size={15} />{record.status === 'approved' ? 'Auf ausstehend setzen' : 'Freigeben'}
       </button>
+      {mine && media.url && <button disabled={busy} onClick={() => {
+        setTrimError(''); setTrim({ start: record.clipStart ?? 0, end: record.clipEnd ?? record.duration });
+      }}>Ausschnitt bearbeiten</button>}
       {mine && <button disabled={busy} onClick={() => setConfirmDelete(value => !value)}><Trash2 size={15} /> Entfernen …</button>}
     </div>}
+    {trim && <ExerciseClipEditor url={media.url} duration={record.duration} start={trim.start} end={trim.end}
+      exerciseName={nameOf(record.id)} submitLabel="Ausschnitt speichern" busy={busy} error={trimError}
+      status="Abspielbereich speichern · Videodatei bleibt erhalten" onChange={setTrim}
+      onCancel={() => { if (!busy) setTrim(null); }} onUpload={async () => {
+        setBusy(true); setTrimError('');
+        try { await setVideoClip(record, trim.start, trim.end); setTrim(null); setNotice('Ausschnitt gespeichert. Die App übernimmt den Abspielbereich.'); }
+        catch (error) { setTrimError(problem(error)); } finally { setBusy(false); }
+      }} />}
     {confirmDelete && <div className="confirmation">
       <p>Dein Video und die Zuordnung zu dieser Übung entfernen? Danach läuft wieder das Standardvideo.</p>
       <button className="danger" disabled={busy} onClick={() => change(() => deleteExerciseVideo(record.id), 'Video entfernt.')}>Video endgültig entfernen</button>

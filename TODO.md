@@ -99,3 +99,5 @@
 - [ ] 6pack: Router-Testeintrag (bitte ignorieren)
 
 - [ ] Gemeinsame Skills-Quelle: VitalOS/Fitness-Hosts umstellen, Skills-Stufen an gemeinsamen Video-Upload anschließen, Browser/iPhone prüfen (skills/MIGRATION.md).
+
+- [x] Video-Control auf Coach :9150/videos/ ausliefern; vorhandene Clips über Start/Ende nachbearbeiten.

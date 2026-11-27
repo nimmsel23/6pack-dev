@@ -23,13 +23,14 @@ globalThis.__videoControlTest = {
   canManageTeam: async () => false,
   watchVideos(callback, onError) { snapshots = callback; snapshotError = onError; callback(records, { fromCache: false }); return () => calls.push('unsubscribe'); },
   videoUrl: async record => `https://example.invalid/${record.id}.mp4`,
+  setVideoClip: async (record, start, end) => { calls.push(['clip', record.id, start, end]); },
   setVideoStatus: async (id, status) => { calls.push(['status', id, status]); },
   deleteExerciseVideo: async id => { calls.push(['delete', id]); },
   uploadExerciseVideo: () => { throw new Error('No real uploads in tests'); },
 };
 const modules = {
   '../photoAuth.js': ['watchPhotoUser', 'loginGoogle', 'loginEmail', 'logoutPhotos'],
-  './cloud.js': ['canManageTeam', 'watchVideos', 'videoUrl', 'setVideoStatus'],
+  './cloud.js': ['canManageTeam', 'watchVideos', 'videoUrl', 'setVideoStatus', 'setVideoClip'],
   '../exerciseVideoCloud.js': ['deleteExerciseVideo', 'uploadExerciseVideo'],
 };
 const output = await build({ entryPoints: ['video-control/main.jsx'], bundle: true, write: false, platform: 'node', format: 'cjs', packages: 'external', jsx: 'automatic', loader: { '.css': 'empty' }, plugins: [{ name: 'isolated-firebase', setup(builder) {
@@ -52,6 +53,10 @@ assert.match(text(), /Live mit Firebase verbunden/);
 assert.match(text(), /Bent Knee Windshield Wipers/);
 assert.equal(document.querySelector('video').getAttribute('src'), 'https://example.invalid/bent_knee_windshield_wipers.mp4');
 assert.match(text(), /auch bei „pending“/);
+await click('Ausschnitt bearbeiten');
+assert.match(text(), /Ausschnitt speichern/);
+await click('Ausschnitt speichern');
+assert.deepEqual(calls.at(-1), ['clip', 'bent_knee_windshield_wipers', 0, 20.93]);
 await click('Freigeben');
 assert.deepEqual(calls.at(-1), ['status', 'bent_knee_windshield_wipers', 'approved']);
 await click('Entfernen …');

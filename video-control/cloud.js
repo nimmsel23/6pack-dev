@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { collection, doc, getDoc, getFirestore, onSnapshot, updateDoc } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 import { config } from '../firebaseConfig.js';
-import { EXERCISE_VIDEO_COLLECTION, parseExerciseVideoRecord } from '../exerciseVideo.js';
+import { EXERCISE_VIDEO_COLLECTION, parseExerciseVideoRecord, normalizeClip } from '../exerciseVideo.js';
 
 // photoAuth initialisiert dieselbe Default-App vor dem Aufruf dieser Funktionen.
 export async function canManageTeam(user) {
@@ -33,4 +33,14 @@ export async function setVideoStatus(id, status) {
   if (!getAuth(getApp()).currentUser) throw new Error('Bitte erneut anmelden.');
   if (!['pending', 'approved'].includes(status)) throw new Error('Ungültiger Status.');
   await updateDoc(doc(getFirestore(getApp()), EXERCISE_VIDEO_COLLECTION, id), { status });
+}
+
+export async function setVideoClip(record, start, end) {
+  const user = getAuth(getApp()).currentUser;
+  if (!user || user.uid !== record.uploaderUid) throw new Error('Nur eigene Videos können geschnitten werden.');
+  const clip = normalizeClip(record.duration, start, end);
+  if (clip.error || clip.start == null || clip.end == null) throw new Error(clip.error || 'Ungültiger Ausschnitt.');
+  await updateDoc(doc(getFirestore(getApp()), EXERCISE_VIDEO_COLLECTION, record.id), {
+    clipStart: clip.start, clipEnd: clip.end,
+  });
 }

@@ -148,15 +148,12 @@ Noch auf einem angemeldeten iPhone prüfen, jeweils in Safari, PWA und Shell:
 
 ## Lokales Video-Control-Panel
 
-Start im Repo: `./scripts/pnpm-cloud.sh run video-control`. Danach
-[Video-Control öffnen](http://localhost:5173/video-control.html).
-Der Befehl baut nach `dist-video-control/` und startet einen kleinen lokalen
-HTTP-Server als User-Unit `sixpack-video-control.service` bei Bedarf.
-Kein Autostart, kein Server-Neustart; ein erneuter Aufruf aktualisiert die
-Build-Dateien. Status: `systemctl --user status sixpack-video-control.service`.
-Die Unit kann bei Bedarf mit `systemctl --user stop sixpack-video-control.service`
-beendet werden. Für UI-Entwicklung alternativ `pnpm run dev:video-control`
-(gleicher Port; nicht gleichzeitig mit dem statischen Server starten).
+Start im Repo: `./scripts/pnpm-cloud.sh run video-control` (oder in Coach
+`bin/coach-video-control`). Danach [Video-Control öffnen](http://localhost:9150/videos/).
+Der Befehl baut das Panel und legt die Build-Dateien unter
+`coach-dev/public-coach/videos/` ab. Der bestehende Coach-/Fitness-Server auf
+9150 liefert sie ohne Neustart aus. Kein zusätzlicher Server oder Port.
+Die veröffentlichte Firebase-App bleibt unabhängig davon.
 
 - Anmeldung mit demselben Firebase-Konto; keine Admin-Schlüssel im Browser.
 - Live-Liste mit Suche, Statusfilter und Anzeige von Cache/Serverbestätigung.
@@ -164,11 +161,13 @@ beendet werden. Für UI-Entwicklung alternativ `pnpm run dev:video-control`
   Speicherpfad, Datum, Größe und Dauer. Der Dateilink enthält einen Firebase-
   Download-Token und sollte nur bewusst weitergegeben werden.
 - Eigene Uploads, Ersetzen und Entfernen mit dem bestehenden Upload-Ablauf.
+- Eigene Videos: „Ausschnitt bearbeiten“ für Start/Ende mit Vorschau. Speichert
+  den Abspielbereich in Firebase; die gespeicherte Datei bleibt erhalten.
+  Vor dem ursprünglichen Upload entfernte Frames sind nicht wiederherstellbar.
 - Statuswechsel für Eigentümer und Coaches; serverseitige Rules entscheiden.
   Teamdateien anderer Konten können hier nicht gelöscht werden.
 - `pending` und `approved` sind für angemeldete Konten abspielbar. Eine Freigabe
   ändert den Prüfstatus, nicht die Leserechte.
 
 Der Build-Modus `video-control` ist separat. Das normale `pnpm run build`
-liefert das Control-Panel nicht an Firebase Hosting aus. Der lokale Server
-bindet ausschließlich 127.0.0.1 und verwendet keine Service Worker.
+liefert das Control-Panel nicht an Firebase Hosting aus. Das Panel verwendet keine Service Worker und nutzt dieselben Firebase-Rechte.
