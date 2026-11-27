@@ -3,7 +3,7 @@
 Stand: 2026-11-26, Implementierung ab `cd6ed992`.
 
 Ein Trainingsvideo kann als Quelle für mehrere Übungsclips dienen. Geschnitten
-wird auf dem Gerät. Erst nach ausdrücklicher Bestätigung wird der erzeugte,
+wird auf dem Gerät in einem Web Worker, damit der UI-Thread frei bleibt. Erst nach ausdrücklicher Bestätigung wird der erzeugte,
 stumme MP4-Clip zu Firebase hochgeladen. Das Original bleibt lokal.
 
 ## Bedienung
@@ -14,6 +14,10 @@ stumme MP4-Clip zu Firebase hochgeladen. Das Original bleibt lokal.
    festlegen. Die angezeigte Übung ist das Ziel des Uploads.
 4. Mit **Clip abspielen** den gewählten Bereich stumm ansehen.
 5. Mit **Hochladen** die Verarbeitung und anschließend den Upload bestätigen.
+   Eine animierte Anzeige nennt den Schritt und Prozent: Vorbereitung/Schnitt,
+   Upload und anschließend Speichern der Zuordnung. Abbrechen beendet auch den
+   Schnitt-Worker sofort. Nach drei Minuten wird ein nicht abgeschlossener Schnitt
+   mit einer Fehlermeldung beendet.
    Erst nach bestätigtem Erfolg erscheint „Video ist dieser Übung zugeordnet“.
 6. Für den nächsten Clip den Editor verlassen, eine andere Übung öffnen und
    **Weiteren Clip schneiden** wählen. Die Quelldatei muss nicht erneut gewählt

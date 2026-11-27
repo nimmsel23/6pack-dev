@@ -247,3 +247,5 @@ assert.ok(wholeRemux.durationSeconds > 2.5 && wholeRemux.durationSeconds <= 3.05
 await assert.rejects(cutExerciseClip(new File(['kein video'], 'notes.txt', { type: 'text/plain' }), 0, 1));
 
 console.log('Exercise video mapping: validation, path, clip, trim and rules limits passed.');
+
+await import('./test-exercise-clip-worker.mjs');

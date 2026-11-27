@@ -1,5 +1,8 @@
 # TODO — 6pack-dev
 
+- [x] 2026-11-27: Clip-Schnitt in Web Worker verlagert; sofort abbrechbar, animierter Status mit Prozent für Verarbeitung/Upload/Speichern.
+- [ ] Persistente Video-Outbox und Hintergrund-Upload mit Benachrichtigung prüfen; bisher App geöffnet lassen.
+
 - [x] 2026-11-26: Trainingsvideo bis 1 GiB einmal wählen, in mehreren Übungen wiederverwenden, Zeitfelder und Dateiauswahl; kein Original-Upload-Fallback. Quelle nur im Sitzungsspeicher, beim Kontowechsel verworfen.
 - [ ] iPhone: große MOV-/HEVC-Quelle, mehrere Clips für verschiedene Übungen und Drive über den System-Dateidialog prüfen. 1 GiB ist eine Auswahlgrenze, keine Gerätegarantie.
 

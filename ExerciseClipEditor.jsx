@@ -121,6 +121,13 @@ export default function ExerciseClipEditor({
     }
   }
 
+  useEffect(() => {
+    if (busy) {
+      playingRef.current = false;
+      videoRef.current?.pause?.();
+    }
+  }, [busy]);
+
   const percent = progress == null ? null : Math.max(0, Math.min(100, progress));
   const dialog = (
     <div
@@ -166,14 +173,22 @@ export default function ExerciseClipEditor({
             style={{ left: `calc(1.5rem + (100% - 3rem) * ${startPct / 100})`, width: `calc((100% - 3rem) * ${(endPct - startPct) / 100})`, background: '#e2001a' }}
           />
           <div className="absolute left-6 right-6 top-0 h-12">
-            <TrimHandle label="Anfang des Clips" edge="start" seconds={start} percent={startPct} duration={duration} onDrag={drag} onKey={nudge} />
-            <TrimHandle label="Ende des Clips" edge="end" seconds={end} percent={endPct} duration={duration} onDrag={drag} onKey={nudge} />
+            <TrimHandle label="Anfang des Clips" edge="start" seconds={start} percent={startPct} duration={duration} onDrag={busy ? () => {} : drag} onKey={busy ? () => {} : nudge} />
+            <TrimHandle label="Ende des Clips" edge="end" seconds={end} percent={endPct} duration={duration} onDrag={busy ? () => {} : drag} onKey={busy ? () => {} : nudge} />
           </div>
         </div>
         <button type="button" className="mt-3 min-h-12 w-full rounded-xl text-sm font-black" style={{ background: '#1a1a1a', color: '#fff', border: '1px solid #333' }} onClick={playClip} disabled={busy}>
           Clip abspielen
         </button>
-        {status && <p className="mt-2 text-center text-xs" style={{ color: '#aaa' }}>{status}</p>}
+        {busy && (
+          <div role="status" aria-live="polite" className="mt-3 text-center" style={{ color: '#fff' }}>
+            <span aria-hidden="true" style={{ display: 'inline-block', marginRight: 8 }}>
+              <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke="#e2001a" strokeWidth="3" strokeDasharray="30 14"><animateTransform attributeName="transform" type="rotate" from="0 10 10" to="360 10 10" dur="1s" repeatCount="indefinite" /></circle></svg>
+            </span>
+            {status} {percent != null && `${percent} %`}
+            <p className="text-xs mt-1" style={{ color: '#aaa' }}>Bitte die App geöffnet lassen. Du kannst den Vorgang abbrechen.</p>
+          </div>
+        )}
         {percent != null && (
           <div className="mt-2" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label="Fortschritt">
             <div className="h-1.5 overflow-hidden rounded-full" style={{ background: '#333' }}>
@@ -187,7 +202,7 @@ export default function ExerciseClipEditor({
             Abbrechen
           </button>
           <button type="button" className="min-h-12 flex-1 rounded-xl text-base font-black" style={{ background: '#e2001a', color: '#fff' }} onClick={onUpload} disabled={busy}>
-            Hochladen
+            {busy ? 'Wird verarbeitet …' : 'Hochladen'}
           </button>
         </div>
       </div>

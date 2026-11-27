@@ -84,6 +84,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   const previewRef = useRef('');
   const uploadRef = useRef(null);
   const requestRef = useRef(0);
+  const cutControllerRef = useRef(null);
   const [file, setFile] = useState(null);
   const [duration, setDuration] = useState(null);
   const [trimStart, setTrimStart] = useState(0);
@@ -99,6 +100,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   useEffect(() => () => {
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
     requestRef.current += 1;
+    cutControllerRef.current?.abort();
     uploadRef.current?.cancel?.();
   }, []);
 
@@ -110,6 +112,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
 
   function discard() {
     requestRef.current += 1;
+    cutControllerRef.current?.abort();
     uploadRef.current?.cancel?.();
     uploadRef.current = null;
     clearPreview();
@@ -140,6 +143,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
 
   async function selectSource(next) {
     const request = ++requestRef.current;
+    cutControllerRef.current?.abort();
     uploadRef.current?.cancel?.();
     uploadRef.current = null;
     clearPreview();
@@ -203,22 +207,26 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
     setError('');
     // Nur die stumme MP4 hochladen; bei fehlgeschlagenem Schnitt abbrechen.
     let cut = null;
+    let cutError = null;
     setProgress(0);
     setPrepNote(wholeFile ? 'Video wird vorbereitet …' : 'Clip wird geschnitten …');
     setPhase('cutting');
+    const controller = new AbortController();
+    cutControllerRef.current = controller;
     try {
-      const { cutExerciseClip } = await import('./exerciseClipCut.js');
+      const { cutExerciseClip } = await import('./exerciseClipWorkerClient.js');
       cut = await cutExerciseClip(file, wholeFile ? 0 : trimStart, wholeFile ? duration : trimEnd, (ratio) => {
         if (request === requestRef.current) setProgress(Math.round((ratio || 0) * 100));
-      });
-    } catch {
+      }, { signal: controller.signal });
+    } catch (err) {
+      cutError = err;
       cut = null;
     }
     if (request !== requestRef.current) return;
     const plan = planExerciseClipUpload({ durationSeconds: duration, start: trimStart, end: trimEnd, cut });
     if (!plan.ok) {
       setPhase('editing');
-      setError(plan.error);
+      setError(cutError?.message || plan.error);
       return;
     }
     const uploadFile = plan.file;
@@ -291,6 +299,10 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
   }
 
   function cancelEditor() {
+    if (phase === 'cutting') {
+      discard();
+      return;
+    }
     if (phase === 'uploading') {
       uploadRef.current?.cancel?.();
       return;
@@ -357,7 +369,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
           end={trimEnd}
           busy={phase === 'cutting' || phase === 'uploading'}
           progress={phase === 'editing' ? null : percent}
-          status={phase === 'cutting' ? prepNote : ''}
+          status={phase === 'cutting' ? prepNote : percent >= 100 ? 'Upload übertragen · Zuordnung wird gespeichert …' : 'Video wird hochgeladen …'}
           exerciseName={exerciseName}
           error={error}
           onChange={({ start, end }) => { setTrimStart(start); setTrimEnd(end); }}
