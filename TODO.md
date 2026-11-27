@@ -119,3 +119,5 @@
 
 - [x] 2026-11-27: Woche 4 Tage 22 (06:30) und 23 (06:00) aus überlappenden Screenshots ergänzt; Canoe Crunch an Tag 22 mit 30 s vom Owner bestätigt. Sechs Katalogeinträge mit Equipment und Reviewstatus ergänzt.
 - [x] 2026-11-27: Woche 4 durch Nachlieferung vollständig; vormals offen: Tag 25 unteres Ende fehlt (30 s offen); Tag 26 und 27 fehlen. Teiltranskript: `catalog/workout-imports/week4-pending.yml`.
+
+- [x] 2026-11-27: Scrollen am Desktop: App-Rahmen lässt vertikalen Overflow zu.

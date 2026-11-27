@@ -33,3 +33,6 @@ functions/.secret*
 dist-skills/
 
 dist-video-control/
+
+# Local session results
+/RESULTS.md

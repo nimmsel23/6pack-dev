@@ -2035,7 +2035,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
   }, [inShell]);
 
   return (
-    <section className="flex w-full flex-col overflow-hidden" style={SCREEN_FRAME}>
+    <section className="flex w-full flex-col overflow-x-hidden overflow-y-auto" style={SCREEN_FRAME}>
         <UpdatePrompt />
         {screen === 'home' && <HomeScreen program={program} onOpenToday={() => openDay(program.currentDay)} onNav={handleNav} eatInApp={embedded || !onSubNav} hasSettings={hasSettings} />}
         {screen === 'settings' && <SettingsScreen uid={uid} reminder={reminder} onChange={changeReminder} onBack={goHome} enablePush={registerPush} pushState={pushState} localReminders={localReminders} setupContent={setupContent} reminderAvailable={reminderAvailable} />}
