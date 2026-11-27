@@ -1,0 +1,28 @@
+exercise_id: one_down_two_ups
+description: >-
+  Week 4 screenshot identity and equipment; initial technique/anatomy pending
+  review.
+exercises:
+  - exercise_id: one_down_two_ups
+    id: one_down_two_ups
+    name: One Down Two Ups
+    display_name: One Down Two Ups
+    category: core
+    equipment:
+      - bodyweight
+    tags:
+      - 6pack_promise
+      - core
+      - lower_abs
+    aliases:
+      - One Down Two Ups
+    primary_muscles:
+      - 501_rectus_abdominis
+    coaching_notes:
+      - >-
+        In Rückenlage die Beine kontrolliert absenken und das Becken nach oben
+        einrollen.
+    common_errors: []
+    source: user_screenshots
+    review_state:
+      status: needs_review

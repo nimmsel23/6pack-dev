@@ -1,0 +1,29 @@
+exercise_id: recliner_elbow_to_knee_tucks
+description: >-
+  Week 4 screenshot identity and equipment; initial technique/anatomy pending
+  review.
+exercises:
+  - exercise_id: recliner_elbow_to_knee_tucks
+    id: recliner_elbow_to_knee_tucks
+    name: Recliner Elbow to Knee Tucks
+    display_name: Recliner Elbow to Knee Tucks
+    category: core
+    equipment:
+      - bodyweight
+    tags:
+      - 6pack_promise
+      - core
+      - rotation
+    aliases:
+      - Recliner Elbow to Knee Tucks
+    primary_muscles:
+      - 502_obliquus_externus
+      - 503_obliquus_internus
+    coaching_notes:
+      - >-
+        Im zurückgelehnten Sitz Ellbogen und gegenüberliegendes Knie
+        kontrolliert zusammenführen.
+    common_errors: []
+    source: user_screenshots
+    review_state:
+      status: needs_review

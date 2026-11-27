@@ -1638,8 +1638,9 @@ const RUNNER_FRAME_STYLE = {
 // Shell-Tab-Leiste ist z-60, ihr Sheet z-56, die Desktop-Sidebar z-50.
 // 40 bleibt darunter, füllt aber die Breite zwischen Rahmenoberkante und Tab-Leiste.
 function runnerFrameProps(contained) {
-  if (!contained) return { className: RUNNER_FRAME, style: RUNNER_FRAME_STYLE };
+  if (!contained) return { className: RUNNER_FRAME, style: RUNNER_FRAME_STYLE, 'data-no-swipe': 'true' };
   return {
+    'data-no-swipe': 'true',
     className: 'fixed inset-x-0 flex w-full max-w-none flex-col overflow-hidden',
     style: {
       ...RUNNER_FRAME_STYLE,

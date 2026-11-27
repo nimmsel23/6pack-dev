@@ -1,0 +1,28 @@
+exercise_id: physioball_sprinter_knee_tucks
+description: >-
+  Week 4 screenshot identity and equipment; initial technique/anatomy pending
+  review.
+exercises:
+  - exercise_id: physioball_sprinter_knee_tucks
+    id: physioball_sprinter_knee_tucks
+    name: Physioball Sprinter Knee Tucks
+    display_name: Physioball Sprinter Knee Tucks
+    category: core
+    equipment:
+      - physioball
+    tags:
+      - 6pack_promise
+      - core
+      - plank
+    aliases:
+      - Physioball Sprinter Knee Tucks
+    primary_muscles:
+      - 501_rectus_abdominis
+    coaching_notes:
+      - >-
+        Im Stütz mit einem Bein auf dem Ball das andere Knie kontrolliert zum
+        Rumpf ziehen.
+    common_errors: []
+    source: user_screenshots
+    review_state:
+      status: needs_review
