@@ -3,6 +3,8 @@ import BackHeader from './BackHeader.jsx';
 import { IS_STORE_BUILD, storeText } from './storeBuild.js';
 import SelfiesScreen from './SelfiesScreen.jsx';
 import ExerciseDetailScreen from './ExerciseDetailScreen.jsx';
+import ExerciseVideoPreview from './ExerciseVideoPreview.jsx';
+import { equipmentLabel, requiredEquipment, availableExercises, createShuffleWorkout } from './workoutEquipment.js';
 import { loadVideoUrls, videoDescriptor } from './exerciseMedia.js';
 import { clipLoopHandlers, resolveExercisePlayback } from './exerciseVideo.js';
 import { deleteExerciseVideo, uploadExerciseVideo, watchExerciseVideos } from './exerciseVideoCloud.js';
@@ -18,6 +20,7 @@ import { SIXPACK_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_POOL, SI
 import UpdatePrompt from './UpdatePrompt.jsx';
 
 const SIXPACK_PROGRAM_KEY = 'fitness-sixpack-program-v1';
+const SHUFFLE_EQUIPMENT_KEY = 'fitness-sixpack-shuffle-equipment-v1';
 const SIXPACK_FAVORITES_KEY = 'fitness-sixpack-workout-favorites-v1';
 
 export function getFuelUrl({ hostname, protocol } = window.location) {
@@ -55,7 +58,7 @@ const SPOKEN_NAMES_BY_NAME = Object.fromEntries(
 const spokenName = (name) => (SPOKEN_NAMES_BY_NAME[name] ?? name).replace(/\bISO\b/gi, 'I-S-O');
 // Equipment-Ansage im Intro: Katalog-Werte → sprechbare Namen. "bodyweight" zählt nicht als Equipment.
 const SPOKEN_EQUIPMENT = {
-  ball: 'a ball', tennis_ball: 'a tennis ball', band: 'a fitness band', resistance_band: 'a fitness band',
+  physioball: 'a stability ball', ball: 'a ball', tennis_ball: 'a tennis ball', band: 'a fitness band', resistance_band: 'a fitness band',
   fitness_band: 'a fitness band', pull_up_bar: 'a pull-up bar', pullup_bar: 'a pull-up bar',
 };
 function equipmentSpeech(items) {
@@ -383,18 +386,18 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
       </div>
       <div>
         {visibleCore.map((exercise) => (
+          <div key={exercise.id} className="flex items-center gap-3 pr-4" style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}>
           <button
-            key={exercise.id}
             onClick={() => onOpenExercise?.(exercise.id)}
-            className="w-full px-4 py-3 text-left"
-            style={{ background: '#1a1a1a', borderBottom: '1px solid #000' }}
+            className="min-w-0 flex-1 pl-4 py-3 text-left"
           >
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <div className="text-sm font-bold" style={{ color: '#fff' }}>{exercise.name}</div>
                 <div className="text-[10px] font-black uppercase tracking-[0.1em] mt-1" style={{ color: '#e2001a' }}>
                   {exercise.focusLabel}
                 </div>
+                <div className="mt-1 text-xs" style={{ color: '#bbb' }}>{requiredEquipment(SIXPACK_EXERCISE_COACHING[exercise.id]).map(equipmentLabel).join(' · ') || 'Ohne Equipment'}</div>
               </div>
               <div className="flex items-center gap-1.5 text-[10px] font-bold shrink-0" style={{ color: 'var(--dim)' }}>
                 {ownVideos[exercise.id]?.url && <Video size={13} aria-label="Eigenes Video" style={{ color: '#e2001a' }} />}
@@ -403,6 +406,8 @@ function LearnScreen({ onBack, onOpenSkill, onOpenExercise, onOpenNote, coaching
               </div>
             </div>
           </button>
+          <ExerciseVideoPreview key={`${exercise.id}:${playbackFor({ exerciseId: exercise.id, name: exercise.name }, loadVideoUrls(), ownVideos).url}`} name={exercise.name} playback={playbackFor({ exerciseId: exercise.id, name: exercise.name }, loadVideoUrls(), ownVideos)} />
+          </div>
         ))}
       </div>
 
@@ -524,23 +529,30 @@ function FavoriteWorkoutButton({ active, onClick }) {
   );
 }
 
-function WorkoutExerciseRow({ item, onOpen }) {
-  const content = <>
-    <div>
-      {item.category && <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#e2001a' }}>{item.category}</div>}
-      <div className="text-sm font-bold" style={{ color: '#fff' }}>{item.name}{item.notes ? ` (${item.notes})` : ''}</div>
-      <div className="text-xs font-bold" style={{ color: '#e2001a' }}>{item.seconds} {storeText('Seconds', 'Sekunden')}</div>
-    </div>
-    {item.type === 'exercise' && <ChevronRight size={20} aria-hidden="true" style={{ color: '#e2001a' }} />}
-  </>;
-  const className = 'w-full px-4 py-3.5 flex items-center justify-between text-left';
-  const style = { background: item.type === 'rest' ? '#151515' : '#1e1e1e', borderBottom: '1px solid #000' };
-  return item.type === 'exercise'
-    ? <button type="button" className={className} style={style} aria-label={`Details zu ${item.name}`} onClick={event => onOpen(item, event?.currentTarget)}>{content}</button>
-    : <div className={className} style={style}>{content}</div>;
+function WorkoutEquipment({ items }) {
+  const equipment = [...new Set(items.filter(item => item.type === 'exercise').flatMap(item => requiredEquipment(SIXPACK_EXERCISE_COACHING[exerciseIdOf(item)])))];
+  return <p className="px-4 py-3 text-xs font-bold" style={{ color: '#bbb', background: '#151515' }}>Equipment: {equipment.length ? equipment.map(equipmentLabel).join(' · ') : 'Ohne Equipment'}</p>;
 }
 
-function FavoritesScreen({ favorites, onBack, onStart, onRemove, onOpenExercise }) {
+function WorkoutExerciseRow({ item, onOpen, ownVideos = {} }) {
+  const equipment = requiredEquipment(SIXPACK_EXERCISE_COACHING[exerciseIdOf(item)]);
+  const content = <div className="min-w-0">
+    {item.category && <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#e2001a' }}>{item.category}</div>}
+    <div className="text-sm font-bold" style={{ color: '#fff' }}>{item.name}{item.notes ? ` (${item.notes})` : ''}</div>
+    <div className="text-xs font-bold" style={{ color: '#e2001a' }}>{item.seconds} {storeText('Seconds', 'Sekunden')}</div>
+    {item.type === 'exercise' && <div className="mt-1 text-xs" style={{ color: '#bbb' }}>{equipment.length ? equipment.map(equipmentLabel).join(' · ') : 'Ohne Equipment'}</div>}
+  </div>;
+  const style = { background: item.type === 'rest' ? '#151515' : '#1e1e1e', borderBottom: '1px solid #000' };
+  if (item.type !== 'exercise') return <div className="w-full px-4 py-3.5" style={style}>{content}</div>;
+  return <div className="w-full flex items-center gap-3 pr-4" style={style}>
+    <button type="button" className="min-w-0 flex-1 pl-4 py-3.5 flex items-center justify-between gap-2 text-left" aria-label={`Details zu ${item.name}`} onClick={event => onOpen(item, event?.currentTarget)}>
+      {content}<ChevronRight size={20} className="shrink-0" aria-hidden="true" style={{ color: '#e2001a' }} />
+    </button>
+    <ExerciseVideoPreview key={`${exerciseIdOf(item)}:${playbackFor(item, loadVideoUrls(), ownVideos).url}`} name={item.name} playback={playbackFor(item, loadVideoUrls(), ownVideos)} />
+  </div>;
+}
+
+function FavoritesScreen({ ownVideos = {}, favorites, onBack, onStart, onRemove, onOpenExercise }) {
   return (
     <div className="h-full overflow-y-auto">
       <BackHeader label={storeText('Favorites', 'Favoriten')} onBack={onBack} />
@@ -557,7 +569,7 @@ function FavoritesScreen({ favorites, onBack, onStart, onRemove, onOpenExercise 
                 {label} · {workout.items.filter(item => item.type === 'exercise').length} Übungen · {formatSeconds(workoutTotalSeconds(workout.items))}
               </summary>
               <ol className="mt-3 space-y-1 text-sm" style={{ color: 'var(--dim)' }}>
-                {workout.items.map((item, index) => <li key={index}><WorkoutExerciseRow item={item} onOpen={onOpenExercise} /></li>)}
+                {workout.items.map((item, index) => <li key={index}><WorkoutExerciseRow item={item} ownVideos={ownVideos} onOpen={onOpenExercise} /></li>)}
               </ol>
             </details>
             <div className="flex gap-3 mt-3">
@@ -573,38 +585,43 @@ function FavoritesScreen({ favorites, onBack, onStart, onRemove, onOpenExercise 
   );
 }
 
-function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExercise }) {
-  const [categoryRoutine] = useState(() => EXERCISE_CATEGORIES.map(cat => ({
-    categoryId: cat.id,
-    category: cat.label,
-    name: cat.exercises[Math.floor(Math.random() * cat.exercises.length)],
-    seconds: Math.random() < 0.5 ? 30 : 60,
-  })));
-
-  const workout = useMemo(() => {
-    const items = [];
-    categoryRoutine.forEach((ex, i) => {
-      items.push({ type: 'exercise', name: ex.name, seconds: ex.seconds });
-      if (i < categoryRoutine.length - 1 && Math.random() < 0.5) {
-        items.push({ type: 'rest', name: 'Rest', seconds: Math.random() < 0.5 ? 30 : 45 });
-      }
-    });
-    return { rest: false, items };
-  }, [categoryRoutine]);
-
+function ShuffleScreen({ onBack, onStart, favorites, onToggleFavorite, onOpenExercise, ownVideos = {} }) {
+  const options = useMemo(() => [...new Set(Object.values(SIXPACK_EXERCISE_COACHING).flatMap(requiredEquipment))].sort((a, b) => equipmentLabel(a).localeCompare(equipmentLabel(b))), []);
+  const [available, setAvailable] = useState(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(SHUFFLE_EQUIPMENT_KEY) || '[]');
+      return Array.isArray(saved) ? saved.filter(key => options.includes(key)) : [];
+    } catch { return []; }
+  });
+  const [revision, setRevision] = useState(0);
+  const eligible = useMemo(() => availableExercises(EXERCISE_CATEGORIES, SIXPACK_EXERCISE_DETAILS, SIXPACK_EXERCISE_COACHING, available), [available]);
+  const workout = useMemo(() => createShuffleWorkout(eligible), [eligible, revision]);
+  function toggleEquipment(key) {
+    const next = available.includes(key) ? available.filter(value => value !== key) : [...available, key];
+    setAvailable(next);
+    try { window.localStorage.setItem(SHUFFLE_EQUIPMENT_KEY, JSON.stringify(next)); } catch { /* Choice still applies for this visit. */ }
+  }
   return (
     <div className="h-full overflow-y-auto">
       <BackHeader label={storeText('Shuffle', 'Zufall')} onBack={onBack} />
-      <FavoriteWorkoutButton active={favorites.some(favorite => favorite.id === workoutFavoriteId(workout))} onClick={() => onToggleFavorite(workout)} />
-      <div className="px-4 py-2 text-[11px] font-bold" style={{ color: 'var(--dim)' }}>
-        Ein Übung je Kategorie: Lower Abs → Bottom-up Rotation → Top-down Rotation → Upper Abs.
+      <fieldset className="px-4 py-4" style={{ background: '#151515', color: '#fff' }}>
+        <legend className="pt-4 text-sm font-bold">Welches Equipment hast du?</legend>
+        <p className="text-xs mb-2" style={{ color: '#bbb' }}>Ohne Auswahl: nur Übungen ohne Equipment.</p>
+        <div className="flex flex-wrap gap-x-5 gap-y-1">{options.map(key => <label key={key} className="flex items-center gap-2 min-h-11 text-sm cursor-pointer">
+          <input type="checkbox" checked={available.includes(key)} onChange={() => toggleEquipment(key)} style={{ accentColor: '#e2001a', width: 18, height: 18 }} />{equipmentLabel(key)}
+        </label>)}</div>
+      </fieldset>
+      {workout.items.length > 0 && <FavoriteWorkoutButton active={favorites.some(favorite => favorite.id === workoutFavoriteId(workout))} onClick={() => onToggleFavorite(workout)} />}
+      <div className="px-4 py-3 flex items-center justify-between gap-3">
+        <p className="text-xs" style={{ color: '#bbb' }}>Eine passende Übung je verfügbarer Kategorie.</p>
+        <button type="button" onClick={() => setRevision(value => value + 1)} className="shrink-0 px-3 py-3 text-sm font-bold" style={{ color: '#fff' }}>Neu mischen</button>
       </div>
-      {categoryRoutine.map(ex => <WorkoutExerciseRow key={ex.categoryId} item={{ ...ex, type: 'exercise' }} onOpen={onOpenExercise} />)}
-      <button
-        onClick={() => onStart(workout)}
-        className="w-full py-4 text-center text-sm font-black uppercase tracking-[0.16em] sticky bottom-0"
-        style={{ background: '#e2001a', color: '#fff', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
-      >
+      <WorkoutEquipment items={workout.items} />
+      {workout.items.map((item, index) => <WorkoutExerciseRow key={index} item={item} ownVideos={ownVideos} onOpen={onOpenExercise} />)}
+      {!workout.items.length && <p role="status" className="p-4 text-sm">Keine Übungen für diese Auswahl verfügbar. Wähle weiteres Equipment aus.</p>}
+      <button disabled={!workout.items.length} onClick={() => onStart(workout)}
+        className="w-full py-4 text-center text-sm font-black uppercase tracking-[0.16em] sticky bottom-0 disabled:opacity-50"
+        style={{ background: '#e2001a', color: '#fff', paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
         {storeText('Start Workout', 'Workout starten')}
       </button>
     </div>
@@ -739,7 +756,7 @@ function TrackScreen({ program, onBack, onOpenDay }) {
   );
 }
 
-function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite, onOpenExercise }) {
+function DayScreen({ ownVideos = {}, day, workout, onBack, onStart, isFavorite, onToggleFavorite, onOpenExercise }) {
   const totalSeconds = workoutTotalSeconds(workout.items);
 
   return (
@@ -755,10 +772,11 @@ function DayScreen({ day, workout, onBack, onStart, isFavorite, onToggleFavorite
       <div className="py-3 text-center text-sm font-black" style={{ background: '#4a4a4a', color: '#fff' }}>
         Total Workout Time: {formatSeconds(totalSeconds)}
       </div>
+      <WorkoutEquipment items={workout.items} />
       <FavoriteWorkoutButton active={isFavorite} onClick={() => onToggleFavorite(workout)} />
 
       <div>
-        {workout.items.map((item, i) => <WorkoutExerciseRow key={i} item={item} onOpen={onOpenExercise} />)}
+        {workout.items.map((item, i) => <WorkoutExerciseRow key={i} item={item} ownVideos={ownVideos} onOpen={onOpenExercise} />)}
       </div>
 
       <button
@@ -2045,10 +2063,10 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
             onBack={() => showScreen('learn')}
           />
         )}
-        {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
+        {(screen === 'favorites' || (screen === 'exercise' && exerciseReturnScreen === 'favorites')) && <div hidden={screen !== 'favorites'} className="h-full"><FavoritesScreen ownVideos={ownVideos} favorites={favorites} onBack={goHome} onStart={workout => startAdhoc(workout, 'favorites')} onRemove={removeFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'favorites', trigger)} /></div>}
         {screen === 'eat' && <EatScreen onBack={goHome} />}
         {screen === 'selfies' && !IS_STORE_BUILD && <SelfiesScreen key={uid} onBack={goHome} uid={uid} />}
-        {(screen === 'shuffle' || (screen === 'exercise' && exerciseReturnScreen === 'shuffle')) && <div hidden={screen !== 'shuffle'} className="h-full"><ShuffleScreen onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'shuffle', trigger)} /></div>}
+        {(screen === 'shuffle' || (screen === 'exercise' && exerciseReturnScreen === 'shuffle')) && <div hidden={screen !== 'shuffle'} className="h-full"><ShuffleScreen ownVideos={ownVideos} onBack={goHome} onStart={startAdhoc} favorites={favorites} onToggleFavorite={toggleFavorite} onOpenExercise={(item, trigger) => openExercise(item, 'shuffle', trigger)} /></div>}
         {(screen === 'day' || (screen === 'exercise' && exerciseReturnScreen === 'day')) && activeWorkout && (
           <div hidden={screen !== 'day'} className="h-full">{
           activeWorkout.rest ? (
@@ -2059,7 +2077,7 @@ export default function SixPackPromiseCard({ onSubNav, coachingNotes = [], uid, 
               <div className="text-lg font-black text-fit-ink">{storeText('Rest Day', 'Ruhetag')}</div>
             </div>
           ) : (
-            <DayScreen day={viewDay} workout={activeWorkout} onBack={goHome} onStart={startWorkout} onOpenExercise={(item, trigger) => openExercise(item, 'day', trigger)} isFavorite={favorites.some(favorite => favorite.id === workoutFavoriteId(activeWorkout))} onToggleFavorite={toggleFavorite} />
+            <DayScreen ownVideos={ownVideos} day={viewDay} workout={activeWorkout} onBack={goHome} onStart={startWorkout} onOpenExercise={(item, trigger) => openExercise(item, 'day', trigger)} isFavorite={favorites.some(favorite => favorite.id === workoutFavoriteId(activeWorkout))} onToggleFavorite={toggleFavorite} />
           )}</div>
         )}
         {screen === 'runner' && activeWorkout && (

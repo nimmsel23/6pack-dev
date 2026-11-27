@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { equipmentLabel, requiredEquipment, availableExercises, createShuffleWorkout } from '../workoutEquipment.js';
+import { SIXPACK_CATEGORIES as categories, SIXPACK_EXERCISE_DETAILS as details, SIXPACK_EXERCISE_COACHING as coaching } from '../sixpackData.generated.js';
+assert.equal(equipmentLabel('physioball'), 'Gymnastikball');
+assert.deepEqual(requiredEquipment({equipment:['bodyweight','stability_ball','physioball']}), ['physioball']);
+const ids = Object.fromEntries(Object.values(details).map(ex => [ex.name, ex.id]));
+const noGear = availableExercises(categories, details, coaching, []);
+assert(noGear.length > 0);
+for (const category of noGear) for (const name of category.exercises) assert.equal(requiredEquipment(coaching[ids[name]]).length, 0, name);
+const withBall = availableExercises(categories, details, coaching, ['physioball']);
+assert(withBall.flatMap(category => category.exercises).includes('Physioball Knee Tucks'));
+assert(!noGear.flatMap(category => category.exercises).includes('Physioball Knee Tucks'));
+assert(!withBall.flatMap(category => category.exercises).includes('The "Any Ball" BTB Pass'), 'generic ball is a separate choice');
+const workout = createShuffleWorkout(withBall, () => 0);
+assert.equal(workout.items.filter(item => item.type === 'exercise').length, withBall.length);
+assert.equal(workout.items.filter(item => item.type === 'rest').length, withBall.length - 1);
+assert.deepEqual(createShuffleWorkout([]).items, []);
+console.log('Shuffle equipment: bodyweight default, aliases, ball filtering, categories, rests and empty state passed.');

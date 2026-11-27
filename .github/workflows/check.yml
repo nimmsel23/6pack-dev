@@ -46,6 +46,11 @@ jobs:
       - name: Workout catalog validation checks
         run: node --test scripts/test-workout-validation.mjs
 
+      - name: Equipment and video preview checks
+        run: |
+          node scripts/test-workout-equipment.mjs
+          node scripts/test-exercise-video-preview.mjs
+
       - name: Exercise preview regression checks
         run: node scripts/test-exercise-details.mjs
 

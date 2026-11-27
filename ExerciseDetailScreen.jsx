@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { equipmentLabel } from './workoutEquipment.js';
 import BackHeader from './BackHeader.jsx';
 import ExerciseMuscles from './ExerciseMuscles.jsx';
 import ExerciseVideoUpload from './ExerciseVideoUpload.jsx';
@@ -24,7 +25,7 @@ export default function ExerciseDetailScreen({ exercise, coaching, item, onBack,
       <div className="px-4 pt-3 flex gap-2 flex-wrap text-xs font-bold" style={{ color: 'var(--dim)' }}>
         <span>{exercise.focusLabel}</span>
         {item?.seconds && <span>· {item.seconds} Sekunden im Workout</span>}
-        {(coaching?.equipment || []).map(eq => <span key={eq}>· {eq}</span>)}
+        {(coaching?.equipment || []).map(eq => <span key={eq}>· {equipmentLabel(eq)}</span>)}
       </div>
       {item?.notes && <p className="px-4 pt-2 text-sm">{item.notes}</p>}
       <ExerciseMuscles exercise={exercise} />

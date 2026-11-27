@@ -113,3 +113,6 @@
 - [ ] Optional KI-gestützte Clip-Vorschläge evaluieren: Übungen und Wiederholungen erkennen, brauchbare Ausschnitte mit Start/Ende und Übungszuordnung vorschlagen. Manuell prüfen/korrigieren und erst ausdrücklich als Übungsvideos übernehmen; Anbieter, Kosten und Umgang mit privaten Aufnahmen vor Umsetzung klären.
 - [ ] Forschungs-/Ideenpunkt: Aus eigenen Videos Bewegungsanimationen erstellen (z. B. Pose/Skelett oder Avatar). Machbarkeit, Bewegungstreue und Aufwand prüfen; zunächst ein bewusst ausgewählter Beispielclip, kein automatisches Ersetzen der Originalvideos.
 - [ ] Video-Control: Die Zielübungs-Auswahl unten zusätzlich nach Programm/Workout/Tag anbieten, nicht nur alphabetisch. Beispiel: „Day 1“ auswählen → dessen Exercises in Workout-Reihenfolge sehen und als Clip-Ziel wählen. Vorhandene Workout-/Programmdaten nutzen; alphabetische Gesamtauswahl weiter anbieten. Damit lässt sich eine komplette Workout-Aufnahme Übung für Übung zuordnen.
+
+- [x] 2026-11-27: Equipment in Tagesübersicht, Übungslisten und Learn sichtbar; Shuffle mit gespeicherter Equipment-Auswahl (Standard ohne Geräte), passender Auswahl und Neu-mischen. Video-Miniaturen öffnen einen eigenen Dialog, hochgeladene Clips haben weiter Vorrang.
+- [ ] iPhone/PWA: Equipment-Auswahl und Vorschau eines echten hochgeladenen Clips prüfen (Ausschnitt, Schließen und Rückkehr zur Liste).

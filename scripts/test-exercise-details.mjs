@@ -23,6 +23,7 @@ const Detail = function ExerciseDetailScreen() {};
 const h = (type, props, ...children) => ({ type, props: props || {}, children });
 const reminder = await import('../reminder.js');
 const programSync = await import('../programSync.js');
+const workoutEquipment = await import('../workoutEquipment.js');
 async function compile(file, extra = '', requireExtra = {}) {
   const path = new URL(file, import.meta.url);
   // Vite 8 dropped the bundled esbuild re-export; transform JSX via esbuild directly.
@@ -30,7 +31,7 @@ async function compile(file, extra = '', requireExtra = {}) {
   const module = { exports: {} };
   vm.runInNewContext(code, {
     module, exports: module.exports, h, Fragment: 'fragment', window, Notification: { permission: 'granted' },
-    require: name => requireExtra[name] || (name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './exerciseVideo.js' ? exerciseVideo : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './storeBuild.js' ? { IS_STORE_BUILD: false, storeText: original => original } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
+    require: name => requireExtra[name] || (name === './workoutEquipment.js' ? workoutEquipment : name === 'react' ? React : name === './sixpackData.js' ? data : name === './ExerciseDetailScreen.jsx' ? { __esModule: true, default: Detail } : name === './exerciseMedia.js' ? { loadVideoUrls, videoDescriptor } : name === './exerciseVideo.js' ? exerciseVideo : name === './muscleGeometry.js' ? { MUSCLE_GEOMETRY } : name === './storeBuild.js' ? { IS_STORE_BUILD: false, storeText: original => original } : name === './reminder.js' ? reminder : name === './programSync.js' ? programSync : { __esModule: true, default: () => null }),
   });
   return module.exports;
 }
@@ -51,9 +52,9 @@ const rows = nodes(dayTree, node => node.type === app.WorkoutExerciseRow);
 const exerciseRow = rows.find(node => node.props.item.type === 'exercise');
 const before = JSON.stringify(day.props.workout);
 const row = app.WorkoutExerciseRow(exerciseRow.props);
-assert.equal(row.type, 'button');
-assert.match(row.props['aria-label'], /Details zu/);
-row.props.onClick();
+const detailButton = nodes(row, node => node.type === 'button' && node.props['aria-label']?.startsWith('Details zu'))[0];
+assert(detailButton);
+detailButton.props.onClick();
 tree = render();
 const detail = nodes(tree, node => node.type === Detail)[0];
 assert(detail.props.exercise?.id);
