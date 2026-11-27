@@ -52,7 +52,12 @@ function fixRolldownPreloadMarker() {
 
 export default defineConfig(({ mode }) => ({
   root: mode === 'skills' ? 'skills' : '.',
-  build: { outDir: mode === 'skills' ? '../dist-skills' : 'dist', emptyOutDir: true },
+  publicDir: mode === 'video-control' ? false : 'public',
+  build: {
+    outDir: mode === 'video-control' ? 'dist-video-control' : mode === 'skills' ? '../dist-skills' : 'dist',
+    emptyOutDir: true,
+    ...(mode === 'video-control' ? { rollupOptions: { input: 'video-control.html' } } : {}),
+  },
   resolve: { dedupe: ['react', 'react-dom', 'firebase'] },
   base: './',
   define: {

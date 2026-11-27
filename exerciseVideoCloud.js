@@ -103,6 +103,11 @@ export function uploadExerciseVideo({
     // die Rules das Dokument ab. Dann gar nicht erst hochladen.
     const docRef = doc(live.db, EXERCISE_VIDEO_COLLECTION, exerciseId);
     const existing = await getDoc(docRef).catch(() => null);
+    if (cancelled) {
+      const error = new Error('Upload abgebrochen.');
+      error.code = 'storage/canceled';
+      throw error;
+    }
     const previousUid = existing?.exists?.() ? existing.data()?.uploaderUid : null;
     if (previousUid && previousUid !== uid) {
       const error = new Error('Für diese Übung hat schon ein anderes Konto ein Video hinterlegt.');
@@ -131,7 +136,7 @@ export function uploadExerciseVideo({
       customMetadata: { uploaderUid: uid },
     });
     await waitForTask(task, onProgress);
-    const payload = { ...built.data, createdAt: serverTimestamp() };
+    const payload = { ...built.data, createdAt: existing?.exists?.() ? existing.data().createdAt : serverTimestamp() };
     try {
       await setDoc(docRef, payload);
     } catch (error) {

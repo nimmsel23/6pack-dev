@@ -31,3 +31,5 @@ functions/.secret*
 .idea/
 
 dist-skills/
+
+dist-video-control/

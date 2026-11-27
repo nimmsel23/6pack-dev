@@ -26,7 +26,11 @@
     "test:update": "node --test scripts/test-app-update.mjs",
     "dev:skills": "pnpm run build:data && vite --mode skills",
     "build:skills": "pnpm run build:data && vite build --mode skills && cd skills && node ../scripts/mini-app-shell/cli.mjs stamp ../dist-skills --app skills",
-    "test:skills": "node scripts/test-skills.mjs"
+    "test:skills": "node scripts/test-skills.mjs",
+    "dev:video-control": "pnpm run build:data && vite --mode video-control --host 127.0.0.1 --port 5173 --strictPort",
+    "build:video-control": "pnpm run build:data && vite build --mode video-control",
+    "test:video-control": "node scripts/test-video-control.mjs",
+    "video-control": "bash scripts/video-control.sh"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.2",
