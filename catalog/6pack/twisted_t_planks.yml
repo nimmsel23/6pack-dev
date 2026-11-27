@@ -1,0 +1,35 @@
+exercise_id: twisted_t_planks
+description: >-
+  Week 3 screenshot identity and equipment; initial coaching and anatomy require
+  technique review.
+exercises:
+  - exercise_id: twisted_t_planks
+    id: twisted_t_planks
+    name: Twisted "T" Planks
+    display_name: Twisted "T" Planks
+    category: core
+    equipment:
+      - bodyweight
+    tags:
+      - 6pack_promise
+      - core
+      - rotation
+    aliases:
+      - Twisted "T" Planks
+      - Twisted T Planks
+    source: user_screenshots
+    origin:
+      type: manual
+      source_refs:
+        app:
+          - 6_pack_promise
+        screenshots:
+          - Week 3, supplied 2026-11-27
+    review_state:
+      status: needs_review
+    coaching_notes:
+      - Aus dem Stütz kontrolliert in die seitlich geöffnete T-Position drehen.
+    common_errors: []
+    primary_muscles:
+      - 502_obliquus_externus
+      - 503_obliquus_internus

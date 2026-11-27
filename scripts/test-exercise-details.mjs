@@ -261,18 +261,21 @@ delete globalThis.Notification;
   console.log('Own clips: public/videos overrides catalog demo, hash busts cache, video cache accepts same-origin clips.');
 }
 
-// Woche 3 (Tage 15–21): gleiche Tagesstruktur wie Woche 2, nur Übungen mit verifizierter Demo.
-for (const day of [15, 16, 18, 19, 20]) {
+// Original Week 3 screenshots, supplied 2026-11-27. Missing demos never replace exercises.
+const week3 = {
+  15: [330, ['heels_to_the_heavens',30], ['the_kobe_crunch',30], ['drunken_mountain_climbers',30], ['rest',30], ['accordian_crunches',60], ['accordian_crunches',60], ['frog_crunches',30], ['russian_v_tuck_twists',60]],
+  16: [300, ['physioball_knee_tucks',30], ['physioball_ball_passes',30], ['side_plank_lifts',30], ['side_plank_lifts',30], ['rest',30], ['scissors',60], ['physioball_levitation_crunches',60], ['twisted_t_planks',30]],
+  18: [330, ['physioball_reverse_crunches',60], ['scissor_v_ups',30], ['legs_straight_windshield_wipers',30], ['rest',30], ['physioball_corkscrews',30], ['prayer_crunch',30], ['any_ball_btb_pass',60], ['any_ball_btb_pass',60]],
+  19: [330, ['physioball_knee_tucks',30], ['physioball_roll_outs',30], ['cross_knee_planks',60], ['rest',30], ['side_crunches',30], ['side_crunches',30], ['jackknifes',60], ['canoe_crunch',60]],
+  20: [270, ['iso_reverse_crunches',60], ['x_man_crunch',30], ['bent_knee_windshield_wipers',30], ['rest',30], ['physioball_corkscrews',30], ['physioball_levitation_crunches',30], ['standing_ab_twists',60]],
+};
+for (const [day, [total, ...items]] of Object.entries(week3)) {
   const workout = data.SIXPACK_VERIFIED_WORKOUTS[day];
-  assert(workout, `Woche 3 Tag ${day}: fehlt`);
-  assert.equal(workout.totalSeconds, workout.items.reduce((sum, item) => sum + item.seconds, 0), `Tag ${day}: total_seconds`);
-  assert.equal(workout.items.filter((item) => item.type === 'rest').length, 2, `Tag ${day}: zwei Pausenblöcke`);
-  for (const item of workout.items.filter((entry) => entry.type === 'exercise')) {
-    assert(data.SIXPACK_EXERCISE_DETAILS[item.exerciseId], `Tag ${day}: ${item.exerciseId} unbekannt`);
-    assert(item.videoUrl, `Tag ${day}: ${item.exerciseId} ohne verifizierte Demo`);
-  }
+  assert.equal(workout.totalSeconds, total);
+  assert.deepEqual(workout.items.map(item => [item.exerciseId || 'rest', item.seconds]), items, `Day ${day}: screenshot sequence`);
+  assert.equal(workout.items.reduce((sum, item) => sum + item.seconds, 0), total);
 }
-for (const day of [17, 21]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Woche 3 Tag ${day} ist Ruhetag`);
+for (const day of [17, 21]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Week 3 day ${day} is a rest day`);
 
 // 5s zwischen jedem Block, 30/45-s-Pause bleibt ein eigener Block, davor und danach wieder 5s mit Ansage.
 {

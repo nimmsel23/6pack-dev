@@ -11,6 +11,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load as yamlLoad } from 'js-yaml';
 import { loadMuscles, exerciseContent } from './catalogContent.mjs';
+import { validateWorkoutProgram } from './scripts/workout-validation.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = __dirname;
@@ -109,6 +110,7 @@ function buildWorkouts(exercises) {
     // week{N}_workouts.yml → Woche N, sonst Fallback Woche 1. Absoluter Tag =
     // (Woche-1)*7 + Tag-in-Woche, damit künftige Wochen ohne Code-Änderung
     // an der richtigen Stelle im Programm auftauchen.
+    validateWorkoutProgram(doc, exercises, file);
     const weekMatch = file.match(/week(\d+)_workouts\.yml$/);
     const week = weekMatch ? Number(weekMatch[1]) : 1;
     for (const [dayInWeek, dayData] of Object.entries(doc.verified_days || {})) {

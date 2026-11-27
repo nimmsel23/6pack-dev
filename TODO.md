@@ -1,5 +1,7 @@
 # TODO — 6pack-dev
 
+- [x] 2026-11-27: Lokales Video-Control-Panel mit Anmeldung, Live-Liste, Vorschau, Diagnose, Freigabe und eigenem Upload/Entfernen. Start: `pnpm run video-control`, dann http://localhost:5173/video-control.html.
+
 - [x] 2026-11-27: Clip-Schnitt in Web Worker verlagert; sofort abbrechbar, animierter Status mit Prozent für Verarbeitung/Upload/Speichern.
 - [ ] Persistente Video-Outbox und Hintergrund-Upload mit Benachrichtigung prüfen; bisher App geöffnet lassen.
 
@@ -28,7 +30,9 @@
 - [x] 2026-10-20: Deutlichen zweistufigen Piep-Tüt-Ton am Ende jeder Runner-Übung ergänzen.
 - [x] 2026-10-20: Englische Abschlussansage nach dem Workout ergänzen.
 - [x] 2026-10-22: Aktuelle Runner-Übung wiederholen können und Audio-Mix vor jeder Ansage/jedem Piep erneut setzen.
-- [x] 2026-11-11: Woche 3 ergänzt (`catalog/6pack/week3_workouts.yml`, App-Tage 15/16/18/19/20): Progression aus Woche 2, nur Übungen mit verifizierter Demo; Regressionstest in `scripts/test-exercise-details.mjs`. Ersetzen, sobald Original-Screenshots von Woche 3 vorliegen.
+- [x] 2026-11-27: Original-Woche 3 aus fünf Screenshots übernommen (Tage 15/16/18/19/20); vorläufige Progression ersetzt. Standardflow: `docs/WORKOUTS-HINZUFUEGEN.md`, Build-Validierung und Folgen-Regression.
+- [ ] Woche 3: Technik/Muskelzuordnung der zehn neuen Katalogübungen prüfen; fehlende Originaldemos und Handy-Runner abnehmen.
+- [x] 2026-11-11: Woche 3 vorläufig ergänzt (`catalog/6pack/week3_workouts.yml`, App-Tage 15/16/18/19/20): Progression aus Woche 2, nur Übungen mit verifizierter Demo; Regressionstest in `scripts/test-exercise-details.mjs`. Am 2026-11-27 durch Original-Screenshots ersetzt.
 - [ ] Wöchentlich: eine weitere Woche des 6 Pack Promise-Programms mit verifizierten Workouts ergänzen. (Woche 2 Tag 1/2/4/5/6 erledigt 2026-10-23; Woche 3 erledigt 2026-11-11; Woche 4 offen.)
 - [ ] Verlässliche öffentliche Demos für Rolling Jackknifes und die seitliche Accordian-Crunch-Variante sind noch nicht bestätigt. Ein generisches Accordion-Video ist nicht als seitliche Variante verifiziert und bleibt unverknüpft; Sprinter Tuck Planks / Canoe Crunch haben nur Näherungs-Videos.
 - [ ] Offline-Video-Clips (Katalogprüfung 2026-10-29): YouTube/Vimeo-Embeds sind nicht im App-Cache speicherbar. Für Offline-Wiedergabe eigene MP4s unter `public/videos/<exercise_id>.mp4` erstellen und in den Build aufnehmen:

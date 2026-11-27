@@ -1,0 +1,34 @@
+exercise_id: physioball_ball_passes
+description: >-
+  Week 3 screenshot identity and equipment; initial coaching and anatomy require
+  technique review.
+exercises:
+  - exercise_id: physioball_ball_passes
+    id: physioball_ball_passes
+    name: Physioball Ball Passes
+    display_name: Physioball Ball Passes
+    category: core
+    equipment:
+      - physioball
+    tags:
+      - 6pack_promise
+      - core
+      - full_range
+    aliases:
+      - Physioball Ball Passes
+      - Physioball Ball Passes
+    source: user_screenshots
+    origin:
+      type: manual
+      source_refs:
+        app:
+          - 6_pack_promise
+        screenshots:
+          - Week 3, supplied 2026-11-27
+    review_state:
+      status: needs_review
+    coaching_notes:
+      - In Rückenlage den Ball kontrolliert zwischen Händen und Füßen übergeben.
+    common_errors: []
+    primary_muscles:
+      - 501_rectus_abdominis

@@ -43,11 +43,20 @@ jobs:
       - name: Calendar reminder regression checks
         run: pnpm run test:calendar
 
+      - name: Workout catalog validation checks
+        run: node --test scripts/test-workout-validation.mjs
+
       - name: Exercise preview regression checks
         run: node scripts/test-exercise-details.mjs
 
       - name: Exercise video mapping checks
         run: node scripts/test-exercise-video.mjs
+
+      - name: Local video control regressions
+        run: pnpm run test:video-control
+
+      - name: Local video control build
+        run: pnpm run build:video-control
 
       - name: In-app update prompt
         run: node --test scripts/test-app-update.mjs
