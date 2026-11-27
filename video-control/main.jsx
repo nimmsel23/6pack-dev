@@ -4,7 +4,7 @@ import { RefreshCw, Video, ExternalLink, Check, Trash2 } from 'lucide-react';
 import { loginEmail, loginGoogle, logoutPhotos, watchPhotoUser } from '../photoAuth.js';
 import { deleteExerciseVideo, uploadExerciseVideo } from '../exerciseVideoCloud.js';
 import ExerciseVideoUpload from '../ExerciseVideoUpload.jsx';
-import ExerciseClipEditor from '../ExerciseClipEditor.jsx';
+import ProClipEditor from './ProClipEditor.jsx';
 import { SIXPACK_EXERCISE_DETAILS } from '../sixpackData.generated.js';
 import { canManageTeam, setVideoStatus, setVideoClip, videoUrl, watchVideos } from './cloud.js';
 import '../styles.css';
@@ -107,7 +107,7 @@ function Inspector({ record, user, teamManager }) {
       }}>Ausschnitt bearbeiten</button>}
       {mine && <button disabled={busy} onClick={() => setConfirmDelete(value => !value)}><Trash2 size={15} /> Entfernen …</button>}
     </div>}
-    {trim && <ExerciseClipEditor url={media.url} duration={record.duration} start={trim.start} end={trim.end}
+    {trim && <ProClipEditor url={media.url} duration={record.duration} start={trim.start} end={trim.end}
       exerciseName={nameOf(record.id)} submitLabel="Ausschnitt speichern" busy={busy} error={trimError}
       status="Abspielbereich speichern · Videodatei bleibt erhalten" onChange={setTrim}
       onCancel={() => { if (!busy) setTrim(null); }} onUpload={async () => {
@@ -187,7 +187,7 @@ export function VideoControlPanel() {
         <label>Zielübung<select value={uploadId} onChange={event => setUploadId(event.target.value)}><option value="">Übung wählen …</option>{Object.values(SIXPACK_EXERCISE_DETAILS).sort((a,b) => a.name.localeCompare(b.name)).map(exercise => <option key={exercise.id} value={exercise.id}>{exercise.name}</option>)}</select></label>
         {uploadId && <ExerciseVideoUpload key={`${session.user.uid}:${uploadId}`} exerciseId={uploadId} exerciseName={nameOf(uploadId)} signedIn
           ownership={records.some(item => item.id === uploadId) ? records.find(item => item.id === uploadId).uploaderUid === session.user.uid ? 'mine' : 'other' : 'none'}
-          onUpload={uploadExerciseVideo} onDelete={deleteExerciseVideo} videoSource={source} onVideoSourceChange={setSource} />}
+          onUpload={uploadExerciseVideo} onDelete={deleteExerciseVideo} Editor={ProClipEditor} videoSource={source} onVideoSourceChange={setSource} />}
       </section>
     </>}
     <footer>Firebase-Projekt fitness-aos · Lokales Werkzeug · Keine Admin-Zugangsdaten im Browser</footer>

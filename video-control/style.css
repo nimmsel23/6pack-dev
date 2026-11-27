@@ -60,3 +60,54 @@ footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); co
 ::selection { background:#7c1220; color:white; }
 @media(max-width:900px) { .workspace { grid-template-columns:1fr; } .inspector { padding:24px 0 0; border-left:0; border-top:1px solid var(--line); } }
 @media(max-width:600px) { main { padding:20px 16px; } header { align-items:flex-start; flex-direction:column; gap:12px; } h1 { font-size:25px; } .toolbar { flex-wrap:wrap; } .search { flex-basis:100%; } .toolbar>label:not(.search) { flex:1; } .toolbar select { min-width:0; } .toolbar>button { padding:9px; } dl { grid-template-columns:95px minmax(0,1fr); gap:10px; } th,td { padding-left:8px; padding-right:8px; } }
+
+/* Schnittfenster (ProClipEditor) */
+.pce { position:fixed; inset:0; z-index:250; display:grid; grid-template-rows:auto minmax(0,1fr) auto auto auto auto; background:#0b0b0b; color:var(--text); height:100dvh; }
+.pce kbd { display:inline-block; min-width:18px; padding:0 4px; margin:0 1px; border:1px solid #444; border-bottom-width:2px; border-radius:4px; background:#1b1b1b; font:600 11px/16px ui-monospace,monospace; text-align:center; color:#ddd; }
+.pce-head { margin:0; display:flex; justify-content:space-between; align-items:center; gap:16px; padding:10px 16px; border-bottom:1px solid var(--line); }
+.pce-title { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0; }
+.pce-meta { color:var(--dim); font-size:12px; font-variant-numeric:tabular-nums; }
+.pce-meta select { display:inline-block; width:auto; min-height:28px; padding:2px 6px; margin:0 4px; }
+.pce-icon { min-height:36px; min-width:36px; padding:6px; }
+.pce-icon[data-on="true"] { background:#3a1015; border-color:var(--accent); color:#fff; }
+.pce-viewer { position:relative; min-height:120px; overflow:hidden; background:#000; }
+.pce-viewer video { position:absolute; inset:0; width:100%; height:100%; max-height:none; margin:0; border-radius:0; object-fit:contain; cursor:pointer; }
+.pce-tc { position:absolute; right:14px; bottom:12px; display:flex; flex-direction:column; align-items:flex-end; padding:6px 10px; border-radius:6px; background:rgba(0,0,0,.65); font:12px ui-monospace,monospace; color:#bbb; pointer-events:none; }
+.pce-tc-main { font-size:22px; font-weight:700; color:#fff; letter-spacing:.04em; }
+.pce-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding:10px 16px; border-top:1px solid var(--line); background:#121212; }
+.pce-points,.pce-transport,.pce-marks { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.pce-point { display:inline-flex; flex-direction:column; align-items:flex-start; gap:0; min-height:40px; padding:4px 10px; font:600 13px ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+.pce-point small { font:600 10px Inter,system-ui,sans-serif; text-transform:uppercase; letter-spacing:.06em; }
+.pce-static { border:1px solid var(--line); border-radius:8px; background:transparent; }
+.pce-play { min-width:48px; background:var(--accent); border-color:var(--accent); color:#fff; }
+.pce-speed { min-width:56px; text-align:center; font:600 12px ui-monospace,monospace; color:var(--dim); }
+.pce-zoom { display:flex; align-items:center; gap:8px; padding:6px 16px; background:#121212; }
+.pce-zoom input[type=range] { width:min(320px,40vw); min-height:0; margin:0; padding:0; border:0; background:transparent; accent-color:var(--accent); }
+.pce-scroller { overflow-x:auto; overflow-y:hidden; background:#0f0f0f; border-top:1px solid var(--line); border-bottom:1px solid var(--line); user-select:none; }
+.pce-track { position:relative; min-width:100%; touch-action:none; cursor:text; }
+.pce-ruler { position:relative; height:26px; border-bottom:1px solid #2a2a2a; background:#151515; overflow:hidden; }
+.pce-tick { position:absolute; bottom:0; width:1px; height:6px; background:#555; }
+.pce-tick.major { height:12px; background:#888; }
+.pce-tick span { position:absolute; left:4px; bottom:9px; font:10px ui-monospace,monospace; color:#aaa; white-space:nowrap; }
+.pce-cell { position:absolute; top:0; bottom:0; background:rgba(226,0,26,.28); }
+.pce-lane { position:relative; height:18px; background:#111; }
+.pce-range { position:absolute; top:3px; height:12px; border-radius:3px; background:var(--accent); cursor:grab; overflow:hidden; }
+.pce-range span { display:block; padding-left:6px; font:600 9px/12px ui-monospace,monospace; color:#fff; white-space:nowrap; }
+.pce-strip { position:relative; overflow:hidden; background:#1a1a1a; }
+.pce-thumb { position:absolute; top:0; height:100%; object-fit:cover; border-right:1px solid #000; }
+.pce-empty { background:linear-gradient(90deg,#1c1c1c,#232323); }
+.pce-dim { position:absolute; top:0; bottom:0; background:rgba(0,0,0,.62); pointer-events:none; }
+.pce-handle { position:absolute; top:0; bottom:0; width:14px; cursor:ew-resize; }
+.pce-handle.in { transform:translateX(-2px); border-left:4px solid #ffd400; }
+.pce-handle.out { transform:translateX(-12px); border-right:4px solid #ffd400; }
+.pce-handle::after { content:""; position:absolute; top:50%; width:6px; height:22px; margin-top:-11px; border-radius:2px; background:#ffd400; }
+.pce-handle.in::after { left:0; } .pce-handle.out::after { right:0; }
+.pce-playhead { position:absolute; top:0; bottom:0; width:0; border-left:2px solid #fff; pointer-events:none; }
+.pce-playhead i { position:absolute; top:0; left:-7px; width:12px; height:12px; background:#fff; clip-path:polygon(0 0,100% 0,100% 55%,50% 100%,0 55%); }
+.pce-foot { margin:0; border:0; font-size:14px; padding:10px 16px 14px; padding-bottom:max(14px,env(safe-area-inset-bottom)); }
+.pce-keys { margin:0 0 10px; max-width:none; color:var(--dim); font-size:12px; line-height:2; }
+.pce-status { margin:6px 0; }
+.pce-progress { height:5px; border-radius:3px; background:#333; overflow:hidden; margin:6px 0 10px; }
+.pce-progress i { display:block; height:100%; background:var(--accent); }
+.pce-actions { display:flex; justify-content:flex-end; gap:8px; }
+@media(max-width:700px) { .pce-keys { display:none; } .pce-bar { padding:8px; } .pce-point { padding:3px 7px; font-size:12px; } }

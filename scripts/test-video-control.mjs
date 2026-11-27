@@ -83,3 +83,4 @@ assert.ok(calls.includes('unsubscribe'));
 console.log('Video-Control: login gate, live list, preview, approval, delete confirmation, owner boundary, errors, empty state and logout passed.');
 
 await import('./test-video-control-cloud.mjs');
+await import('./test-video-timeline.mjs');

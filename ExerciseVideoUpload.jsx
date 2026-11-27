@@ -77,7 +77,7 @@ function useWakeLock(active) {
   }, [active]);
 }
 
-export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload, ownership = 'none', onDelete, videoSource, onVideoSourceChange }) {
+export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn, onUpload, ownership = 'none', onDelete, videoSource, onVideoSourceChange, Editor = ExerciseClipEditor }) {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
   const filesRef = useRef(null);
@@ -362,7 +362,7 @@ export default function ExerciseVideoUpload({ exerciseId, exerciseName, signedIn
       )}
       {phase === 'checking' && <p className="text-xs mt-2" style={{ color: 'var(--dim)' }}>Video wird geprüft …</p>}
       {editing && (
-        <ExerciseClipEditor
+        <Editor
           url={previewUrl}
           duration={duration}
           start={trimStart}
