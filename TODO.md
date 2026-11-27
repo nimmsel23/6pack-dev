@@ -2,6 +2,8 @@
 
 - [x] 2026-11-27: Lokales Video-Control-Panel mit Anmeldung, Live-Liste, Vorschau, Diagnose, Freigabe und eigenem Upload/Entfernen. Start: `pnpm run video-control`, dann http://localhost:5173/video-control.html.
 
+- [x] 2026-11-27: Video-Control als PWA „6Pack Videos“ (Manifest, SW, Android-Teilen-Ziel, Touch-Editor am Handy), im Tailnet unter https://ideapad.tail7a15d6.ts.net:8443/videos/. Details: `VIDEOUPLOAD.md`.
+- [ ] Firebase Auth: `ideapad.tail7a15d6.ts.net` als autorisierte Domain eintragen (sonst nur E-Mail-Anmeldung in der Video-PWA). Installation und Teilen-Ziel auf dem Android-Gerät abnehmen.
 - [x] 2026-11-27: Video-Control-Schnittfenster `video-control/ProClipEditor.jsx` (NLE-Stil): Filmstreifen mit Vorschaubildern, Zoom bis auf Einzelframes, Lineal mit Timecode, framegenau über Container-Zeitstempel (VFR), J/K/L, ←/→ Frame, I/O, Bereich/Loop. Gilt für „Ausschnitt bearbeiten“ und den Upload im Panel; die App behält den Touch-Editor.
 - [ ] Upload-Schnitt (`exerciseClipCut.js`) kopiert Pakete und weitet auf Keyframes aus; framegenau ist danach nur der Abspielbereich. Frame-exakter Datei-Schnitt bräuchte Neukodierung.
 - [ ] Prüfen, ob Firebase-Download-URLs CORS/Range für mediabunny liefern; sonst fällt das Schnittfenster auf fps-Raster und Seek-Vorschaubilder zurück.

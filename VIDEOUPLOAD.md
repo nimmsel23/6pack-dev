@@ -170,4 +170,19 @@ Die veröffentlichte Firebase-App bleibt unabhängig davon.
   ändert den Prüfstatus, nicht die Leserechte.
 
 Der Build-Modus `video-control` ist separat. Das normale `pnpm run build`
-liefert das Control-Panel nicht an Firebase Hosting aus. Das Panel verwendet keine Service Worker und nutzt dieselben Firebase-Rechte.
+liefert das Control-Panel nicht an Firebase Hosting aus. Das Panel nutzt dieselben Firebase-Rechte.
+
+### Als PWA am Handy (2026-11-27)
+
+- Adresse im Tailnet: https://ideapad.tail7a15d6.ts.net:8443/videos/ (Tailscale
+  Serve, nur Tailnet, Proxy auf :9150/videos/). Mit Schrägstrich am Ende öffnen.
+- Installierbar als „6Pack Videos“ (`video-control/public/manifest.webmanifest`,
+  eigener Service Worker `video-control/public/sw.js`, Scope `/videos/`). Shell
+  Netz zuerst mit 800 ms Timeout, gehashte Assets aus dem Cache.
+- Teilen-Ziel (nur Android/Chrome, iOS kennt es nicht): Video aus Galerie oder
+  WhatsApp an „6Pack Videos“ teilen → der SW legt es im Cache `vc-share` ab →
+  das Panel übernimmt es nach der Anmeldung als Quelle, Zielübung wählen,
+  „Weiteren Clip schneiden“. Kamera-Aufnahme gibt es über „Aufnehmen“.
+- Handy (`pointer: coarse`, bis 900 px): Touch-Editor; sonst das NLE-Schnittfenster.
+- Google-Anmeldung braucht `ideapad.tail7a15d6.ts.net` in den autorisierten
+  Domains von Firebase Auth (fehlt Stand 2026-11-27). E-Mail-Anmeldung geht ohne.

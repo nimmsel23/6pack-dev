@@ -5,6 +5,8 @@ import { loginEmail, loginGoogle, logoutPhotos, watchPhotoUser } from '../photoA
 import { deleteExerciseVideo, uploadExerciseVideo } from '../exerciseVideoCloud.js';
 import ExerciseVideoUpload from '../ExerciseVideoUpload.jsx';
 import ProClipEditor from './ProClipEditor.jsx';
+import ExerciseClipEditor from '../ExerciseClipEditor.jsx';
+import { takeSharedVideo, registerWorker, useTouchLayout } from './pwa.js';
 import { SIXPACK_EXERCISE_DETAILS } from '../sixpackData.generated.js';
 import { canManageTeam, setVideoStatus, setVideoClip, videoUrl, watchVideos } from './cloud.js';
 import '../styles.css';
@@ -15,7 +17,7 @@ const formatDate = value => value ? new Date(value).toLocaleString('de-AT') : 'Z
 function problem(error) {
   if (error?.code?.includes('permission-denied') || error?.code === 'storage/unauthorized') return 'Zugriff verweigert. Anmeldung und Kontorechte prüfen.';
   if (error?.code === 'storage/object-not-found') return 'Die Zuordnung existiert, aber die Videodatei fehlt im Storage.';
-  if (error?.code === 'auth/unauthorized-domain') return 'Diese Adresse ist für die Anmeldung nicht freigeschaltet. Bitte http://localhost:9150/videos/ öffnen.';
+  if (error?.code === 'auth/unauthorized-domain') return 'Google-Anmeldung ist für diese Adresse nicht freigeschaltet. Mit E-Mail anmelden oder http://localhost:9150/videos/ öffnen.';
   return error?.message || 'Laden fehlgeschlagen. Bitte erneut versuchen.';
 }
 
@@ -42,7 +44,7 @@ function Login() {
   </section>;
 }
 
-function Inspector({ record, user, teamManager }) {
+function Inspector({ record, user, teamManager, Editor }) {
   const [attempt, setAttempt] = useState(0);
   const [media, setMedia] = useState({ phase: 'loading', url: '', error: '' });
   const [notice, setNotice] = useState('');
@@ -107,7 +109,7 @@ function Inspector({ record, user, teamManager }) {
       }}>Ausschnitt bearbeiten</button>}
       {mine && <button disabled={busy} onClick={() => setConfirmDelete(value => !value)}><Trash2 size={15} /> Entfernen …</button>}
     </div>}
-    {trim && <ProClipEditor url={media.url} duration={record.duration} start={trim.start} end={trim.end}
+    {trim && <Editor url={media.url} duration={record.duration} start={trim.start} end={trim.end}
       exerciseName={nameOf(record.id)} submitLabel="Ausschnitt speichern" busy={busy} error={trimError}
       status="Abspielbereich speichern · Videodatei bleibt erhalten" onChange={setTrim}
       onCancel={() => { if (!busy) setTrim(null); }} onUpload={async () => {
@@ -138,6 +140,15 @@ export function VideoControlPanel() {
   const [selected, setSelected] = useState('bent_knee_windshield_wipers');
   const [uploadId, setUploadId] = useState('');
   const [source, setSource] = useState(null);
+  const [shared, setShared] = useState(null);
+  const touch = useTouchLayout();
+  const Editor = touch ? ExerciseClipEditor : ProClipEditor;
+  useEffect(() => { takeSharedVideo().then(file => { if (file) setShared(file); }).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!session.user || !shared) return;
+    setSource({ file: shared });
+    document.querySelector('.upload')?.scrollIntoView({ behavior: 'smooth' });
+  }, [session.user, shared]);
   useEffect(() => watchPhotoUser(user => {
     setSession({ ready: true, user }); setRecords([]); setSource(null); setUploadId('');
   }, err => { setError(problem(err)); setSession({ ready: true, user: null }); }), []);
@@ -181,17 +192,19 @@ export function VideoControlPanel() {
             <td>{Number(item.duration || 0).toFixed(1)} s</td>
           </tr>)}</tbody></table> : !loading && <p className="empty">{records.length ? 'Keine Videos für diese Suche. Filter ändern oder Suche leeren.' : 'Noch keine Videos vorhanden. Unten eine Übung wählen und den ersten Clip hochladen.'}</p>}
         </section>
-        {record && <Inspector key={`${session.user.uid}:${record.id}`} record={record} user={session.user} teamManager={teamManager} />}
+        {record && <Inspector key={`${session.user.uid}:${record.id}`} record={record} user={session.user} teamManager={teamManager} Editor={Editor} />}
       </div>
       <section className="upload"><h2>Video hochladen oder ersetzen</h2>
+        {shared && source?.file === shared && <p role="status" className="shared">Geteiltes Video bereit: {shared.name}. Zielübung wählen, dann „Weiteren Clip schneiden“.</p>}
         <label>Zielübung<select value={uploadId} onChange={event => setUploadId(event.target.value)}><option value="">Übung wählen …</option>{Object.values(SIXPACK_EXERCISE_DETAILS).sort((a,b) => a.name.localeCompare(b.name)).map(exercise => <option key={exercise.id} value={exercise.id}>{exercise.name}</option>)}</select></label>
         {uploadId && <ExerciseVideoUpload key={`${session.user.uid}:${uploadId}`} exerciseId={uploadId} exerciseName={nameOf(uploadId)} signedIn
           ownership={records.some(item => item.id === uploadId) ? records.find(item => item.id === uploadId).uploaderUid === session.user.uid ? 'mine' : 'other' : 'none'}
-          onUpload={uploadExerciseVideo} onDelete={deleteExerciseVideo} Editor={ProClipEditor} videoSource={source} onVideoSourceChange={setSource} />}
+          onUpload={uploadExerciseVideo} onDelete={deleteExerciseVideo} Editor={Editor} videoSource={source} onVideoSourceChange={setSource} />}
       </section>
     </>}
     <footer>Firebase-Projekt fitness-aos · Lokales Werkzeug · Keine Admin-Zugangsdaten im Browser</footer>
   </main>;
 }
 
+registerWorker();
 createRoot(document.getElementById('root')).render(<VideoControlPanel />);

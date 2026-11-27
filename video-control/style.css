@@ -111,3 +111,4 @@ footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); co
 .pce-progress i { display:block; height:100%; background:var(--accent); }
 .pce-actions { display:flex; justify-content:flex-end; gap:8px; }
 @media(max-width:700px) { .pce-keys { display:none; } .pce-bar { padding:8px; } .pce-point { padding:3px 7px; font-size:12px; } }
+.shared { padding:10px 12px; border:1px solid var(--accent); border-radius:8px; background:#211315; }

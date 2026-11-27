@@ -52,7 +52,7 @@ function fixRolldownPreloadMarker() {
 
 export default defineConfig(({ mode }) => ({
   root: mode === 'skills' ? 'skills' : '.',
-  publicDir: mode === 'video-control' ? false : 'public',
+  publicDir: mode === 'video-control' ? 'video-control/public' : 'public',
   build: {
     outDir: mode === 'video-control' ? 'dist-video-control' : mode === 'skills' ? '../dist-skills' : 'dist',
     emptyOutDir: true,
