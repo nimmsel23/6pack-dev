@@ -1,0 +1,85 @@
+program_id: sixpack_promise_week4
+name: 6 Pack Promise Week 4
+source: user_screenshots
+verified_days:
+  '1':
+    total_seconds: 390
+    items:
+      - type: exercise
+        exercise_id: hands_back_raises
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: marching_planks
+        duration_seconds: 60
+      - type: exercise
+        exercise_id: twisting_pistons
+        duration_seconds: 30
+      - type: rest
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: scissor_v_ups
+        duration_seconds: 60
+      - type: exercise
+        exercise_id: upper_circle_crunches
+        duration_seconds: 60
+      - type: exercise
+        exercise_id: upper_circle_crunches
+        duration_seconds: 60
+      - type: rest
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: canoe_crunch
+        duration_seconds: 30
+  '2':
+    total_seconds: 360
+    items:
+      - type: exercise
+        exercise_id: physioball_reverse_crunches
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: physioball_alternating_toe_touch
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: seated_ab_circles
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: seated_ab_circles
+        duration_seconds: 30
+      - type: rest
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: physioball_side_plank_drops
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: physioball_side_plank_drops
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: physioball_wall_plant_crunches
+        duration_seconds: 60
+      - type: rest
+        duration_seconds: 30
+      - type: exercise
+        exercise_id: canoe_crunch
+        duration_seconds: 60
+rest_days:
+  - 3
+  - 7
+unverified_days:
+  - 4
+  - 5
+  - 6
+notes:
+  - 'Partial Week 4: only app days 22 and 23 are complete. Supplied 2026-11-27.'
+  - >-
+    Day 22: screenshots 3 + 4; final Canoe Crunch duration 30 seconds explicitly
+    confirmed by owner. Total 390 seconds.
+  - >-
+    Day 23: screenshots 5 + 2; overlapping blocks counted once. Total 360
+    seconds.
+  - >-
+    Day 25: screenshot 1 incomplete; visible blocks total 360 of displayed 390
+    seconds. Preserved in catalog/workout-imports/week4-pending.yml, not
+    published as a complete workout.
+  - >-
+    App days 26 and 27 not supplied; days 24 and 28 retain the established rest
+    schedule.

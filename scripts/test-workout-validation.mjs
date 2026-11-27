@@ -13,3 +13,8 @@ for (const [name, mutate] of [
   ['missing day', d => d.rest_days.pop()],
   ['out of range', d => d.rest_days.push(8)],
 ]) test(`rejects ${name}`, () => { const doc=valid(); mutate(doc); assert.throws(() => check(doc)); });
+
+test('partial weeks explicitly reserve unverified days without fabricating workouts', () => {
+  const doc=valid(); doc.rest_days=[3,7]; doc.unverified_days=[2,4,5,6]; check(doc);
+  doc.unverified_days.push(1); assert.throws(() => check(doc));
+});

@@ -278,6 +278,18 @@ for (const [day, [total, ...items]] of Object.entries(week3)) {
 }
 for (const day of [17, 21]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Week 3 day ${day} is a rest day`);
 
+// Week 4: combine overlapping screenshots once; final Day-22 duration owner-confirmed.
+const week4 = {
+  22: [390, ['hands_back_raises',30], ['marching_planks',60], ['twisting_pistons',30], ['rest',30], ['scissor_v_ups',60], ['upper_circle_crunches',60], ['upper_circle_crunches',60], ['rest',30], ['canoe_crunch',30]],
+  23: [360, ['physioball_reverse_crunches',30], ['physioball_alternating_toe_touch',30], ['seated_ab_circles',30], ['seated_ab_circles',30], ['rest',30], ['physioball_side_plank_drops',30], ['physioball_side_plank_drops',30], ['physioball_wall_plant_crunches',60], ['rest',30], ['canoe_crunch',60]],
+};
+for (const [day, [total, ...items]] of Object.entries(week4)) {
+  const workout = data.SIXPACK_VERIFIED_WORKOUTS[day];
+  assert.equal(workout.totalSeconds, total);
+  assert.deepEqual(workout.items.map(item => [item.exerciseId || 'rest', item.seconds]), items, `Day ${day}: merged screenshots`);
+}
+for (const day of [24,25,26,27,28]) assert(!data.SIXPACK_VERIFIED_WORKOUTS[day], `Day ${day}: no invented verified workout`);
+
 // 5s zwischen jedem Block, 30/45-s-Pause bleibt ein eigener Block, davor und danach wieder 5s mit Ansage.
 {
   const exercise = (name, seconds) => ({ type: 'exercise', name, seconds });

@@ -116,3 +116,6 @@
 
 - [x] 2026-11-27: Equipment in Tagesübersicht, Übungslisten und Learn sichtbar; Shuffle mit gespeicherter Equipment-Auswahl (Standard ohne Geräte), passender Auswahl und Neu-mischen. Video-Miniaturen öffnen einen eigenen Dialog, hochgeladene Clips haben weiter Vorrang.
 - [ ] iPhone/PWA: Equipment-Auswahl und Vorschau eines echten hochgeladenen Clips prüfen (Ausschnitt, Schließen und Rückkehr zur Liste).
+
+- [x] 2026-11-27: Woche 4 Tage 22 (06:30) und 23 (06:00) aus überlappenden Screenshots ergänzt; Canoe Crunch an Tag 22 mit 30 s vom Owner bestätigt. Sechs Katalogeinträge mit Equipment und Reviewstatus ergänzt.
+- [ ] Woche 4 vervollständigen: Tag 25 unteres Ende fehlt (30 s offen); Tag 26 und 27 fehlen. Teiltranskript: `catalog/workout-imports/week4-pending.yml`.

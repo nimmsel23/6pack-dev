@@ -8,6 +8,9 @@ export function validateWorkoutProgram(doc, exercises, file) {
   const rest = doc.rest_days;
   if (!Array.isArray(rest) || new Set(rest).size !== rest.length) fail('invalid rest_days');
   for (const day of rest) if (!Number.isInteger(day) || day < 1 || day > 7 || days[day]) fail(`invalid/conflicting rest day ${day}`);
+  const unverified = doc.unverified_days || [];
+  if (!Array.isArray(unverified) || new Set(unverified).size !== unverified.length) fail('invalid unverified_days');
+  for (const day of unverified) if (!Number.isInteger(day) || day < 1 || day > 7 || days[day] || rest.includes(day)) fail(`invalid/conflicting unverified day ${day}`);
   for (const [day, workout] of Object.entries(days)) {
     if (!/^[1-7]$/.test(day)) fail(`invalid day ${day}`);
     if (!Array.isArray(workout.items) || !workout.items.length) fail(`day ${day}: no items`);
@@ -21,5 +24,5 @@ export function validateWorkoutProgram(doc, exercises, file) {
     }
     if (workout.total_seconds !== total) fail(`day ${day}: total_seconds ${workout.total_seconds} != sum ${total}`);
   }
-  for (let day = 1; day <= 7; day++) if (!days[day] && !rest.includes(day)) fail(`day ${day}: missing workout or rest designation`);
+  for (let day = 1; day <= 7; day++) if (!days[day] && !rest.includes(day) && !unverified.includes(day)) fail(`day ${day}: missing workout or rest designation`);
 }
