@@ -4,6 +4,11 @@
 - [ ] Gmail-Agentenkanal konkretisieren: strukturierte 6Pack-Diagnose als Mail an Betta/Alpha zustellen und eine `[ci:betta]`-Eingangsmail bis zur korrekten Agenten-/Repo-Routing-Übergabe nachweisen. Noch keine Gmail-Zustellung aus der Cloud-Pipeline eingerichtet.
 
 # NEXT — 6pack-dev
+- **Video-Control-PWA pushen:** `8368943d` (PWA) und `433c870c` (Doku) liegen nur lokal auf `dev`. Ein Push auf `dev` läuft automatisch bis zum Live-Deploy, deshalb wartet er auf das OK des Users (eventuell erst nach dem Handy-Test).
+- **„6Pack Videos“ am Handy abnehmen:** Unter https://ideapad.tail7a15d6.ts.net:8443/videos/ Google-Login, Installation und Teilen-Ziel auf Android prüfen. Offen ist, ob Chrome für eine reine Tailnet-Adresse eine vollwertige WebAPK mit Teilen-Ziel anlegt. iOS hat kein Teilen-Ziel.
+- **Video-Control, noch nicht gebaut:** Upload-Warteschlange (Schritt 4 der PWA) sowie ein optionales ffmpeg-Backend in coach-dev (framegenauer Export, Range/CORS-Proxy für Firebase-URLs). Empfohlen, aber nicht beauftragt.
+- **Restliche `.bak`-Dateien:** etwa 44 Stück im Repo-Root und anderswo (z. B. `AGENTS.md.bak`, `vite.config.js.bak-video-control`). Löschen wurde angeboten, ist aber noch nicht bestätigt.
+- **Fitness-Integration:** Den neuen Video-Control-Stand nach `fitness` bzw. ins Submodul `6pack` übernehmen. Ist offen und nicht beauftragt.
 - Fitness `HIIT ABS`-Session-UI: Ticket in `/home/alpha/dev/fitness-dev/TODO.md`; Slot als kompakte HIIT-Einheit mit eingeklappten Übungsdetails rendern.
 - ~~automerge-pr Dependabot base=master→dev Retarget~~: Port journal-SSOT `375e122` (Org `c1f9b6ce`/`0e25e4c4`); Dry-Check keine Dep-PRs base=master (AL 2026-11-12).
 - ~~Shell-Theme-Diebstahl~~: `onSubNav` skippt documentElement-Theme; nach Promote Shell-Pin (`vos-release 6pack` / Meta-Bump) prüfen — Sidebar darf nicht mehr rot werden (2026-11-10).
