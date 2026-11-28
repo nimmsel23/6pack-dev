@@ -185,4 +185,4 @@ liefert das Control-Panel nicht an Firebase Hosting aus. Das Panel nutzt dieselb
   „Weiteren Clip schneiden“. Kamera-Aufnahme gibt es über „Aufnehmen“.
 - Handy (`pointer: coarse`, bis 900 px): Touch-Editor; sonst das NLE-Schnittfenster.
 - Google-Anmeldung braucht `ideapad.tail7a15d6.ts.net` in den autorisierten
-  Domains von Firebase Auth (fehlt Stand 2026-11-27). E-Mail-Anmeldung geht ohne.
+  Domains von Firebase Auth (eingetragen 2026-11-28).
