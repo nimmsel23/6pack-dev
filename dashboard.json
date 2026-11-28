@@ -1,12 +1,12 @@
 {
  "evidence": {
-  "generated_at": "2026-11-27T14:19:29+00:00",
+  "generated_at": "2026-11-28T13:35:22+00:00",
   "repo": "nimmsel23/6pack-dev",
   "meta": {
    "name": "6pack-dev",
    "description": null,
    "html_url": "https://github.com/nimmsel23/6pack-dev",
-   "pushed_at": "2026-11-27T13:24:43Z",
+   "pushed_at": "2026-11-28T10:47:31Z",
    "default_branch": "master",
    "visibility": "public",
    "pages_url": "https://nimmsel23.github.io/6pack-dev/"
@@ -21,14 +21,38 @@
    "dev_behind": 0,
    "dev_ahead": 0,
    "oldest_unpromoted": null,
-   "dev_head": "e3bc44f 2026-11-27T14:23:48+01:00",
-   "master_head": "e3bc44f 2026-11-27T14:23:48+01:00"
+   "dev_head": "bd0d0c4 2026-11-28T08:31:14+01:00",
+   "master_head": "bd0d0c4 2026-11-28T08:31:14+01:00"
   },
   "work": {
    "branch": "master",
-   "sha": "e3bc44fa86a694c937484fdf2e1fe1e7b7dc7ef2"
+   "sha": "bd0d0c478d0b2dda7b602c36a53a2dd3ddd988b5"
   },
   "commits": [
+   {
+    "sha": "bd0d0c4",
+    "date": "2026-11-28T08:31:14+01:00",
+    "author": "Alpha",
+    "subject": "docs: auto-update NEXT.md (pre-compact)"
+   },
+   {
+    "sha": "433c870",
+    "date": "2026-11-28T08:17:21+01:00",
+    "author": "Alpha",
+    "subject": "docs(video-control): Tailnet-Domain in Firebase Auth freigeschaltet"
+   },
+   {
+    "sha": "8368943",
+    "date": "2026-11-27T18:35:53+01:00",
+    "author": "Alpha",
+    "subject": "feat(video-control): PWA „6Pack Videos“ mit Teilen-Ziel, Offline-Shell und Touch-Editor am Handy"
+   },
+   {
+    "sha": "6b61d4b",
+    "date": "2026-11-27T15:13:16+01:00",
+    "author": "Alpha",
+    "subject": "fix: allow vertical scrolling in sixpack app frame"
+   },
    {
     "sha": "e3bc44f",
     "date": "2026-11-27T14:23:48+01:00",
@@ -124,40 +148,12 @@
     "date": "2026-11-26T12:49:02+01:00",
     "author": "Alpha",
     "subject": "video: Ersetzen, Entfernen, ohne Ton, Besitzprüfung vor dem Upload"
-   },
-   {
-    "sha": "77ca96b",
-    "date": "2026-11-24T10:39:27+01:00",
-    "author": "nimmsel23",
-    "subject": "ci: Merge nur mit --match-head-commit des geprüften Heads"
-   },
-   {
-    "sha": "2241ce5",
-    "date": "2026-11-24T10:38:25+01:00",
-    "author": "nimmsel23",
-    "subject": "ci: keine Zweitfreigabe mehr, Merge sobald Checks grün (Owner Daniel 24.11.2026 10:33)"
-   },
-   {
-    "sha": "da199a8",
-    "date": "2026-11-24T10:26:10+01:00",
-    "author": "nimmsel23",
-    "subject": "fix(ci): Approval zählt nicht bei offenem Security-Befund HIGH/CRITICAL"
-   },
-   {
-    "sha": "b2ace03",
-    "date": "2026-11-24T10:18:56+01:00",
-    "author": "nimmsel23",
-    "subject": "fix(ci): Org-Bot fail-closed, Merge-Logik ist Klasse B (Security Review vos#125)"
    }
   ],
   "activity": [
    {
-    "day": "2026-11-07",
-    "n": 22
-   },
-   {
     "day": "2026-11-08",
-    "n": 2
+    "n": 0
    },
    {
     "day": "2026-11-09",
@@ -233,7 +229,11 @@
    },
    {
     "day": "2026-11-27",
-    "n": 10
+    "n": 12
+   },
+   {
+    "day": "2026-11-28",
+    "n": 2
    }
   ],
   "workflows": [
@@ -243,9 +243,19 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T14:08:06Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46013161721",
-    "sha": "e3bc44f"
+    "created_at": "2026-11-28T13:25:31Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46149550239",
+    "sha": "bd0d0c4"
+   },
+   {
+    "name": "PR-AutoMerge (Dependabot -> dev)",
+    "branch": "master",
+    "event": "schedule",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-28T12:00:06Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46142482452",
+    "sha": "bd0d0c4"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -253,9 +263,9 @@
     "event": "workflow_dispatch",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T13:24:44Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006878195",
-    "sha": "e3bc44f"
+    "created_at": "2026-11-28T10:47:32Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46136828213",
+    "sha": "bd0d0c4"
    },
    {
     "name": "Auto-Promote dev -> master (Check (6Pack))",
@@ -263,9 +273,9 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T13:24:34Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006854591",
-    "sha": "a6d71aa"
+    "created_at": "2026-11-28T10:47:24Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46136817386",
+    "sha": "e3bc44f"
    },
    {
     "name": "Gemini CI Agent",
@@ -273,19 +283,9 @@
     "event": "workflow_run",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T13:24:34Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006854562",
-    "sha": "a6d71aa"
-   },
-   {
-    "name": "PR-AutoMerge (Dependabot -> dev)",
-    "branch": "master",
-    "event": "workflow_run",
-    "status": "completed",
-    "conclusion": "skipped",
-    "created_at": "2026-11-27T13:24:34Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006854516",
-    "sha": "a6d71aa"
+    "created_at": "2026-11-28T10:47:24Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46136817332",
+    "sha": "e3bc44f"
    },
    {
     "name": "6Pack deploy (preview + standalone)",
@@ -293,9 +293,9 @@
     "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T13:23:53Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006753678",
-    "sha": "e3bc44f"
+    "created_at": "2026-11-28T10:46:40Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46136763647",
+    "sha": "bd0d0c4"
    },
    {
     "name": "Check (6Pack)",
@@ -303,9 +303,9 @@
     "event": "push",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T13:23:52Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46006753594",
-    "sha": "e3bc44f"
+    "created_at": "2026-11-28T10:46:40Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46136763580",
+    "sha": "bd0d0c4"
    },
    {
     "name": "CI-Heilung (rote Läufe wiederholen)",
@@ -313,9 +313,9 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T08:14:34Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45964155440",
-    "sha": "1f632fe"
+    "created_at": "2026-11-28T10:16:23Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46134382632",
+    "sha": "e3bc44f"
    },
    {
     "name": "Org-Bot (PR anlegen & mergen)",
@@ -323,9 +323,9 @@
     "event": "schedule",
     "status": "completed",
     "conclusion": "success",
-    "created_at": "2026-11-27T05:21:55Z",
-    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/45945363023",
-    "sha": "1f632fe"
+    "created_at": "2026-11-28T04:58:41Z",
+    "url": "https://github.com/nimmsel23/6pack-dev/actions/runs/46109970693",
+    "sha": "e3bc44f"
    }
   ],
   "issues": [
